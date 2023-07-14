@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: draw-server
+
+server:
+  error:
+    whitelabel:
+      enabled: false
+  shutdown: graceful
