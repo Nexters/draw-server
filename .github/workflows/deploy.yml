@@ -46,8 +46,8 @@ jobs:
         tags: ${{ secrets.NCP_CONTAINER_REGISTRY }}/app:latest
 #        cache-from: type=registry,ref=${{ secrets.NCP_CONTAINER_REGISTRY }}/prv-frontend:latest
 #        cache-to: type=inline
-        secrets: |
-          GIT_AUTH_TOKEN=${{ secrets.GIT_TOKEN }}
+#       secrets: |
+#          GIT_AUTH_TOKEN=${{ secrets.GIT_TOKEN }}
 
   pull_from_registry:
     name: Connect server ssh and pull from container registry
