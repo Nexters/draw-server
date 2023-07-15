@@ -49,6 +49,7 @@ jobs:
 #       secrets: |
 #          GIT_AUTH_TOKEN=${{ secrets.GIT_TOKEN }}
 
+
   pull_from_registry:
     name: Connect server ssh and pull from container registry
     needs: push_to_registry
