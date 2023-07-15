@@ -8,6 +8,6 @@ class SampleController {
 
     @GetMapping("/")
     fun example(): String {
-        return "드로우 프로젝트 시작!"
+        return "드로우 프로젝트 시작! - v2"
     }
 }

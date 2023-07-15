@@ -19,14 +19,14 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
     
-#    - name: Set up JDK 17
-#      uses: actions/setup-java@v3
-#      with:
-#        java-version: '17'
-#        distribution: 'temurin'
-#    
-#    - name: Build with Gradle
-#      run: ./gradlew clean build
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Build with Gradle
+      run: ./gradlew clean build
       
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
@@ -38,16 +38,13 @@ jobs:
         username: ${{ secrets.NCP_ACCESS_KEY }}
         password: ${{ secrets.NCP_SECRET_KEY }}
     - name: build and push
-      uses: docker/build-push-action@v3
+      uses: docker/build-push-action@v4
       with:
         context: .
         file: ./Dockerfile
         push: true
         tags: ${{ secrets.NCP_CONTAINER_REGISTRY }}/app:latest
-#        cache-from: type=registry,ref=${{ secrets.NCP_CONTAINER_REGISTRY }}/prv-frontend:latest
-#        cache-to: type=inline
-#       secrets: |
-#          GIT_AUTH_TOKEN=${{ secrets.GIT_TOKEN }}
+        platforms: linux/amd64
 
 
   pull_from_registry:
@@ -63,4 +60,4 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           port: ${{ secrets.SERVER_PORT }}
           script: |
-            ~/app/run.sh ${{ secrets.NCP_CONTAINER_REGISTRY }}
+            sh ~/app/run.sh ${{ secrets.NCP_CONTAINER_REGISTRY }}
