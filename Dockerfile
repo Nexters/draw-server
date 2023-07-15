@@ -4,7 +4,12 @@ ADD . /app
 WORKDIR /app
 RUN ./gradlew clean build
 
-COPY ./build/libs/*.jar app.jar
+RUN echo "----------"
+RUN echo $(pwd)
+RUN echo $(ls -al)
+RUN echo "----------"
+
+COPY ./build/libs/draw-server-0.0.1-SNAPSHOT.jar app.jar
 
 ENTRYPOINT ["java", "-jar","./app.jar"]
 
