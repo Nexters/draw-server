@@ -17,3 +17,9 @@ JDK >= 17
 ## System Recommendation
 OS: Mac OS
 JDK: Amazon Coretto 17.0.4
+
+
+## 브런치 전략
+- 리얼배포: prod
+- 메인브런치: master
+- 신규 기능 개발시: master -> feature/xxx
