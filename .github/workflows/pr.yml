@@ -4,8 +4,9 @@ on:
   push:
     branches:
       - develop
+      - master
   pull_request:
-    branches: [ master, develop ]
+    branches: [ prod, master, develop ]
 
 jobs:
   build:
