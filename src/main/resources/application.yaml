@@ -5,6 +5,12 @@ spring:
     url: jdbc:mysql://draw-db-dev.canyydkgjrr5.ap-northeast-2.rds.amazonaws.com:3306/draw?serverTimezone=UTC
     username: ${DB_USER}
     password: ${DB_PASSWORD}
+  redis:
+    host: 118.67.129.198
+    port: ${REDIS_PORT}
+    password: ${REDIS_PASSWORD}
+    db: 0
+
   jpa:
     show-sql: true
     properties:
@@ -42,6 +48,12 @@ spring:
     url: jdbc:mysql://draw-db-dev.canyydkgjrr5.ap-northeast-2.rds.amazonaws.com:3306/draw?serverTimezone=UTC
     username: ${DB_USER}
     password: ${DB_PASSWORD}
+  redis:
+    host: 118.67.129.198
+    port: ${REDIS_PORT}
+    password: ${REDIS_PASSWORD}
+    db: 3
+
   jpa:
     show-sql: false
     properties:
