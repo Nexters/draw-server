@@ -22,9 +22,10 @@ class RedisConfig {
 
     @Bean
     fun redisConnectionFactory(): RedisConnectionFactory {
-        return LettuceConnectionFactory(RedisStandaloneConfiguration(host, port.toInt()).apply {
-            this.password = RedisPassword.of(pw)
-        })
+        return LettuceConnectionFactory(
+            RedisStandaloneConfiguration(host, port.toInt()).apply {
+                this.password = RedisPassword.of(pw)
+            }
+        )
     }
-
 }
