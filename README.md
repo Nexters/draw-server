@@ -18,6 +18,8 @@ JDK >= 17
 OS: Mac OS
 JDK: Amazon Coretto 17.0.4
 
+## API endpoint
+- https://draw-nexters.kro.kr/
 
 ## 브런치 전략
 - 리얼배포: prod
