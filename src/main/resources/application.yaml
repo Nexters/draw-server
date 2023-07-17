@@ -28,9 +28,6 @@ auth:
     refresh:
       secret: "refresh-secret-key"
 
-sentry:
-  dsn: ${SENTRY_DSN}
-
 kakao:
   auth:
     rest-api-key: ${KAKAO_REST_API_KEY}
@@ -67,6 +64,9 @@ auth:
       secret: ${JWT_ACCESS_SECRET}
     refresh:
       secret: ${JWT_REFRESH_SECRET}
+
+sentry:
+  dsn: ${SENTRY_DSN}
 
 kakao:
   auth:
