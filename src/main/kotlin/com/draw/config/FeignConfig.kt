@@ -1,7 +1,7 @@
 package com.draw.config
 
 import feign.Logger.Level
-import feign.codec.ErrorDecoder.*
+import feign.codec.ErrorDecoder.Default
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
