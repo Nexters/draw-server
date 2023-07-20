@@ -28,7 +28,6 @@ class LoggingFilter : OncePerRequestFilter() {
     private fun printLog(request: HttpServletRequest, response: HttpServletResponse) {
         val duration = System.currentTimeMillis() - MDC.get(Const.REQUEST_TIME).toLong()
         if (duration > 1000) {
-            // TODO: to sentry 2023/07/20 (koi)
             log.warn { "${request.requestURI} response is slow: $duration" }
         }
 

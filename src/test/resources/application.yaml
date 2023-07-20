@@ -39,3 +39,6 @@ kakao:
   auth:
     rest-api-key: "kakao-rest-api-key"
 
+discord:
+  webhook:
+    url: "localhost"

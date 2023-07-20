@@ -34,10 +34,20 @@ auth:
     refresh:
       secret: "refresh-secret-key"
 
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 3000
+        readTimeout: 3000
+
 kakao:
   auth:
     rest-api-key: ${KAKAO_REST_API_KEY}
 
+discord:
+  webhook:
+    url: ${DISCORD_WEBHOOK_URL}
 
 ---
 spring:
@@ -83,3 +93,7 @@ sentry:
 kakao:
   auth:
     rest-api-key: ${KAKAO_REST_API_KEY}
+
+discord:
+  webhook:
+    url: ${DISCORD_WEBHOOK_URL}
