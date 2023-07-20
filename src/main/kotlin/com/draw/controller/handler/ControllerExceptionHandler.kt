@@ -78,9 +78,10 @@ class ControllerExceptionHandler(
                         ${request.method} ${request.requestURI}
                         
                         ${request.parameterMap.map { "${it.key}: ${it.value.joinToString()}" }.joinToString("\n")}
-                    """.trimIndent()
-        val length = min(contentTemplate.length, 2000)
+                        """
+            .trimIndent()
 
+        val length = min(contentTemplate.length, 2000)
         try {
             discordApiClient.sendMessage(
                 DiscordMessage(
