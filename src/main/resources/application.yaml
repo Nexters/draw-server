@@ -51,8 +51,9 @@ discord:
 
 ---
 spring:
-  profiles:
-    active: prod
+  config:
+    activate:
+      on-profile: prod
 
   datasource:
     url: jdbc:mysql://draw-db-dev.canyydkgjrr5.ap-northeast-2.rds.amazonaws.com:3306/draw?serverTimezone=UTC
