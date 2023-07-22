@@ -10,9 +10,4 @@ class SampleController {
     fun example(): String {
         return "드로우 프로젝트 시작! - v2"
     }
-
-    @GetMapping("/error")
-    fun error(): String {
-        throw Exception("에러 발생!")
-    }
 }
