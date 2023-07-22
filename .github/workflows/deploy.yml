@@ -3,7 +3,7 @@ name: draw-server-deploy
 on:
   push:
     branches:
-      - master
+      - prod
 
 jobs:
   push_to_registry:

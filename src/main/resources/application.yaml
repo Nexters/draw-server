@@ -1,9 +1,100 @@
 spring:
   application:
     name: draw-server
+  datasource:
+    url: jdbc:mysql://draw-db-dev.canyydkgjrr5.ap-northeast-2.rds.amazonaws.com:3306/draw?serverTimezone=UTC
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  redis:
+    host: 118.67.129.198
+    port: ${REDIS_PORT}
+    password: ${REDIS_PASSWORD}
+    db: 0
+
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
 
 server:
   error:
     whitelabel:
       enabled: false
   shutdown: graceful
+
+auth:
+  jwt:
+    access:
+      secret: "access-secret-key"
+    refresh:
+      secret: "refresh-secret-key"
+
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 3000
+        readTimeout: 3000
+
+kakao:
+  auth:
+    rest-api-key: ${KAKAO_REST_API_KEY}
+
+discord:
+  webhook:
+    url: ${DISCORD_WEBHOOK_URL}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  datasource:
+    url: jdbc:mysql://draw-db-dev.canyydkgjrr5.ap-northeast-2.rds.amazonaws.com:3306/draw?serverTimezone=UTC
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  redis:
+    host: 118.67.129.198
+    port: ${REDIS_PORT}
+    password: ${REDIS_PASSWORD}
+    db: 3
+
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+
+server:
+  error:
+    whitelabel:
+      enabled: false
+  shutdown: graceful
+
+auth:
+  jwt:
+    access:
+      secret: ${JWT_ACCESS_SECRET}
+    refresh:
+      secret: ${JWT_REFRESH_SECRET}
+
+sentry:
+  dsn: ${SENTRY_DSN}
+
+kakao:
+  auth:
+    rest-api-key: ${KAKAO_REST_API_KEY}
+
+discord:
+  webhook:
+    url: ${DISCORD_WEBHOOK_URL}
