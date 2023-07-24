@@ -1,4 +1,4 @@
-package com.draw.domain.common.enums
+package com.draw.common.enums
 
 enum class MBTIChar(
     val pos: Int

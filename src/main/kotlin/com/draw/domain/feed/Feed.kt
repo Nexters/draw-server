@@ -1,11 +1,11 @@
 package com.draw.domain.feed
 
+import com.draw.common.enums.AgeRange
+import com.draw.common.enums.Gender
+import com.draw.common.enums.MBTIChar
 import com.draw.domain.common.BaseEntity
 import com.draw.domain.common.converter.GendersConverter
 import com.draw.domain.common.converter.MBTICharsConverter
-import com.draw.domain.common.enums.AgeRange
-import com.draw.domain.common.enums.Gender
-import com.draw.domain.common.enums.MBTIChar
 import jakarta.persistence.Column
 import jakarta.persistence.Convert
 import jakarta.persistence.Entity
