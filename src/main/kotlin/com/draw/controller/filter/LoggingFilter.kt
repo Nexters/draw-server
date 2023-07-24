@@ -22,6 +22,7 @@ class LoggingFilter : OncePerRequestFilter() {
             filterChain.doFilter(contentCachingRequestWrapper, contentCachingResponseWrapper)
         } finally {
             printLog(contentCachingRequestWrapper, contentCachingResponseWrapper)
+            contentCachingResponseWrapper.copyBodyToResponse()
         }
     }
 
