@@ -24,16 +24,17 @@ class Feed : BaseEntity() {
     var id: Long? = null
 
     @Column(nullable = false)
-    var userId: Long? = null
-
-    @Column(nullable = false)
     var content: String? = null
 
+    @Column(nullable = false)
+    var writerId: Long? = null
+
+    @Column(nullable = false)
     @Convert(converter = GendersConverter::class)
     var genders: MutableList<Gender> = mutableListOf()
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     var ageRange: AgeRange? = null
 
     @Column(nullable = false)
