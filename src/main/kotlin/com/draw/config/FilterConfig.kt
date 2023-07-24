@@ -15,7 +15,7 @@ class FilterConfig {
         return FilterRegistrationBean<Filter>().apply {
             filter = MDCFilter()
             order = 1
-            urlPatterns = listOf("/*")
+            urlPatterns = listOf("/api/*")
         }
     }
 
@@ -24,7 +24,7 @@ class FilterConfig {
         return FilterRegistrationBean<Filter>().apply {
             filter = LoggingFilter()
             order = 2
-            urlPatterns = listOf("/*")
+            urlPatterns = listOf("/api/*")
         }
     }
 }

@@ -39,7 +39,7 @@ class LoggingFilter : OncePerRequestFilter() {
         }
 
         val responseArray = (response as ContentCachingResponseWrapper).contentAsByteArray
-        val responseStr = String(responseArray, charset(response.characterEncoding))
+        val responseStr = String(responseArray, charset(Charsets.UTF_8.name()))
 
         if (!loggingExcludePaths.contains(request.pathInfo)) {
             LogUtils.accessLog(
