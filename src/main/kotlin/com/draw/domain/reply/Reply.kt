@@ -11,19 +11,26 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 
 @Entity
-class Reply : BaseEntity() {
+class Reply(
+    feed: Feed,
+    content: String,
+    writerId: Long,
+) : BaseEntity() {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
 
     @ManyToOne
-    @JoinColumn(name = "feed_id")
-    var feed: Feed? = null
+    @JoinColumn(name = "feed_id", nullable = false)
+    var feed: Feed = feed
+        protected set
 
     @Column(length = 256, nullable = false)
-    var content: String? = null
+    var content: String = content
+        protected set
 
     @Column(nullable = false)
-    var writerId: Long? = null
+    var writerId: Long = writerId
+        protected set
 }

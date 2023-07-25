@@ -27,7 +27,6 @@ create table if not exists feed_view_history
     id         bigint auto_increment primary key,
     feed_id    bigint   not null,
     user_id    bigint   not null,
-    count      int      not null default 0,
     created_at datetime not null default now(),
     updated_at datetime not null default now() on update now()
 );

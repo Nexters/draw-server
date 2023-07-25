@@ -1,25 +1,30 @@
 package com.draw.domain.feed
 
 import com.draw.domain.common.BaseEntity
+import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
-import jakarta.validation.constraints.NotNull
 
 @Entity
-class FavoriteFeed : BaseEntity() {
+class FavoriteFeed(
+    feed: Feed,
+    userId: Long,
+) : BaseEntity() {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
 
     @ManyToOne
-    @JoinColumn(name = "feed_id")
-    @NotNull
-    var feed: Feed? = null
+    @JoinColumn(name = "feed_id", nullable = false)
+    var feed: Feed = feed
+        protected set
 
-    var userId: Long? = null // TODO: entity 2023/07/23 (koi)
+    @Column(nullable = false)
+    var userId: Long = userId // TODO: entity 2023/07/23 (koi)
+        protected set
 }

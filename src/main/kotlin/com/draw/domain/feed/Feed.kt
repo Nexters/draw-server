@@ -17,30 +17,42 @@ import jakarta.persistence.Id
 import org.hibernate.annotations.Formula
 
 @Entity
-class Feed : BaseEntity() {
+class Feed(
+    content: String,
+    writerId: Long,
+    genders: MutableList<Gender> = mutableListOf(),
+    ageRange: AgeRange = AgeRange.ALL,
+    mbtiChars: MutableList<MBTIChar> = mutableListOf(),
+) : BaseEntity() {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
 
     @Column(nullable = false)
-    var content: String? = null
+    var content: String = content
+        protected set
 
     @Column(nullable = false)
-    var writerId: Long? = null
+    var writerId: Long = writerId
+        protected set
 
     @Column(nullable = false)
     @Convert(converter = GendersConverter::class)
-    var genders: MutableList<Gender> = mutableListOf()
+    var genders: MutableList<Gender> = genders
+        protected set
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    var ageRange: AgeRange? = null
+    var ageRange: AgeRange = ageRange
+        protected set
 
     @Column(nullable = false)
     @Convert(converter = MBTICharsConverter::class)
-    var mbtiChars: MutableList<MBTIChar> = mutableListOf()
+    var mbtiChars: MutableList<MBTIChar> = mbtiChars
+        protected set
 
     @Formula("(select count(*) from favorite_feed ff where ff.feed_id = id)")
-    var favoriteCount: Int? = null
+    var favoriteCount: Int = 0
+        protected set
 }
