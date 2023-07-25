@@ -20,12 +20,12 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/feeds")
 @Tag(name = FEED_TAG, description = "피드 API")
 class FeedController {
     private val log = KotlinLogging.logger { }
 
-    @GetMapping("/feeds")
+    @GetMapping
     @Operation(summary = "피드 조회", description = MOCKING)
     fun getFeeds(
         @Parameter(description = "마지막 피드 id") @RequestParam("lastFeedId", required = false) lastFeedId: Long?,
@@ -41,7 +41,7 @@ class FeedController {
         )
     }
 
-    @PostMapping("/feeds")
+    @PostMapping
     @Operation(summary = "피드 작성", description = MOCKING)
     fun createFeed(
         @RequestBody feedCreateReq: FeedCreateReq
@@ -50,7 +50,7 @@ class FeedController {
         // TODO:  2023/07/24 (koi)
     }
 
-    @GetMapping("/feeds/me")
+    @GetMapping("/me")
     @Tag(name = MY_TAG, description = "My 관련 API")
     @Operation(summary = "내가 쓴 피드 조회", description = MOCKING)
     fun getFeedsByMe(
@@ -67,7 +67,7 @@ class FeedController {
         )
     }
 
-    @GetMapping("/feeds/me/favorites")
+    @GetMapping("/me/favorites")
     @Tag(name = MY_TAG, description = "My 관련 API")
     @Operation(summary = "내가 좋아요한 피드 조회", description = MOCKING)
     fun getFeedsByMeFavorites(
@@ -84,7 +84,7 @@ class FeedController {
         )
     }
 
-    @PostMapping("/feeds/{feedId}/view")
+    @PostMapping("/{feedId}/view")
     @Operation(summary = "피드 조회 (기록)", description = MOCKING)
     fun createFeedView(
         @Parameter(description = "피드 id") @PathVariable("feedId") feedId: Long,
@@ -92,7 +92,7 @@ class FeedController {
         // TODO:  2023/07/24 (koi)
     }
 
-    @PostMapping("/feeds/{feedId}/favorites")
+    @PostMapping("/{feedId}/favorites")
     @Operation(summary = "피드 좋아요", description = MOCKING)
     fun createFavoriteFeed(
         @PathVariable("feedId") feedId: Long,
@@ -100,7 +100,7 @@ class FeedController {
         // TODO:  2023/07/24 (koi)
     }
 
-    @DeleteMapping("/feeds/{feedId}/favorites")
+    @DeleteMapping("/{feedId}/favorites")
     @Operation(summary = "피드 좋아요 취소", description = MOCKING)
     fun deleteFavoriteFeed(
         @PathVariable("feedId") feedId: Long,
