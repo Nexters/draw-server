@@ -20,10 +20,19 @@ class SecurityConfig {
             .sessionManagement { mgmt -> mgmt.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests {
                 it.requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                it.requestMatchers("/health", "/ready").permitAll()
+                it.requestMatchers(*permitAllUrls()).permitAll()
                 it.requestMatchers("/", "/error").permitAll()
                 it.anyRequest().authenticated()
             }
             .build()
+    }
+
+    private fun permitAllUrls(): Array<String> {
+        return arrayOf(
+            "/health",
+            "/ready",
+            "/api/v1/feeds",
+            "/api/v1/feeds/*/replies"
+        )
     }
 }

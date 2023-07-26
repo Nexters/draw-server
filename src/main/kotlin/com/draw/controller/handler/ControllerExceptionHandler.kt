@@ -68,6 +68,7 @@ class ControllerExceptionHandler(
 
     private fun sendNotification(e: Exception, request: HttpServletRequest) {
         if (!env.activeProfiles.contains("prod")) {
+            e.printStackTrace()
             return
         }
 
