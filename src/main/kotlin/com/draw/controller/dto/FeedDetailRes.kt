@@ -3,9 +3,13 @@ package com.draw.controller.dto
 import com.draw.common.enums.Gender
 import com.draw.common.enums.MBTI
 
-data class RepliesRes(
+data class FeedDetailRes(
+    val id: Long,
+    val content: String,
+    val isFavorite: Boolean,
+    val favoriteCount: Int,
+    val isFit: Boolean,
     val replies: List<ReplyRes>,
-    val hasNext: Boolean,
 )
 
 data class ReplyRes(
