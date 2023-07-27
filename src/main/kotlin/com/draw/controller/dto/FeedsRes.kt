@@ -8,6 +8,7 @@ data class FeedsRes(
 data class FeedRes(
     val id: Long,
     val content: String,
+    val isFavorite: Boolean,
     val favoriteCount: Int,
     val isFit: Boolean,
 )

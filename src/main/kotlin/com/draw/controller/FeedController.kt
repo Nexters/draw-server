@@ -34,8 +34,8 @@ class FeedController {
         // TODO: 2023/07/24 (koi)
         return FeedsRes(
             feeds = listOf(
-                FeedRes(1, "저녁먹을사람!", 1, true),
-                FeedRes(2, "t도 박은빈 시상식때", 1, true),
+                FeedRes(1, "저녁먹을사람!", true, 1, true),
+                FeedRes(2, "t도 박은빈 시상식때", false, 1, true),
             ),
             hasNext = false
         )
@@ -60,8 +60,8 @@ class FeedController {
         // TODO: 2023/07/24 (koi)
         return FeedsRes(
             feeds = listOf(
-                FeedRes(1, "저녁먹을사람!", 1, false),
-                FeedRes(2, "t도 박은빈 시상식때", 1, false),
+                FeedRes(1, "저녁먹을사람!", true, 1, false),
+                FeedRes(2, "t도 박은빈 시상식때", false, 1, false),
             ),
             hasNext = false
         )
@@ -77,8 +77,8 @@ class FeedController {
         // TODO: 2023/07/24 (koi)
         return FeedsRes(
             feeds = listOf(
-                FeedRes(1, "저녁먹을사람!", 1, false),
-                FeedRes(2, "t도 박은빈 시상식때", 1, false),
+                FeedRes(1, "저녁먹을사람!", true, 1, false),
+                FeedRes(2, "t도 박은빈 시상식때", false, 1, false),
             ),
             hasNext = false
         )
