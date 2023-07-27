@@ -21,6 +21,8 @@ create table if not exists favorite_feed
     updated_at datetime not null default now() on update now()
 );
 
+create unique index favorite_feed_feed_id_user_id_uindex
+    on favorite_feed (feed_id, user_id);
 
 create table if not exists feed_view_history
 (

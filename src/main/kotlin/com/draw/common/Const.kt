@@ -6,6 +6,7 @@ object Const {
     const val USER_ID = "userId"
 
     const val MOCKING = "mocking api"
+    const val MOCK_USER_HEADER = "X-mock-userId"
 
     // swagger tags
     const val FEED_TAG = "feed-api"
