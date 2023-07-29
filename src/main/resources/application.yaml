@@ -20,6 +20,9 @@ spring:
     open-in-view: false
     hibernate:
       ddl-auto: none
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
 
 server:
   error:
@@ -29,10 +32,9 @@ server:
 
 auth:
   jwt:
-    access:
-      secret: "access-secret-key"
-    refresh:
-      secret: "refresh-secret-key"
+    secret-key: ${JWT_SECRET_KEY}
+    access-token-expire-ms: 3600000
+    refresh-token-expire-ms: 1209600000
 
 feign:
   client:
@@ -43,7 +45,10 @@ feign:
 
 kakao:
   auth:
+    client-secret: ${KAKAO_CLIENT_SECRET}
+    js-key: ${KAKAO_JS_KEY}
     rest-api-key: ${KAKAO_REST_API_KEY}
+    callback-url: http://localhost:8080/api/v1/oauth/kakao/login
 
 discord:
   webhook:
@@ -93,7 +98,10 @@ sentry:
 
 kakao:
   auth:
+    client-secret: ${KAKAO_CLIENT_SECRET}
+    js-key: ${KAKAO_JS_KEY}
     rest-api-key: ${KAKAO_REST_API_KEY}
+    callback-url: http://localhost:8080/api/v1/oauth/kakao/login
 
 discord:
   webhook:
