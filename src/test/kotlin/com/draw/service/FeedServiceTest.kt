@@ -3,6 +3,7 @@ package com.draw.service
 import com.draw.common.BusinessException
 import com.draw.common.enums.AgeRange
 import com.draw.controller.dto.FeedCreateReq
+import com.draw.controller.dto.ReplyCreateReq
 import com.draw.domain.feed.FavoriteFeed
 import com.draw.domain.feed.Feed
 import com.draw.infra.persistence.FavoriteFeedRepository
@@ -52,6 +53,19 @@ class FeedServiceTest {
 
         // then
         assertThat(feed.feedViewHistories).hasSize(1)
+    }
+
+    @Test
+    fun `피드내 리플이 생성된다`() {
+        // given
+        val feed = Feed(content = "content", writerId = 1L)
+        every { feedRepository.findByIdOrNull(1L) } returns feed
+
+        // when
+        feedService.createReply(1L, 1L, ReplyCreateReq(content = "content"))
+
+        // then
+        assertThat(feed.replies).hasSize(1)
     }
 
     @Test

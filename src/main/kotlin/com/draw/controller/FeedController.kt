@@ -4,12 +4,14 @@ import com.draw.common.Const.FEED_TAG
 import com.draw.common.Const.MOCKING
 import com.draw.common.Const.MOCK_USER_HEADER
 import com.draw.common.Const.MY_TAG
+import com.draw.common.Const.REPLY_TAG
 import com.draw.common.enums.Gender
 import com.draw.common.enums.MBTI
 import com.draw.controller.dto.FeedCreateReq
 import com.draw.controller.dto.FeedDetailRes
 import com.draw.controller.dto.FeedRes
 import com.draw.controller.dto.FeedsRes
+import com.draw.controller.dto.ReplyCreateReq
 import com.draw.controller.dto.ReplyRes
 import com.draw.controller.dto.ReplyStatus
 import com.draw.controller.dto.ReplyWriterRes
@@ -125,6 +127,17 @@ class FeedController(
         @Parameter(description = "피드 id") @PathVariable("feedId") feedId: Long,
     ) {
         feedService.createFeedView(userId, feedId)
+    }
+
+    @PostMapping("/{feedId}/replies")
+    @Tag(name = REPLY_TAG)
+    @Operation(summary = "리플 작성")
+    fun createReply(
+        @RequestHeader(MOCK_USER_HEADER) userId: Long,
+        @PathVariable("feedId") feedId: Long,
+        @RequestBody replyCreateReq: ReplyCreateReq,
+    ) {
+        feedService.createReply(userId, feedId, replyCreateReq)
     }
 
     @PostMapping("/{feedId}/favorites")

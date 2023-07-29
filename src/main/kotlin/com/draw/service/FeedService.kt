@@ -3,6 +3,7 @@ package com.draw.service
 import com.draw.common.BusinessException
 import com.draw.common.enums.ErrorType
 import com.draw.controller.dto.FeedCreateReq
+import com.draw.controller.dto.ReplyCreateReq
 import com.draw.domain.feed.FavoriteFeed
 import com.draw.infra.persistence.FavoriteFeedRepository
 import com.draw.infra.persistence.FeedRepository
@@ -31,6 +32,12 @@ class FeedService(
     fun createFeedView(userId: Long, feedId: Long) {
         val feed = feedRepository.findByIdOrNull(feedId) ?: throw IllegalArgumentException("존재하지 않는 피드입니다.")
         feed.addFeedViewHistory(userId)
+    }
+
+    @Transactional
+    fun createReply(userId: Long, feedId: Long, reqReplyCreateReq: ReplyCreateReq) {
+        val feed = feedRepository.findByIdOrNull(feedId) ?: throw IllegalArgumentException("존재하지 않는 피드입니다.")
+        feed.addReply(userId, reqReplyCreateReq.content)
     }
 
     @Transactional

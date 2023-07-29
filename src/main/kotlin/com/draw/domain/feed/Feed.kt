@@ -6,6 +6,7 @@ import com.draw.common.enums.MBTIChar
 import com.draw.domain.common.BaseEntity
 import com.draw.domain.common.converter.GendersConverter
 import com.draw.domain.common.converter.MBTICharsConverter
+import com.draw.domain.reply.Reply
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Convert
@@ -58,6 +59,15 @@ class Feed(
     @OneToMany(
         mappedBy = "feed",
         fetch = FetchType.LAZY,
+        cascade = [CascadeType.PERSIST],
+    )
+    protected val mutableReplies: MutableList<Reply> = mutableListOf()
+    val replies: List<Reply> get() = mutableReplies
+
+
+    @OneToMany(
+        mappedBy = "feed",
+        fetch = FetchType.LAZY,
         cascade = [CascadeType.PERSIST, CascadeType.REMOVE],
         orphanRemoval = true
     )
@@ -67,6 +77,11 @@ class Feed(
     @Formula("(select count(*) from favorite_feed ff where ff.feed_id = id)")
     var favoriteCount: Int = 0
         protected set
+
+    fun addReply(userId: Long, content: String) {
+        val reply = Reply(feed = this, writerId = userId, content = content)
+        mutableReplies.add(reply)
+    }
 
     fun addFeedViewHistory(userId: Long) {
         val feedViewHistory = FeedViewHistory(userId = userId, feed = this)
