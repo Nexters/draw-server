@@ -6,11 +6,13 @@ import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.ManyToOne
 
 @Entity
 class FeedViewHistory(
     userId: Long,
-    feedId: Long,
+    feed: Feed,
 ) : BaseEntity() {
 
     @Id
@@ -21,7 +23,8 @@ class FeedViewHistory(
     var userId: Long = userId
         protected set
 
-    @Column(nullable = false)
-    var feedId: Long = feedId
+    @ManyToOne
+    @JoinColumn(name = "feed_id", nullable = false)
+    var feed: Feed = feed
         protected set
 }

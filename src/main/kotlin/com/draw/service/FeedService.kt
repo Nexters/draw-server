@@ -20,6 +20,12 @@ class FeedService(
     private val log = KotlinLogging.logger { }
 
     @Transactional
+    fun createFeedView(userId: Long, feedId: Long) {
+        val feed = feedRepository.findByIdOrNull(feedId) ?: throw IllegalArgumentException("존재하지 않는 피드입니다.")
+        feed.addFeedViewHistory(userId)
+    }
+
+    @Transactional
     fun createFavoriteFeed(userId: Long, feedId: Long) {
         val feed = feedRepository.findByIdOrNull(feedId) ?: throw IllegalArgumentException("존재하지 않는 피드입니다.")
 

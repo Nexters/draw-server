@@ -1,7 +1,6 @@
 package com.draw.service
 
 import com.draw.common.BusinessException
-import com.draw.common.enums.ErrorType
 import com.draw.domain.feed.FavoriteFeed
 import com.draw.domain.feed.Feed
 import com.draw.infra.persistence.FavoriteFeedRepository
@@ -17,7 +16,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.dao.DataIntegrityViolationException
-import org.springframework.dao.DuplicateKeyException
 import org.springframework.data.repository.findByIdOrNull
 
 @ExtendWith(value = [MockKExtension::class])
@@ -27,6 +25,19 @@ class FeedServiceTest {
     private val favoriteFeedRepository = mockk<FavoriteFeedRepository>(relaxUnitFun = true)
 
     private val feedService = FeedService(feedRepository, favoriteFeedRepository)
+
+    @Test
+    fun `피드 조회 히스토리가 추가된다`() {
+        // given
+        val feed = Feed(content = "content", writerId = 1L)
+        every { feedRepository.findByIdOrNull(1L) } returns feed
+
+        // when
+        feedService.createFeedView(1L, 1L)
+
+        // then
+        assertThat(feed.feedViewHistories).hasSize(1)
+    }
 
     @Test
     fun `피드 좋아요가 생성된다`() {

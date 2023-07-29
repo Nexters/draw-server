@@ -119,11 +119,12 @@ class FeedController(
     }
 
     @PostMapping("/{feedId}/view")
-    @Operation(summary = "피드 확인 기록 저장", description = MOCKING)
+    @Operation(summary = "피드 확인 기록 저장")
     fun createFeedView(
+        @RequestHeader(MOCK_USER_HEADER) userId: Long,
         @Parameter(description = "피드 id") @PathVariable("feedId") feedId: Long,
     ) {
-        // TODO:  2023/07/24 (koi)
+        feedService.createFeedView(userId, feedId)
     }
 
     @PostMapping("/{feedId}/favorites")
