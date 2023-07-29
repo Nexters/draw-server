@@ -64,7 +64,6 @@ class Feed(
     protected val mutableReplies: MutableList<Reply> = mutableListOf()
     val replies: List<Reply> get() = mutableReplies
 
-
     @OneToMany(
         mappedBy = "feed",
         fetch = FetchType.LAZY,

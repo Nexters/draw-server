@@ -2,12 +2,11 @@ package com.draw.controller
 
 import com.draw.common.Const
 import com.draw.common.Const.MOCKING
+import com.draw.common.Const.MOCK_USER_HEADER
 import com.draw.common.Const.REPLY_TAG
 import com.draw.common.enums.Gender
 import com.draw.common.enums.MBTI
 import com.draw.controller.dto.MyRepliesRes
-import com.draw.controller.dto.MyReplyRes
-import com.draw.controller.dto.ReplyCreateReq
 import com.draw.controller.dto.ReplyWriterRes
 import com.draw.service.ReplyService
 import io.swagger.v3.oas.annotations.Operation
@@ -17,6 +16,7 @@ import mu.KotlinLogging
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -33,16 +33,10 @@ class ReplyController(
     @Tag(name = Const.MY_TAG, description = "My 관련 API")
     @Operation(summary = "내가 쓴 리플 조회", description = MOCKING)
     fun getMyReplies(
+        @RequestHeader(MOCK_USER_HEADER) userId: Long,
         @Parameter(description = "마지막 리플 id") @RequestParam("lastReplyId", required = false) lastReplyId: Long?,
     ): MyRepliesRes {
-        // TODO:  2023/07/24 (koi)
-        return MyRepliesRes(
-            myReplies = listOf(
-                MyReplyRes(1, "김치찌개 어때?", 4, "난 반대야"),
-                MyReplyRes(2, "나는 T인데 눈물이 없어", 3, "나는 글쓴이야 👋"),
-            ),
-            hasNext = false
-        )
+        return replyService.getMyReplies(userId, lastReplyId)
     }
 
     @PostMapping("/replies/{replyId}/peek")
