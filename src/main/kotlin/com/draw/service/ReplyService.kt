@@ -2,15 +2,24 @@ package com.draw.service
 
 import com.draw.controller.dto.MyRepliesRes
 import com.draw.controller.dto.MyReplyRes
+import com.draw.controller.dto.ReplyCreateReq
+import com.draw.infra.persistence.FeedRepository
 import com.draw.infra.persistence.ReplyRepository
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 @Transactional(readOnly = true)
 class ReplyService(
+    private val feedRepository: FeedRepository,
     private val replyRepository: ReplyRepository,
 ) {
+    @Transactional
+    fun createReply(userId: Long, feedId: Long, reqReplyCreateReq: ReplyCreateReq) {
+        val feed = feedRepository.findByIdOrNull(feedId) ?: throw IllegalArgumentException("존재하지 않는 피드입니다.")
+        feed.addReply(userId, reqReplyCreateReq.content)
+    }
 
     // TODO: 페이징 이후 고민 2023/07/29 (koi)
     fun getMyReplies(userId: Long, lastReplyId: Long?): MyRepliesRes {
