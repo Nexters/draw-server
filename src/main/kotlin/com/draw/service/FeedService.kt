@@ -4,7 +4,7 @@ import com.draw.domain.feed.FavoriteFeed
 import com.draw.infra.persistence.FavoriteFeedRepository
 import com.draw.infra.persistence.FeedRepository
 import mu.KotlinLogging
-import org.springframework.dao.DuplicateKeyException
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 
@@ -25,7 +25,7 @@ class FeedService(
                     feed = feed,
                 )
             )
-        } catch (ignore: DuplicateKeyException) {
+        } catch (ignore: DataIntegrityViolationException) {
             log.info { "${ignore.message}" }
         }
     }
