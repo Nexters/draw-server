@@ -1,5 +1,7 @@
 package com.draw.service
 
+import com.draw.common.BusinessException
+import com.draw.common.enums.ErrorType
 import com.draw.domain.feed.FavoriteFeed
 import com.draw.domain.feed.Feed
 import com.draw.infra.persistence.FavoriteFeedRepository
@@ -8,10 +10,13 @@ import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
 import io.mockk.verify
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertDoesNotThrow
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.dao.DuplicateKeyException
 import org.springframework.data.repository.findByIdOrNull
 
@@ -41,14 +46,17 @@ class FeedServiceTest {
     }
 
     @Test
-    fun `한 피드에 중복 좋아요가 유입되어도 예외가 발생하지 않는다`() {
+    fun `한 피드에 중복 좋아요가 유입되면, 예외가 발생하며, 4002 에러코드를 반환한다`() {
         // given
         val feed = Feed(content = "content", writerId = 1L)
         every { feedRepository.findByIdOrNull(1L) } returns feed
-        every { favoriteFeedRepository.save(any()) } throws DuplicateKeyException("중복 키 예외 발생")
+        every { favoriteFeedRepository.save(any()) } throws DataIntegrityViolationException("중복 키 예외 발생")
 
-        // when, then
-        assertDoesNotThrow { feedService.createFavoriteFeed(1L, 1L) }
+        // when
+        val e = assertThrows<BusinessException> { feedService.createFavoriteFeed(1L, 1L) }
+
+        // then
+        assertThat(e.errorType.code).isEqualTo(4002)
     }
 
     @Test
