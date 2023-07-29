@@ -16,6 +16,7 @@ import com.draw.controller.dto.ReplyWriterRes
 import com.draw.service.FeedService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
 import mu.KotlinLogging
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -126,7 +127,10 @@ class FeedController(
     }
 
     @PostMapping("/{feedId}/favorites")
-    @Operation(summary = "피드 좋아요")
+    @Operation(
+        summary = "피드 좋아요",
+        responses = [ApiResponse(responseCode = "400(4002)", description = "FAVORITE_FEED_ALREADY_EXISTS")]
+    )
     fun createFavoriteFeed(
         @RequestHeader(MOCK_USER_HEADER) userId: Long,
         @PathVariable("feedId") feedId: Long,
