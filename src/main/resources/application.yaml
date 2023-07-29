@@ -86,22 +86,8 @@ server:
       enabled: false
   shutdown: graceful
 
-auth:
-  jwt:
-    access:
-      secret: ${JWT_ACCESS_SECRET}
-    refresh:
-      secret: ${JWT_REFRESH_SECRET}
-
 sentry:
   dsn: ${SENTRY_DSN}
-
-kakao:
-  auth:
-    client-secret: ${KAKAO_CLIENT_SECRET}
-    js-key: ${KAKAO_JS_KEY}
-    rest-api-key: ${KAKAO_REST_API_KEY}
-    callback-url: http://localhost:8080/api/v1/oauth/kakao/login
 
 discord:
   webhook:

@@ -30,14 +30,16 @@ server:
 
 auth:
   jwt:
-    access:
-      secret: "access-secret-key"
-    refresh:
-      secret: "refresh-secret-key"
+    secret-key: "VGhlIGdyYWNlIG9mIHRoZSBMb3JkIEplc3VzIGJlIHdpdGggR29kJ3MgcGVvcGxlLiBBbWVuLg=="
+    access-token-expire-ms: 3600000
+    refresh-token-expire-ms: 1209600000
 
 kakao:
   auth:
+    client-secret: "kakao-client-secret"
+    js-key: "kakao-js-key"
     rest-api-key: "kakao-rest-api-key"
+    callback-url: http://localhost:8080/api/v1/oauth/kakao/login
 
 discord:
   webhook:
