@@ -54,12 +54,12 @@ class FeedController(
     }
 
     @PostMapping
-    @Operation(summary = "피드 작성", description = MOCKING)
+    @Operation(summary = "피드 작성")
     fun createFeed(
+        @RequestHeader(MOCK_USER_HEADER) userId: Long,
         @RequestBody feedCreateReq: FeedCreateReq
     ) {
-
-        // TODO:  2023/07/24 (koi)
+        feedService.createFeed(userId, feedCreateReq)
     }
 
     @GetMapping("/me")

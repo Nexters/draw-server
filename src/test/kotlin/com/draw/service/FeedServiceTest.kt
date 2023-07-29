@@ -1,6 +1,8 @@
 package com.draw.service
 
 import com.draw.common.BusinessException
+import com.draw.common.enums.AgeRange
+import com.draw.controller.dto.FeedCreateReq
 import com.draw.domain.feed.FavoriteFeed
 import com.draw.domain.feed.Feed
 import com.draw.infra.persistence.FavoriteFeedRepository
@@ -25,6 +27,19 @@ class FeedServiceTest {
     private val favoriteFeedRepository = mockk<FavoriteFeedRepository>(relaxUnitFun = true)
 
     private val feedService = FeedService(feedRepository, favoriteFeedRepository)
+
+    @Test
+    fun `피드가 생성된다`() {
+        // given
+        every { feedRepository.save(any()) } returns Feed(content = "content", writerId = 1L)
+        val req = FeedCreateReq(content = "content", genders = listOf(), ageRange = AgeRange.ALL, mbtiChars = listOf())
+
+        // when
+        feedService.createFeed(1L, req)
+
+        // then
+        verify { feedRepository.save(any()) }
+    }
 
     @Test
     fun `피드 조회 히스토리가 추가된다`() {

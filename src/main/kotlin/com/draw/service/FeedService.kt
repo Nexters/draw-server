@@ -2,6 +2,7 @@ package com.draw.service
 
 import com.draw.common.BusinessException
 import com.draw.common.enums.ErrorType
+import com.draw.controller.dto.FeedCreateReq
 import com.draw.domain.feed.FavoriteFeed
 import com.draw.infra.persistence.FavoriteFeedRepository
 import com.draw.infra.persistence.FeedRepository
@@ -18,6 +19,13 @@ class FeedService(
     private val favoriteFeedRepository: FavoriteFeedRepository,
 ) {
     private val log = KotlinLogging.logger { }
+
+    @Transactional
+    fun createFeed(userId: Long, feedCreateReq: FeedCreateReq) {
+        feedRepository.save(
+            feedCreateReq.toEntity(userId)
+        )
+    }
 
     @Transactional
     fun createFeedView(userId: Long, feedId: Long) {
