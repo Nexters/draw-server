@@ -24,6 +24,7 @@ class SecurityConfig(
             .httpBasic { httpBasic -> httpBasic.disable() }
             .formLogin { formLogin -> formLogin.disable() }
             .sessionManagement { mgmt -> mgmt.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
+            .anonymous { it.disable() }
             .authorizeHttpRequests {
                 it.requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 it.requestMatchers(*permitAllUrls()).permitAll()

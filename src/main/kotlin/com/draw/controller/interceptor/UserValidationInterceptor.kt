@@ -23,7 +23,7 @@ class UserValidationInterceptor(
         val writer = response.writer
         response.contentType = MediaType.APPLICATION_JSON_VALUE
 
-        if (authentication.isAuthenticated) {
+        if (authentication != null && authentication.isAuthenticated) {
             val user = authentication.principal as User
             if (!user.registrationCompleted) {
                 response.status = HttpStatus.FORBIDDEN.value()
