@@ -22,22 +22,21 @@ class OauthSecurityFilter(
 ) : GenericFilterBean() {
     override fun doFilter(request: ServletRequest?, response: ServletResponse, chain: FilterChain) {
         val tokenHeader = (request as HttpServletRequest).getHeader(HttpHeaders.AUTHORIZATION)
-        if (tokenHeader != null) {
-            runCatching {
-                val token = tokenHeader.toString().removePrefix("Bearer")
-                val authentication = jwtProvider.authenticate(token)
-                SecurityContextHolder.getContext().authentication = authentication
-            }.onFailure { e ->
-                when (e) {
-                    is ExpiredJwtException -> response.writer.write(
-                        objectMapper.writeValueAsString(
-                            ErrorRes.of(ErrorType.ACCESS_TOKEN_EXPIRED),
-                        ),
-                    )
-                    else -> writeUnAuthorizedResponse(response)
-                }
-                return
+
+        runCatching {
+            val token = tokenHeader.toString().removePrefix("Bearer")
+            val authentication = jwtProvider.authenticate(token)
+            SecurityContextHolder.getContext().authentication = authentication
+        }.onFailure { e ->
+            when (e) {
+                is ExpiredJwtException -> response.writer.write(
+                    objectMapper.writeValueAsString(
+                        ErrorRes.of(ErrorType.ACCESS_TOKEN_EXPIRED),
+                    ),
+                )
+                else -> writeUnAuthorizedResponse(response)
             }
+            return
         }
         chain.doFilter(request, response)
     }

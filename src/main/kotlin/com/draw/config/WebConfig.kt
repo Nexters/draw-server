@@ -12,7 +12,7 @@ class WebConfig(
 ) : WebMvcConfigurer {
     override fun addInterceptors(registry: InterceptorRegistry) {
         registry.addInterceptor(UserValidationInterceptor(objectMapper))
-            .addPathPatterns("/**")
+            .addPathPatterns("/api/v1/**")
             .excludePathPatterns("/health", "/ready", "/api/v1/oauth/**")
     }
 }
