@@ -39,7 +39,7 @@ kakao:
     client-secret: "kakao-client-secret"
     js-key: "kakao-js-key"
     rest-api-key: "kakao-rest-api-key"
-    callback-url: http://localhost:8080/api/v1/oauth/kakao/login
+    callback-url: http://localhost:8080/auth/v1/kakao/login
 
 discord:
   webhook:

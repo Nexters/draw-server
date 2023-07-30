@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping
  * 로컬에서 카카오 JS-SDK 연동을 테스트하기 위한 임시 컨트롤러
  */
 @Controller
-@RequestMapping("/api/v1/oauth/test")
+@RequestMapping("/auth/v1/test")
 class TestController(
     @Value("\${kakao.auth.js-key}") private val kakaoJsKey: String,
 ) {

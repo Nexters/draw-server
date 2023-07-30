@@ -2,7 +2,6 @@ package com.draw.config.security
 
 import com.draw.component.JwtProvider
 import com.fasterxml.jackson.databind.ObjectMapper
-import jakarta.servlet.http.HttpServletRequest
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
@@ -11,8 +10,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher
-import org.springframework.security.web.util.matcher.RequestMatcher
 
 @Configuration
 @EnableWebSecurity
@@ -29,7 +26,7 @@ class SecurityConfig(
             .httpBasic { httpBasic -> httpBasic.disable() }
             .formLogin { formLogin -> formLogin.disable() }
             .sessionManagement { mgmt -> mgmt.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
-            .securityMatcher(CustomRequestMatcher())
+            .securityMatcher("/api/v1/**")
             .authorizeHttpRequests {
                 it.anyRequest().authenticated()
             }
@@ -41,15 +38,6 @@ class SecurityConfig(
                 handling.accessDeniedHandler(AuthTokenAccessDeniedHandler(objectMapper))
             }
             .build()
-    }
-
-    class CustomRequestMatcher : RequestMatcher {
-        private val includedPathMatcher = AntPathRequestMatcher("/api/v1/**")
-        private val excludedPathMatcher = AntPathRequestMatcher("/api/v1/oauth/**")
-
-        override fun matches(request: HttpServletRequest): Boolean {
-            return includedPathMatcher.matches(request) && !excludedPathMatcher.matches(request)
-        }
     }
 
     @Bean

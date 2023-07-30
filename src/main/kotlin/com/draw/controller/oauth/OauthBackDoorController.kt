@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController
 import kotlin.jvm.optionals.getOrNull
 
 @RestController
-@RequestMapping("/api/v1/oauth/backdoor")
+@RequestMapping("/auth/v1/backdoor")
 class OauthBackDoorController(
     private val userRepository: UserRepository,
     private val jwtProvider: JwtProvider,
