@@ -1,7 +1,7 @@
 package com.draw.service
 
 import com.draw.common.BusinessException
-import com.draw.common.enums.AgeRange
+import com.draw.common.enums.AgeOption
 import com.draw.common.exception.FeedNotFoundException
 import com.draw.controller.dto.FeedCreateReq
 import com.draw.domain.feed.FavoriteFeed
@@ -49,7 +49,7 @@ class FeedServiceTest {
     fun `피드가 생성된다`() {
         // given
         every { feedRepository.save(any()) } returns Feed(content = "content", writerId = 1L)
-        val req = FeedCreateReq(content = "content", genders = listOf(), ageRange = AgeRange.ALL, mbtiChars = listOf())
+        val req = FeedCreateReq(content = "content", genders = listOf(), ageOption = AgeOption.ALL, mbtiChars = listOf())
 
         // when
         feedService.createFeed(1L, req)

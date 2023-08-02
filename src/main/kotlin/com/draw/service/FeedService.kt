@@ -2,6 +2,8 @@ package com.draw.service
 
 import com.draw.common.BusinessException
 import com.draw.common.enums.ErrorType
+import com.draw.common.enums.Gender
+import com.draw.common.enums.MBTI
 import com.draw.common.exception.FeedNotFoundException
 import com.draw.controller.dto.FeedCreateReq
 import com.draw.controller.dto.FeedRes
@@ -31,14 +33,16 @@ class FeedService(
             content = feed.content,
             isFavorite = isFavorite,
             favoriteCount = feed.favoriteCount,
-            isFit = false // TODO: 개발 필요 2023/08/02 (koi)
+            isFit = feed.isFit(userGender = Gender.MALE, 29, MBTI.ESTJ) // TODO: userAge 연동시 변경 2023/08/03 (koi)
         )
     }
 
     @Transactional
     fun createFeed(userId: Long, feedCreateReq: FeedCreateReq) {
+
+        // TODO: userAge반환 로직으로 변경 2023/08/03 (koi)
         feedRepository.save(
-            feedCreateReq.toEntity(userId)
+            feedCreateReq.toEntity(userId, 29)
         )
     }
 

@@ -2,7 +2,7 @@ create table if not exists feed
 (
     id         bigint auto_increment primary key,
     writer_id  bigint       not null,
-    age_range  varchar(16)  not null comment '나이범위 (ALL, PEER)',
+    age_range  varchar(16)  not null comment '나이범위 (ALL, ZERO_TO_TEN, TEEN, TWENTY, THIRTY, FORTY, FIFTY, SIXTY, SEVENTY, EIGHTY, NINETY)',
     content    varchar(256) not null,
     genders    varchar(32)  not null default '[]',
     mbti_chars varchar(32)  not null default '[]',
