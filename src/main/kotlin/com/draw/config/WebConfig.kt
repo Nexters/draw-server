@@ -13,6 +13,6 @@ class WebConfig(
     override fun addInterceptors(registry: InterceptorRegistry) {
         registry.addInterceptor(UserValidationInterceptor(objectMapper))
             .addPathPatterns("/api/v1/**")
-            .excludePathPatterns("/health", "/ready", "BackDoorRegisterReq/**")
+            .excludePathPatterns("/health", "/ready", "/auth/v1/backdoor")
     }
 }

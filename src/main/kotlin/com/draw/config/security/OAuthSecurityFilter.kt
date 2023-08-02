@@ -16,7 +16,7 @@ import org.springframework.http.MediaType
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.filter.GenericFilterBean
 
-class OauthSecurityFilter(
+class OAuthSecurityFilter(
     private val jwtProvider: JwtProvider,
     private val objectMapper: ObjectMapper,
 ) : GenericFilterBean() {

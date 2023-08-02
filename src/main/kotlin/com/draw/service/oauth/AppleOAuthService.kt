@@ -1,6 +1,6 @@
 package com.draw.service.oauth
 
-import com.draw.common.enums.OauthProvider
+import com.draw.common.enums.OAuthProvider
 import com.draw.component.JwtProvider
 import com.draw.domain.user.User
 import com.draw.infra.external.apple.AppleOauthClient
@@ -19,7 +19,7 @@ import java.security.PublicKey
 import java.security.spec.RSAPublicKeySpec
 
 @Service
-class AppleOauthService(
+class AppleOAuthService(
     private val appleOauthClient: AppleOauthClient,
     private val appleOauthProperties: AppleOAuthProperties,
     private val userRepository: UserRepository,
@@ -40,7 +40,7 @@ class AppleOauthService(
         if (user != null) {
             return LoginResult.normal(jwtProvider.generateAccessToken(user), jwtProvider.generateRefreshToken(user))
         }
-        val newUser = User(appleId = appleId, oauthProvider = OauthProvider.APPLE)
+        val newUser = User(appleId = appleId, oauthProvider = OAuthProvider.APPLE)
         val accessToken = jwtProvider.generateAccessToken(newUser)
         newUser.refreshToken = jwtProvider.generateRefreshToken(newUser)
         userRepository.save(newUser)

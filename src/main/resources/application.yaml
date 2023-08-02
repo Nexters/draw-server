@@ -48,7 +48,7 @@ kakao:
     client-secret: ${KAKAO_CLIENT_SECRET}
     js-key: ${KAKAO_JS_KEY}
     rest-api-key: ${KAKAO_REST_API_KEY}
-    callback-url: http://localhost:8080/auth/v1/kakao/login
+    callback-url: http://localhost:8080/auth/v1/local/kakao/login
 
 apple:
   auth:

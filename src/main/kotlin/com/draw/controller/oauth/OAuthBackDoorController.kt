@@ -1,6 +1,6 @@
 package com.draw.controller.oauth
 
-import com.draw.common.enums.OauthProvider
+import com.draw.common.enums.OAuthProvider
 import com.draw.component.JwtProvider
 import com.draw.domain.user.User
 import com.draw.infra.persistence.user.UserRepository
@@ -14,7 +14,7 @@ import kotlin.jvm.optionals.getOrNull
 
 @RestController
 @RequestMapping("/auth/v1/backdoor")
-class OauthBackDoorController(
+class OAuthBackDoorController(
     private val userRepository: UserRepository,
     private val jwtProvider: JwtProvider,
 ) {
@@ -24,8 +24,8 @@ class OauthBackDoorController(
         val user =
             userRepository.save(
                 User(
-                    kakaoId = if (req.oauthProvider == OauthProvider.KAKAO) "-1" else null,
-                    appleId = if (req.oauthProvider == OauthProvider.APPLE) "-1" else null,
+                    kakaoId = if (req.oauthProvider == OAuthProvider.KAKAO) "-1" else null,
+                    appleId = if (req.oauthProvider == OAuthProvider.APPLE) "-1" else null,
                     registrationCompleted = req.registerCompleted,
                     oauthProvider = req.oauthProvider,
                 ),
@@ -59,8 +59,8 @@ class OauthBackDoorController(
     data class BackDoorRegisterReq(
         @Schema(description = "가입완료 여부")
         val registerCompleted: Boolean = false,
-        @Schema(description = "Oauth 프로바이더")
-        val oauthProvider: OauthProvider = OauthProvider.KAKAO,
+        @Schema(description = "OAuth 프로바이더")
+        val oauthProvider: OAuthProvider = OAuthProvider.KAKAO,
         @Schema(description = "액세스 토큰 유효시간")
         val accessTokenLifeTime: Long? = null,
         @Schema(description = "리프레시 토큰 유효시간")

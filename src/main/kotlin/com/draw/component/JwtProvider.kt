@@ -16,7 +16,7 @@ import java.util.Date
 
 @Component
 class JwtProvider(
-    private val UserRepository: UserRepository,
+    private val userRepository: UserRepository,
     private val jwtProperties: JwtProperties,
 ) {
     private val secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtProperties.secretKey))
@@ -28,37 +28,37 @@ class JwtProvider(
 
     fun authenticate(token: String): Authentication {
         println("요청토큰 : $token")
-        val user = UserRepository.findByIdOrNull(getId(token).toLong())
+        val user = userRepository.findByIdOrNull(getId(token).toLong())
             ?: throw RuntimeException("authentication user not found")
         return UsernamePasswordAuthenticationToken(user, javaClass, listOf())
     }
 
     fun generateAccessToken(
-        User: User,
+        user: User,
         lifeTime: Long? = null,
     ): String {
         val expire = lifeTime ?: jwtProperties.accessTokenExpireMs
         val claims = Jwts.claims().setSubject("draw-accessToken").also {
             it["token_type"] = ACCESS_TOKEN
-            it["id"] = User.id.toString()
+            it["id"] = user.id.toString()
         }
         val now = Date()
         return createToken(claims, now, Date(now.time + expire))
     }
 
     fun generateRefreshToken(
-        User: User,
+        user: User,
         lifeTime: Long? = null,
     ): String {
         val expire = lifeTime ?: jwtProperties.refreshTokenExpireMs
         val claims = Jwts.claims().setSubject("draw-token").also {
             it["token_type"] = REFRESH_TOKEN
-            it["id"] = User.id.toString()
+            it["id"] = user.id.toString()
         }
         val now = Date()
         val createdToken = createToken(claims, now, Date(now.time + expire))
-        User.refreshToken = createdToken
-        UserRepository.save(User)
+        user.refreshToken = createdToken
+        userRepository.save(user)
         return createdToken
     }
 
@@ -71,7 +71,7 @@ class JwtProvider(
             .compact()
     }
 
-    fun validate(User: User, token: String) {
+    fun validate(user: User, token: String) {
         val claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token)
         val tokenType = claims.body["token_type"]!!
 
@@ -80,8 +80,8 @@ class JwtProvider(
 
         if (tokenType == REFRESH_TOKEN) {
             if (isExpired) {
-                User.refreshToken = null
-                UserRepository.save(User)
+                user.refreshToken = null
+                userRepository.save(user)
                 throw RuntimeException("RefreshToken expired")
             }
         }

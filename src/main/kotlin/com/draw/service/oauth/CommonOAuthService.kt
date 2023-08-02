@@ -11,7 +11,7 @@ import java.lang.IllegalArgumentException
 import kotlin.jvm.optionals.getOrNull
 
 @Service
-class CommonOauthService(
+class CommonOAuthService(
     private val userRepository: UserRepository,
     private val jwtProvider: JwtProvider,
 ) {
@@ -21,6 +21,8 @@ class CommonOauthService(
         if (user.refreshToken != refreshToken) {
             throw IllegalStateException("전달받은 리프레시 토큰이 실제 유저의 리프레시 토큰과 일치하지 않습니다.")
         }
+        jwtProvider.validate(user, refreshToken)
+
         val newAccessToken = jwtProvider.generateAccessToken(user)
         val newRefreshToken = jwtProvider.generateRefreshToken(user)
         userRepository.save(user.apply { this.refreshToken = newRefreshToken })
