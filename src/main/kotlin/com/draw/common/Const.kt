@@ -8,6 +8,7 @@ object Const {
     const val MOCKING = "mocking api"
 
     // swagger tags
+    const val AUTH_TAG = "auth-api"
     const val FEED_TAG = "feed-api"
     const val REPLY_TAG = "reply-api"
     const val MY_TAG = "my-api"

@@ -17,7 +17,7 @@ import kotlin.math.min
 @ControllerAdvice
 class ControllerExceptionHandler(
     private val env: Environment,
-    private val discordApiClient: DiscordApiClient
+    private val discordApiClient: DiscordApiClient,
 ) {
     private val log = KotlinLogging.logger { }
 
@@ -29,7 +29,7 @@ class ControllerExceptionHandler(
 
         sendNotification(e, request)
         return ResponseEntity.badRequest().body(
-            ErrorRes.of(ErrorType.VALIDATION_FAILED, errorMessage)
+            ErrorRes.of(ErrorType.VALIDATION_FAILED, errorMessage),
         )
     }
 
@@ -37,7 +37,7 @@ class ControllerExceptionHandler(
     fun handleIllegalArgumentException(e: IllegalArgumentException, request: HttpServletRequest): ResponseEntity<ErrorRes> {
         sendNotification(e, request)
         return ResponseEntity.badRequest().body(
-            ErrorRes.of(ErrorType.BAD_REQUEST)
+            ErrorRes.of(ErrorType.BAD_REQUEST),
         )
     }
 
@@ -45,7 +45,7 @@ class ControllerExceptionHandler(
     fun handleIllegalStateException(e: IllegalStateException, request: HttpServletRequest): ResponseEntity<ErrorRes> {
         sendNotification(e, request)
         return ResponseEntity.badRequest().body(
-            ErrorRes.of(ErrorType.BAD_REQUEST)
+            ErrorRes.of(ErrorType.BAD_REQUEST),
         )
     }
 
@@ -53,7 +53,7 @@ class ControllerExceptionHandler(
     fun handleBusinessException(e: BusinessException, request: HttpServletRequest): ResponseEntity<ErrorRes> {
         sendNotification(e, request)
         return ResponseEntity.badRequest().body(
-            ErrorRes.of(e.errorType)
+            ErrorRes.of(e.errorType),
         )
     }
 
@@ -62,7 +62,7 @@ class ControllerExceptionHandler(
         sendNotification(e, request)
         return ResponseEntity.internalServerError()
             .body(
-                ErrorRes.of(ErrorType.UNKNOWN_ERROR)
+                ErrorRes.of(ErrorType.UNKNOWN_ERROR),
             )
     }
 
@@ -86,8 +86,8 @@ class ControllerExceptionHandler(
         try {
             discordApiClient.sendMessage(
                 DiscordMessage(
-                    content = contentTemplate.substring(0, length)
-                )
+                    content = contentTemplate.substring(0, length),
+                ),
             )
         } catch (e: Exception) {
             log.error("Failed to send slack notification", e)
