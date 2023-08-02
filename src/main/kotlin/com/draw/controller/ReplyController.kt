@@ -7,6 +7,7 @@ import com.draw.common.Const.REPLY_TAG
 import com.draw.common.enums.Gender
 import com.draw.common.enums.MBTI
 import com.draw.controller.dto.MyRepliesRes
+import com.draw.controller.dto.RepliesRes
 import com.draw.controller.dto.ReplyCreateReq
 import com.draw.controller.dto.ReplyWriterRes
 import com.draw.service.ReplyService
@@ -28,6 +29,15 @@ import org.springframework.web.bind.annotation.RestController
 class ReplyController(
     private val replyService: ReplyService,
 ) {
+
+    @GetMapping("/feeds/{feedId}/replies")
+    @Operation(summary = "리플 조회")
+    fun getReplies(
+        @RequestHeader(MOCK_USER_HEADER, required = false) userId: Long?,
+        @PathVariable("feedId") feedId: Long,
+    ): RepliesRes {
+        return replyService.getReplies(userId, feedId)
+    }
 
     @PostMapping("/{feedId}/replies")
     @Operation(summary = "리플 작성")

@@ -4,6 +4,7 @@ import com.draw.controller.dto.ReplyCreateReq
 import com.draw.domain.feed.Feed
 import com.draw.domain.reply.Reply
 import com.draw.infra.persistence.FeedRepository
+import com.draw.infra.persistence.PeekReplyRepository
 import com.draw.infra.persistence.ReplyRepository
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
@@ -18,8 +19,9 @@ class ReplyServiceTest {
 
     private val feedRepository = mockk<FeedRepository>()
     private val replyRepository = mockk<ReplyRepository>()
+    private val peekReplyRepository = mockk<PeekReplyRepository>()
 
-    private val replyService = ReplyService(feedRepository, replyRepository)
+    private val replyService = ReplyService(feedRepository, replyRepository, peekReplyRepository)
 
     @Test
     fun `피드내 리플이 생성된다`() {

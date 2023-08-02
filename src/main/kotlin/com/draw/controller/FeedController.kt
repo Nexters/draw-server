@@ -5,7 +5,6 @@ import com.draw.common.Const.MOCKING
 import com.draw.common.Const.MOCK_USER_HEADER
 import com.draw.common.Const.MY_TAG
 import com.draw.controller.dto.FeedCreateReq
-import com.draw.controller.dto.FeedDetailRes
 import com.draw.controller.dto.FeedRes
 import com.draw.controller.dto.FeedsRes
 import com.draw.service.FeedService
@@ -94,7 +93,7 @@ class FeedController(
     fun getFeed(
         @RequestHeader(MOCK_USER_HEADER, required = false) userId: Long?,
         @Parameter(description = "피드 id") @PathVariable("feedId") feedId: Long,
-    ): FeedDetailRes {
+    ): FeedRes {
         return feedService.getFeed(userId, feedId)
     }
 
