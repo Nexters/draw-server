@@ -34,31 +34,31 @@ class JwtProvider(
     }
 
     fun generateAccessToken(
-        User: User,
+        user: User,
         lifeTime: Long? = null,
     ): String {
         val expire = lifeTime ?: jwtProperties.accessTokenExpireMs
         val claims = Jwts.claims().setSubject("draw-accessToken").also {
             it["token_type"] = ACCESS_TOKEN
-            it["id"] = User.id.toString()
+            it["id"] = user.id.toString()
         }
         val now = Date()
         return createToken(claims, now, Date(now.time + expire))
     }
 
     fun generateRefreshToken(
-        User: User,
+        user: User,
         lifeTime: Long? = null,
     ): String {
         val expire = lifeTime ?: jwtProperties.refreshTokenExpireMs
         val claims = Jwts.claims().setSubject("draw-token").also {
             it["token_type"] = REFRESH_TOKEN
-            it["id"] = User.id.toString()
+            it["id"] = user.id.toString()
         }
         val now = Date()
         val createdToken = createToken(claims, now, Date(now.time + expire))
-        User.refreshToken = createdToken
-        UserRepository.save(User)
+        user.refreshToken = createdToken
+        UserRepository.save(user)
         return createdToken
     }
 
@@ -71,7 +71,7 @@ class JwtProvider(
             .compact()
     }
 
-    fun validate(User: User, token: String) {
+    fun validate(user: User, token: String) {
         val claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token)
         val tokenType = claims.body["token_type"]!!
 
@@ -80,8 +80,8 @@ class JwtProvider(
 
         if (tokenType == REFRESH_TOKEN) {
             if (isExpired) {
-                User.refreshToken = null
-                UserRepository.save(User)
+                user.refreshToken = null
+                UserRepository.save(user)
                 throw RuntimeException("RefreshToken expired")
             }
         }
