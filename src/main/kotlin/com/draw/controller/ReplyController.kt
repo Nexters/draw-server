@@ -4,8 +4,6 @@ import com.draw.common.Const
 import com.draw.common.Const.MOCKING
 import com.draw.common.Const.MOCK_USER_HEADER
 import com.draw.common.Const.REPLY_TAG
-import com.draw.common.enums.Gender
-import com.draw.common.enums.MBTI
 import com.draw.controller.dto.MyRepliesRes
 import com.draw.controller.dto.RepliesRes
 import com.draw.controller.dto.ReplyCreateReq
@@ -80,10 +78,9 @@ class ReplyController(
     @PostMapping("/replies/{replyId}/peek")
     @Operation(summary = "리플 훔쳐보기", description = MOCKING)
     fun peekReply(
+        @RequestHeader(MOCK_USER_HEADER) userId: Long,
         @PathVariable("replyId") replyId: Long,
     ): ReplyWriterRes {
-
-        // TODO: 여기에서 포인트 제외 & peek 저장 & 관련 서비스로직이 들어가지 않을까 추측 2023/07/24 (koi)
-        return ReplyWriterRes(MBTI.ENFP, Gender.MALE)
+        return replyService.peekReply(userId, replyId)
     }
 }

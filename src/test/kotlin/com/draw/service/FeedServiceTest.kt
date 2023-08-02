@@ -2,6 +2,7 @@ package com.draw.service
 
 import com.draw.common.BusinessException
 import com.draw.common.enums.AgeRange
+import com.draw.common.exception.FeedNotFoundException
 import com.draw.controller.dto.FeedCreateReq
 import com.draw.domain.feed.FavoriteFeed
 import com.draw.domain.feed.Feed
@@ -75,13 +76,22 @@ class FeedServiceTest {
         // given
         val feed = Feed(content = "content", writerId = 1L)
         every { feedRepository.findByIdOrNull(1L) } returns feed
-        every { feedRepository.findByIdOrNull(1L) } returns feed
 
         // when
-        feedService.blockFeed(1L, 1L)
+        feedService.blockFeed(2L, 1L)
 
         // then
         assertThat(feed.blockFeeds).hasSize(1)
+    }
+
+    @Test
+    fun `내 피드는 차단할 수 없다`() {
+        // given
+        val feed = Feed(content = "content", writerId = 1L)
+        every { feedRepository.findByIdOrNull(1L) } returns feed
+
+        // when, then
+        assertThrows<IllegalArgumentException> { feedService.blockFeed(1L, 1L) }
     }
 
     @Test
@@ -89,13 +99,22 @@ class FeedServiceTest {
         // given
         val feed = Feed(content = "content", writerId = 1L)
         every { feedRepository.findByIdOrNull(1L) } returns feed
-        every { feedRepository.findByIdOrNull(1L) } returns feed
 
         // when
-        feedService.claimFeed(1L, 1L)
+        feedService.claimFeed(2L, 1L)
 
         // then
         assertThat(feed.blockFeeds).hasSize(1)
+    }
+
+    @Test
+    fun `내 피드는 신고할 수 없다`() {
+        // given
+        val feed = Feed(content = "content", writerId = 1L)
+        every { feedRepository.findByIdOrNull(1L) } returns feed
+
+        // when, then
+        assertThrows<IllegalArgumentException> { feedService.claimFeed(1L, 1L) }
     }
 
     @Test
@@ -135,7 +154,7 @@ class FeedServiceTest {
         every { feedRepository.findByIdOrNull(1L) } returns null
 
         // when, then
-        assertThrows(IllegalArgumentException::class.java) {
+        assertThrows(FeedNotFoundException::class.java) {
             feedService.createFavoriteFeed(1L, 1L)
         }
     }

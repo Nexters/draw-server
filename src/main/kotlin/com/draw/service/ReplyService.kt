@@ -11,6 +11,7 @@ import com.draw.controller.dto.ReplyCreateReq
 import com.draw.controller.dto.ReplyRes
 import com.draw.controller.dto.ReplyStatus
 import com.draw.controller.dto.ReplyWriterRes
+import com.draw.domain.reply.PeekReply
 import com.draw.domain.reply.Reply
 import com.draw.infra.persistence.FeedRepository
 import com.draw.infra.persistence.PeekReplyRepository
@@ -62,13 +63,14 @@ class ReplyService(
     @Transactional
     fun blockReply(userId: Long, replyId: Long) {
         val reply = replyRepository.findByIdOrNull(replyId) ?: throw ReplyNotFoundException()
+        require(reply.writerId != userId) { "Not allowed block own reply" }
+
         reply.addBlockReply(userId)
     }
 
     @Transactional
     fun claimReply(userId: Long, replyId: Long) {
-        val reply = replyRepository.findByIdOrNull(replyId) ?: throw ReplyNotFoundException()
-        reply.addBlockReply(userId)
+        blockReply(userId, replyId)
 
         // TODO: claim 적재 로직 추가 2023/08/02 (koi)
     }
@@ -88,6 +90,22 @@ class ReplyService(
             }.toList(),
             hasNext = false
         )
+    }
+
+    @Transactional
+    fun peekReply(userId: Long, replyId: Long): ReplyWriterRes {
+        val reply = replyRepository.findByIdOrNull(replyId) ?: throw ReplyNotFoundException()
+        require(reply.writerId != userId) { "Not allowed peek own reply" }
+
+        // TODO: 여기에서 포인트 제외 & peek 저장 & 관련 서비스로직 적용 필요 2023/07/24 (koi)
+        peekReplyRepository.save(
+            PeekReply(
+                userId = userId,
+                reply = reply
+            )
+        )
+
+        return ReplyWriterRes(MBTI.ENFP, Gender.MALE) // TODO:  2023/08/02 (koi)
     }
 
     private fun Map<Reply, ReplyWriterRes>.getStatus(reply: Reply, inputUserId: Long?) =

@@ -51,13 +51,14 @@ class FeedService(
     @Transactional
     fun blockFeed(userId: Long, feedId: Long) {
         val feed = feedRepository.findByIdOrNull(feedId) ?: throw FeedNotFoundException()
+        require(feed.writerId != userId) { "Not allowed block own feed" }
+
         feed.addBlockFeed(userId)
     }
 
     @Transactional
     fun claimFeed(userId: Long, feedId: Long) {
-        val feed = feedRepository.findByIdOrNull(feedId) ?: throw FeedNotFoundException()
-        feed.addBlockFeed(userId)
+        blockFeed(userId, feedId)
 
         // TODO: claim 적재 로직 추가 2023/08/02 (koi)
     }

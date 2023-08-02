@@ -11,6 +11,7 @@ import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.data.repository.findByIdOrNull
 
@@ -43,10 +44,20 @@ class ReplyServiceTest {
         every { replyRepository.findByIdOrNull(1L) } returns reply
 
         // when
-        replyService.blockReply(1L, 1L)
+        replyService.blockReply(2L, 1L)
 
         // then
         assertThat(reply.blockReplies).hasSize(1)
+    }
+
+    @Test
+    fun `내 리플은 차단할 수 없다`() {
+        // given
+        val reply = Reply(feed = Feed(content = "feed-content", writerId = 1L), content = "content", writerId = 1L)
+        every { replyRepository.findByIdOrNull(1L) } returns reply
+
+        // when, then
+        assertThrows<IllegalArgumentException> { replyService.blockReply(1L, 1L) }
     }
 
     @Test
@@ -56,9 +67,29 @@ class ReplyServiceTest {
         every { replyRepository.findByIdOrNull(1L) } returns reply
 
         // when
-        replyService.claimReply(1L, 1L)
+        replyService.claimReply(2L, 1L)
 
         // then
         assertThat(reply.blockReplies).hasSize(1)
+    }
+
+    @Test
+    fun `내 리플은 신고할 수 없다`() {
+        // given
+        val reply = Reply(feed = Feed(content = "feed-content", writerId = 1L), content = "content", writerId = 1L)
+        every { replyRepository.findByIdOrNull(1L) } returns reply
+
+        // when, then
+        assertThrows<IllegalArgumentException> { replyService.claimReply(1L, 1L) }
+    }
+
+    @Test
+    fun `내 리플은 훔쳐볼 수 없다`() {
+        // given
+        val reply = Reply(feed = Feed(content = "feed-content", writerId = 1L), content = "content", writerId = 1L)
+        every { replyRepository.findByIdOrNull(1L) } returns reply
+
+        // when, then
+        assertThrows<IllegalArgumentException> { replyService.peekReply(1L, 1L) }
     }
 }
