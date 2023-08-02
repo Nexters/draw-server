@@ -21,6 +21,20 @@ class ReplyService(
         feed.addReply(userId, reqReplyCreateReq.content)
     }
 
+    @Transactional
+    fun blockReply(userId: Long, replyId: Long) {
+        val reply = replyRepository.findByIdOrNull(replyId) ?: throw IllegalArgumentException("존재하지 않는 리플입니다.")
+        reply.addBlockReply(userId)
+    }
+
+    @Transactional
+    fun claimReply(userId: Long, replyId: Long) {
+        val reply = replyRepository.findByIdOrNull(replyId) ?: throw IllegalArgumentException("존재하지 않는 리플입니다.")
+        reply.addBlockReply(userId)
+
+        // TODO: claim 적재 로직 추가 2023/08/02 (koi)
+    }
+
     // TODO: 페이징 이후 고민 2023/07/29 (koi)
     fun getMyReplies(userId: Long, lastReplyId: Long?): MyRepliesRes {
         val replies = replyRepository.findAllByWriterIdOrderByCreatedAtDesc(userId)

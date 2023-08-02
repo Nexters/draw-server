@@ -2,6 +2,7 @@ package com.draw.service
 
 import com.draw.controller.dto.ReplyCreateReq
 import com.draw.domain.feed.Feed
+import com.draw.domain.reply.Reply
 import com.draw.infra.persistence.FeedRepository
 import com.draw.infra.persistence.ReplyRepository
 import io.mockk.every
@@ -31,5 +32,31 @@ class ReplyServiceTest {
 
         // then
         assertThat(feed.replies).hasSize(1)
+    }
+
+    @Test
+    fun `리플 차단이 생성된다`() {
+        // given
+        val reply = Reply(feed = Feed(content = "feed-content", writerId = 1L), content = "content", writerId = 1L)
+        every { replyRepository.findByIdOrNull(1L) } returns reply
+
+        // when
+        replyService.blockReply(1L, 1L)
+
+        // then
+        assertThat(reply.blockReplies).hasSize(1)
+    }
+
+    @Test
+    fun `리플 신고시에도 차단이 생성된다`() {
+        // given
+        val reply = Reply(feed = Feed(content = "feed-content", writerId = 1L), content = "content", writerId = 1L)
+        every { replyRepository.findByIdOrNull(1L) } returns reply
+
+        // when
+        replyService.claimReply(1L, 1L)
+
+        // then
+        assertThat(reply.blockReplies).hasSize(1)
     }
 }

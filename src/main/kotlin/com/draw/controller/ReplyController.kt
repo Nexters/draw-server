@@ -49,6 +49,24 @@ class ReplyController(
         return replyService.getMyReplies(userId, lastReplyId)
     }
 
+    @PostMapping("/replies/{replyId}/blocks")
+    @Operation(summary = "리플 차단")
+    fun blockReply(
+        @RequestHeader(MOCK_USER_HEADER) userId: Long,
+        @PathVariable("replyId") replyId: Long,
+    ) {
+        replyService.blockReply(userId, replyId)
+    }
+
+    @PostMapping("/replies/{replyId}/claims")
+    @Operation(summary = "리플 신고")
+    fun claimReply(
+        @RequestHeader(MOCK_USER_HEADER) userId: Long,
+        @PathVariable("replyId") replyId: Long,
+    ) {
+        replyService.claimReply(userId, replyId)
+    }
+
     @PostMapping("/replies/{replyId}/peek")
     @Operation(summary = "리플 훔쳐보기", description = MOCKING)
     fun peekReply(
