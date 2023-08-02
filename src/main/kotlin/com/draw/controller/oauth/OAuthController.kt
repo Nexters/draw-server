@@ -49,7 +49,7 @@ class OAuthController(
     @PostMapping("/local/apple/login")
     @Operation(summary = "로컬 테스트용 애플 Oauth 로그인 콜백", description = Const.AUTH_TAG)
     fun localAppleLoginCallBack(
-        @RequestBody req: AppleLoginReq,
+        req: AppleLoginReq,
     ): LoginResult {
         return appleOAuthService.registerOrLogin(req.idToken)
     }
