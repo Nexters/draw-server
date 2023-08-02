@@ -50,6 +50,11 @@ kakao:
     rest-api-key: ${KAKAO_REST_API_KEY}
     callback-url: http://localhost:8080/auth/v1/kakao/login
 
+apple:
+  auth:
+    team-id: ${APPLE_TEAM_ID}
+    aud: https://appleid.apple.com
+
 discord:
   webhook:
     url: ${DISCORD_WEBHOOK_URL}

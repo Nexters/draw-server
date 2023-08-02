@@ -1,8 +1,10 @@
 package com.draw.controller.oauth
 
 import com.draw.common.Const
+import com.draw.controller.dto.AppleLoginReq
 import com.draw.controller.dto.TokenRefreshReq
 import com.draw.controller.dto.TokenRefreshRes
+import com.draw.service.oauth.AppleOauthService
 import com.draw.service.oauth.CommonOauthService
 import com.draw.service.oauth.KakaoOauthService
 import com.draw.service.oauth.dto.LoginResult
@@ -18,15 +20,24 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/auth/v1")
 class OauthController(
     private val commonOauthService: CommonOauthService,
+    private val appleOauthService: AppleOauthService,
     private val kakaoOauthService: KakaoOauthService,
 ) {
 
     @GetMapping("/kakao/login")
     @Operation(summary = "카카오 Oauth 로그인 콜백", description = Const.AUTH_TAG)
-    fun loginCallBack(
+    fun kakaoLoginCallBack(
         @RequestParam("code") code: String,
     ): LoginResult {
         return kakaoOauthService.registerOrLogin(code)
+    }
+
+    @PostMapping("/apple/login")
+    @Operation(summary = "애플 Oauth 로그인 콜백", description = Const.AUTH_TAG)
+    fun appleLoginCallBack(
+        @RequestBody req: AppleLoginReq,
+    ): LoginResult {
+        return appleOauthService.registerOrLogin(req.idToken)
     }
 
     @PostMapping("/token/refresh")

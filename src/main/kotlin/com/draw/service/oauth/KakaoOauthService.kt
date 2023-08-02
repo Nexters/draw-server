@@ -17,20 +17,20 @@ class KakaoOauthService(
     private val kakaoOauthProperties: KakaoOauthProperties,
     private val kakaoAuthClient: KakaoAuthClient,
     private val kakaoApiClient: KakaoApiClient,
-    private val UserRepository: UserRepository,
+    private val userRepository: UserRepository,
     private val jwtProvider: JwtProvider,
 ) {
     fun registerOrLogin(authCode: String): LoginResult {
         val tokenResponse = fetchKakaoUserAccessToken(authCode)
         val userInfo = kakaoApiClient.getUserInfo("Bearer ${tokenResponse.access_token}")
-        val user = UserRepository.findByKakaoId(userInfo.id.toString())
+        val user = userRepository.findByKakaoId(userInfo.id.toString())
         if (user != null) {
             return LoginResult.normal(jwtProvider.generateAccessToken(user), jwtProvider.generateRefreshToken(user))
         }
         val newUser = User(kakaoId = userInfo.id.toString(), oauthProvider = OauthProvider.KAKAO)
         val accessToken = jwtProvider.generateAccessToken(newUser)
         newUser.refreshToken = jwtProvider.generateRefreshToken(newUser)
-        UserRepository.save(newUser)
+        userRepository.save(newUser)
         return LoginResult.newlyRegistered(accessToken, newUser.refreshToken!!)
     }
 

@@ -14,9 +14,14 @@ import org.springframework.web.bind.annotation.RequestMapping
 class TestController(
     @Value("\${kakao.auth.js-key}") private val kakaoJsKey: String,
 ) {
-    @GetMapping
-    fun login(model: Model): String {
+    @GetMapping("/kakao")
+    fun kakaoLogin(model: Model): String {
         model.addAttribute("kakaoJsKey", kakaoJsKey)
-        return "index"
+        return "kakao"
+    }
+
+    @GetMapping("/apple")
+    fun appleLogin(model: Model): String {
+        return "apple"
     }
 }
