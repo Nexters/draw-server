@@ -2,6 +2,8 @@ package com.draw.service
 
 import com.draw.common.enums.Gender
 import com.draw.common.enums.MBTI
+import com.draw.common.exception.FeedNotFoundException
+import com.draw.common.exception.ReplyNotFoundException
 import com.draw.controller.dto.MyRepliesRes
 import com.draw.controller.dto.MyReplyRes
 import com.draw.controller.dto.RepliesRes
@@ -25,7 +27,7 @@ class ReplyService(
     private val peekReplyRepository: PeekReplyRepository,
 ) {
     fun getReplies(inputUserId: Long?, feedId: Long): RepliesRes {
-        val feed = feedRepository.findByIdOrNull(feedId) ?: throw IllegalArgumentException("존재하지 않는 피드입니다.")
+        val feed = feedRepository.findByIdOrNull(feedId) ?: throw FeedNotFoundException()
         val replies = inputUserId?.let { replyRepository.findAllByFeedAndBlockExclude(feed, it) } ?: feed.replies
 
         // 쿼리량이 많지 않을 것으로 보여져, n+1 쿼리 발생을 허용함, 추후 캐싱 적용 예정
@@ -53,19 +55,19 @@ class ReplyService(
 
     @Transactional
     fun createReply(userId: Long, feedId: Long, reqReplyCreateReq: ReplyCreateReq) {
-        val feed = feedRepository.findByIdOrNull(feedId) ?: throw IllegalArgumentException("존재하지 않는 피드입니다.")
+        val feed = feedRepository.findByIdOrNull(feedId) ?: throw FeedNotFoundException()
         feed.addReply(userId, reqReplyCreateReq.content)
     }
 
     @Transactional
     fun blockReply(userId: Long, replyId: Long) {
-        val reply = replyRepository.findByIdOrNull(replyId) ?: throw IllegalArgumentException("존재하지 않는 리플입니다.")
+        val reply = replyRepository.findByIdOrNull(replyId) ?: throw ReplyNotFoundException()
         reply.addBlockReply(userId)
     }
 
     @Transactional
     fun claimReply(userId: Long, replyId: Long) {
-        val reply = replyRepository.findByIdOrNull(replyId) ?: throw IllegalArgumentException("존재하지 않는 리플입니다.")
+        val reply = replyRepository.findByIdOrNull(replyId) ?: throw ReplyNotFoundException()
         reply.addBlockReply(userId)
 
         // TODO: claim 적재 로직 추가 2023/08/02 (koi)

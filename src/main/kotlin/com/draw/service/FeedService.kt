@@ -2,6 +2,7 @@ package com.draw.service
 
 import com.draw.common.BusinessException
 import com.draw.common.enums.ErrorType
+import com.draw.common.exception.FeedNotFoundException
 import com.draw.controller.dto.FeedCreateReq
 import com.draw.controller.dto.FeedRes
 import com.draw.domain.feed.FavoriteFeed
@@ -22,7 +23,7 @@ class FeedService(
     private val log = KotlinLogging.logger { }
 
     fun getFeed(inputUserId: Long?, feedId: Long): FeedRes {
-        val feed = feedRepository.findByIdOrNull(feedId) ?: throw IllegalArgumentException("존재하지 않는 피드입니다.")
+        val feed = feedRepository.findByIdOrNull(feedId) ?: throw FeedNotFoundException()
         val isFavorite = inputUserId?.let { favoriteFeedRepository.existsByUserIdAndFeed(it, feed) } ?: false
 
         return FeedRes(
@@ -43,19 +44,19 @@ class FeedService(
 
     @Transactional
     fun createFeedView(userId: Long, feedId: Long) {
-        val feed = feedRepository.findByIdOrNull(feedId) ?: throw IllegalArgumentException("존재하지 않는 피드입니다.")
+        val feed = feedRepository.findByIdOrNull(feedId) ?: throw FeedNotFoundException()
         feed.addFeedViewHistory(userId)
     }
 
     @Transactional
     fun blockFeed(userId: Long, feedId: Long) {
-        val feed = feedRepository.findByIdOrNull(feedId) ?: throw IllegalArgumentException("존재하지 않는 피드입니다.")
+        val feed = feedRepository.findByIdOrNull(feedId) ?: throw FeedNotFoundException()
         feed.addBlockFeed(userId)
     }
 
     @Transactional
     fun claimFeed(userId: Long, feedId: Long) {
-        val feed = feedRepository.findByIdOrNull(feedId) ?: throw IllegalArgumentException("존재하지 않는 피드입니다.")
+        val feed = feedRepository.findByIdOrNull(feedId) ?: throw FeedNotFoundException()
         feed.addBlockFeed(userId)
 
         // TODO: claim 적재 로직 추가 2023/08/02 (koi)
@@ -63,7 +64,7 @@ class FeedService(
 
     @Transactional
     fun createFavoriteFeed(userId: Long, feedId: Long) {
-        val feed = feedRepository.findByIdOrNull(feedId) ?: throw IllegalArgumentException("존재하지 않는 피드입니다.")
+        val feed = feedRepository.findByIdOrNull(feedId) ?: throw FeedNotFoundException()
 
         try {
             favoriteFeedRepository.save(
