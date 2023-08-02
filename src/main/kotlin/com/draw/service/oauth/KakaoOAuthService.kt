@@ -22,7 +22,7 @@ class KakaoOAuthService(
 ) {
     fun registerOrLogin(authCode: String): LoginResult {
         val tokenResponse = fetchKakaoUserAccessToken(authCode)
-        val userInfo = kakaoApiClient.getUserInfo("Bearer ${tokenResponse.access_token}")
+        val userInfo = kakaoApiClient.getUserInfo("Bearer ${tokenResponse.accessToken}")
         val user = userRepository.findByKakaoId(userInfo.id.toString())
         if (user != null) {
             return LoginResult.normal(jwtProvider.generateAccessToken(user), jwtProvider.generateRefreshToken(user))
@@ -37,12 +37,12 @@ class KakaoOAuthService(
     private fun fetchKakaoUserAccessToken(authCode: String): KauthTokenResponse {
         return kakaoAuthClient.getToken(
             KauthTokenRequest(
-                grant_type = "authorization_code",
-                client_id = kakaoOAuthProperties.restApiKey,
-                redirect_uri = kakaoOAuthProperties.callbackUrl,
+                grantType = "authorization_code",
+                clientId = kakaoOAuthProperties.restApiKey,
+                redirectUri = kakaoOAuthProperties.callbackUrl,
                 code = authCode,
-                client_secret = kakaoOAuthProperties.clientSecret,
-            ),
+                clientSecret = kakaoOAuthProperties.clientSecret,
+            ).toMap(),
         )
     }
 }

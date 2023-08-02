@@ -1,5 +1,8 @@
 package com.draw.infra.external.kakao
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies
+import com.fasterxml.jackson.module.kotlin.convertValue
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import feign.Headers
 import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.cloud.openfeign.SpringQueryMap
@@ -11,23 +14,31 @@ interface KakaoAuthClient {
 
     @Headers("Content-Type: application/x-www-form-urlencoded")
     @PostMapping("/oauth/token")
-    fun getToken(@SpringQueryMap parameters: KauthTokenRequest): KauthTokenResponse
+    fun getToken(@SpringQueryMap parameters: Map<String, Any>): KauthTokenResponse
 }
 
 data class KauthTokenRequest(
-    val grant_type: String,
-    val client_id: String,
-    val redirect_uri: String,
+    val grantType: String,
+    val clientId: String,
+    val redirectUri: String,
     val code: String,
-    val client_secret: String? = null,
-)
+    val clientSecret: String? = null,
+) {
+    fun toMap(): Map<String, Any> {
+        return mapper.convertValue(this)
+    }
+
+    companion object {
+        private val mapper = jacksonObjectMapper().setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
+    }
+}
 
 data class KauthTokenResponse(
-    val token_type: String,
-    val access_token: String,
-    val id_token: String?,
-    val expires_in: Int,
-    val refresh_token: String,
-    val refresh_token_expires_in: Int,
+    val tokenType: String,
+    val accessToken: String,
+    val idToken: String?,
+    val expiresIn: Int,
+    val refreshToken: String,
+    val refreshTokenExpiresIn: Int,
     val scope: String?,
 )

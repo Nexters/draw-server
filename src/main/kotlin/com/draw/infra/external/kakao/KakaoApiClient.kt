@@ -18,5 +18,6 @@ interface KakaoApiClient {
 // 참고: https://developers.kakao.com/docs/latest/ko/kakaologin/rest-api#req-user-info-response
 data class UserInfoResponse(
     val id: Long,
-    val connectedAt: Long?,
+    val connectedAt: String?,
+    val kakaoAccount: Any?
 )
