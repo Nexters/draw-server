@@ -11,7 +11,7 @@ import java.lang.IllegalArgumentException
 import kotlin.jvm.optionals.getOrNull
 
 @Service
-class CommonOauthService(
+class CommonOAuthService(
     private val userRepository: UserRepository,
     private val jwtProvider: JwtProvider,
 ) {

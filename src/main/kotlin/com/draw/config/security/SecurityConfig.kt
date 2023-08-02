@@ -31,7 +31,7 @@ class SecurityConfig(
                 it.anyRequest().authenticated()
             }
             .addFilterBefore(
-                OauthSecurityFilter(jwtProvider, objectMapper),
+                OAuthSecurityFilter(jwtProvider, objectMapper),
                 BasicAuthenticationFilter::class.java,
             )
             .exceptionHandling { handling ->

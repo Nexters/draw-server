@@ -1,6 +1,6 @@
 package com.draw.domain.user
 
-import com.draw.common.enums.OauthProvider
+import com.draw.common.enums.OAuthProvider
 import com.draw.domain.common.BaseEntity
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -26,7 +26,7 @@ class User(
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    var oauthProvider: OauthProvider? = null,
+    var oauthProvider: OAuthProvider? = null,
 
     var refreshToken: String? = null,
 ) : BaseEntity()

@@ -1,5 +1,5 @@
 package com.draw.common.enums
 
-enum class OauthProvider {
+enum class OAuthProvider {
     KAKAO, APPLE
 }
