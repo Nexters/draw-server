@@ -16,7 +16,7 @@ import java.util.Date
 
 @Component
 class JwtProvider(
-    private val UserRepository: UserRepository,
+    private val userRepository: UserRepository,
     private val jwtProperties: JwtProperties,
 ) {
     private val secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtProperties.secretKey))
@@ -28,7 +28,7 @@ class JwtProvider(
 
     fun authenticate(token: String): Authentication {
         println("요청토큰 : $token")
-        val user = UserRepository.findByIdOrNull(getId(token).toLong())
+        val user = userRepository.findByIdOrNull(getId(token).toLong())
             ?: throw RuntimeException("authentication user not found")
         return UsernamePasswordAuthenticationToken(user, javaClass, listOf())
     }
@@ -58,7 +58,7 @@ class JwtProvider(
         val now = Date()
         val createdToken = createToken(claims, now, Date(now.time + expire))
         user.refreshToken = createdToken
-        UserRepository.save(user)
+        userRepository.save(user)
         return createdToken
     }
 
@@ -81,7 +81,7 @@ class JwtProvider(
         if (tokenType == REFRESH_TOKEN) {
             if (isExpired) {
                 user.refreshToken = null
-                UserRepository.save(user)
+                userRepository.save(user)
                 throw RuntimeException("RefreshToken expired")
             }
         }

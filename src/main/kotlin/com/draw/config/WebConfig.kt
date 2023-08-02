@@ -8,11 +8,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
 @Configuration
 class WebConfig(
-    private val objectMapper: ObjectMapper
+    private val objectMapper: ObjectMapper,
 ) : WebMvcConfigurer {
     override fun addInterceptors(registry: InterceptorRegistry) {
         registry.addInterceptor(UserValidationInterceptor(objectMapper))
             .addPathPatterns("/api/v1/**")
-            .excludePathPatterns("/health", "/ready", "BackDoorRegisterReq/**")
+            .excludePathPatterns("/health", "/ready", "/auth/v1/backdoor")
     }
 }
