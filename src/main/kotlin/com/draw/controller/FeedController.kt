@@ -4,15 +4,10 @@ import com.draw.common.Const.FEED_TAG
 import com.draw.common.Const.MOCKING
 import com.draw.common.Const.MOCK_USER_HEADER
 import com.draw.common.Const.MY_TAG
-import com.draw.common.enums.Gender
-import com.draw.common.enums.MBTI
 import com.draw.controller.dto.FeedCreateReq
 import com.draw.controller.dto.FeedDetailRes
 import com.draw.controller.dto.FeedRes
 import com.draw.controller.dto.FeedsRes
-import com.draw.controller.dto.ReplyRes
-import com.draw.controller.dto.ReplyStatus
-import com.draw.controller.dto.ReplyWriterRes
 import com.draw.service.FeedService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -97,23 +92,10 @@ class FeedController(
     @GetMapping("/{feedId}")
     @Operation(summary = "피드 조회 (상세)", description = MOCKING)
     fun getFeed(
+        @RequestHeader(MOCK_USER_HEADER, required = false) userId: Long?,
         @Parameter(description = "피드 id") @PathVariable("feedId") feedId: Long,
     ): FeedDetailRes {
-
-        // TODO:  2023/07/27 (koi)
-        return FeedDetailRes(
-            id = 1,
-            content = "저녁먹을사람!",
-            isFavorite = true,
-            favoriteCount = 1,
-            isFit = true,
-            replies = listOf(
-                ReplyRes(1, "김치찌개 어때?", ReplyStatus.NORMAL, 4L, null),
-                ReplyRes(2, "난 반대야", ReplyStatus.PEEKED, 2L, ReplyWriterRes(MBTI.ENFP, Gender.FEMALE)),
-                ReplyRes(3, "나는 T인데 눈물이 없어", ReplyStatus.PEEKED, 3L, ReplyWriterRes(MBTI.ESTJ, Gender.MALE)),
-                ReplyRes(4, "나는 글쓴이야 😁", ReplyStatus.MINE, 1L, null),
-            )
-        )
+        return feedService.getFeed(userId, feedId)
     }
 
     @PostMapping("/{feedId}/views")

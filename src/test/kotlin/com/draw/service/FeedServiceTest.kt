@@ -29,6 +29,22 @@ class FeedServiceTest {
     private val feedService = FeedService(feedRepository, favoriteFeedRepository)
 
     @Test
+    fun `내가 좋아요를 누른 피드면, isFavorite 값이 true로 반환된다`() {
+        // given
+        val feed = Feed(content = "content", writerId = 1L)
+            .apply { id = 1L }
+
+        every { feedRepository.findByIdOrNull(1L) } returns feed
+        every { favoriteFeedRepository.existsByUserIdAndFeed(1L, feed) } returns true
+
+        // when
+        val res = feedService.getFeed(1L, 1L)
+
+        // then
+        assertThat(res.isFavorite).isTrue
+    }
+
+    @Test
     fun `피드가 생성된다`() {
         // given
         every { feedRepository.save(any()) } returns Feed(content = "content", writerId = 1L)
