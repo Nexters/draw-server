@@ -55,4 +55,27 @@ create table peek_reply
 );
 
 
+create table if not exists block_feed
+(
+    id         bigint auto_increment primary key,
+    feed_id    bigint   not null,
+    user_id    bigint   not null,
+    created_at datetime not null default now(),
+    updated_at datetime not null default now() on update now()
+);
 
+create unique index feed_id_user_id_uniq
+    on block_feed (feed_id, user_id);
+
+
+create table if not exists block_reply
+(
+    id         bigint auto_increment primary key,
+    reply_id   bigint   not null,
+    user_id    bigint   not null,
+    created_at datetime not null default now(),
+    updated_at datetime not null default now() on update now()
+);
+
+create unique index reply_id_user_id_uniq
+    on block_reply (reply_id, user_id);

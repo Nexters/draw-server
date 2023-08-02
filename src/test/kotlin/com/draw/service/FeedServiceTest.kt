@@ -55,6 +55,34 @@ class FeedServiceTest {
     }
 
     @Test
+    fun `피드 차단이 생성된다`() {
+        // given
+        val feed = Feed(content = "content", writerId = 1L)
+        every { feedRepository.findByIdOrNull(1L) } returns feed
+        every { feedRepository.findByIdOrNull(1L) } returns feed
+
+        // when
+        feedService.blockFeed(1L, 1L)
+
+        // then
+        assertThat(feed.blockFeeds).hasSize(1)
+    }
+
+    @Test
+    fun `피드 신고시에도 차단이 생성된다`() {
+        // given
+        val feed = Feed(content = "content", writerId = 1L)
+        every { feedRepository.findByIdOrNull(1L) } returns feed
+        every { feedRepository.findByIdOrNull(1L) } returns feed
+
+        // when
+        feedService.claimFeed(1L, 1L)
+
+        // then
+        assertThat(feed.blockFeeds).hasSize(1)
+    }
+
+    @Test
     fun `피드 좋아요가 생성된다`() {
         // given
         val feed = Feed(content = "content", writerId = 1L)

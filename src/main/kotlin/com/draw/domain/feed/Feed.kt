@@ -73,6 +73,14 @@ class Feed(
     protected val mutableFeedViewHistories: MutableList<FeedViewHistory> = mutableListOf()
     val feedViewHistories: List<FeedViewHistory> get() = mutableFeedViewHistories
 
+    @OneToMany(
+        mappedBy = "feed",
+        fetch = FetchType.LAZY,
+        cascade = [CascadeType.PERSIST],
+    )
+    protected val mutableBlockFeeds: MutableList<BlockFeed> = mutableListOf()
+    val blockFeeds: List<BlockFeed> get() = mutableBlockFeeds
+
     @Formula("(select count(*) from favorite_feed ff where ff.feed_id = id)")
     var favoriteCount: Int = 0
         protected set
@@ -85,5 +93,10 @@ class Feed(
     fun addFeedViewHistory(userId: Long) {
         val feedViewHistory = FeedViewHistory(userId = userId, feed = this)
         mutableFeedViewHistories.add(feedViewHistory)
+    }
+
+    fun addBlockFeed(userId: Long) {
+        val blockFeed = BlockFeed(feed = this, userId = userId)
+        mutableBlockFeeds.add(blockFeed)
     }
 }

@@ -34,6 +34,21 @@ class FeedService(
     }
 
     @Transactional
+    fun blockFeed(userId: Long, feedId: Long) {
+        val feed = feedRepository.findByIdOrNull(feedId) ?: throw IllegalArgumentException("존재하지 않는 피드입니다.")
+        feed.addBlockFeed(userId)
+    }
+
+    @Transactional
+    fun claimFeed(userId: Long, feedId: Long) {
+        val feed = feedRepository.findByIdOrNull(feedId) ?: throw IllegalArgumentException("존재하지 않는 피드입니다.")
+        feed.addBlockFeed(userId)
+
+        // TODO: claim 적재 로직 추가 2023/08/02 (koi)
+    }
+
+
+    @Transactional
     fun createFavoriteFeed(userId: Long, feedId: Long) {
         val feed = feedRepository.findByIdOrNull(feedId) ?: throw IllegalArgumentException("존재하지 않는 피드입니다.")
 

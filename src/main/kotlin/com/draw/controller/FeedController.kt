@@ -116,13 +116,31 @@ class FeedController(
         )
     }
 
-    @PostMapping("/{feedId}/view")
+    @PostMapping("/{feedId}/views")
     @Operation(summary = "피드 확인 기록 저장")
     fun createFeedView(
         @RequestHeader(MOCK_USER_HEADER) userId: Long,
         @Parameter(description = "피드 id") @PathVariable("feedId") feedId: Long,
     ) {
         feedService.createFeedView(userId, feedId)
+    }
+
+    @PostMapping("/{feedId}/blocks")
+    @Operation(summary = "피드 차단")
+    fun blockFeed(
+        @RequestHeader(MOCK_USER_HEADER) userId: Long,
+        @Parameter(description = "피드 id") @PathVariable("feedId") feedId: Long,
+    ) {
+        feedService.blockFeed(userId, feedId)
+    }
+
+    @PostMapping("/{feedId}/claims")
+    @Operation(summary = "피드 신고")
+    fun claimFeed(
+        @RequestHeader(MOCK_USER_HEADER) userId: Long,
+        @Parameter(description = "피드 id") @PathVariable("feedId") feedId: Long,
+    ) {
+        feedService.claimFeed(userId, feedId)
     }
 
     @PostMapping("/{feedId}/favorites")
