@@ -127,7 +127,7 @@ class FeedController(
     @PostMapping("/{feedId}/favorites")
     @Operation(
         summary = "피드 좋아요",
-        responses = [ApiResponse(responseCode = "400(4002)", description = "FAVORITE_FEED_ALREADY_EXISTS")]
+        responses = [ApiResponse(responseCode = "400(40002)", description = "FAVORITE_FEED_ALREADY_EXISTS")]
     )
     fun createFavoriteFeed(
         @RequestHeader(MOCK_USER_HEADER) userId: Long,
