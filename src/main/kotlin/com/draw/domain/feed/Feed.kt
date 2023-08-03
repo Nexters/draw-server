@@ -4,6 +4,7 @@ import com.draw.common.enums.AgeRange
 import com.draw.common.enums.Gender
 import com.draw.common.enums.MBTI
 import com.draw.common.enums.MBTIChar
+import com.draw.common.enums.VisibleTarget
 import com.draw.domain.common.BaseEntity
 import com.draw.domain.common.converter.GendersConverter
 import com.draw.domain.common.converter.MBTICharsConverter
@@ -27,6 +28,7 @@ class Feed(
     writerId: Long,
     genders: MutableList<Gender> = mutableListOf(),
     ageRange: AgeRange = AgeRange.ALL,
+    visibleTarget: VisibleTarget,
     mbtiChars: MutableList<MBTIChar> = mutableListOf(),
 ) : BaseEntity() {
 
@@ -50,6 +52,11 @@ class Feed(
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     var ageRange: AgeRange = ageRange
+        protected set
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    var visibleTarget: VisibleTarget = visibleTarget
         protected set
 
     @Column(nullable = false)

@@ -1,13 +1,14 @@
-create table if not exists feed
+create table feed
 (
-    id         bigint auto_increment primary key,
-    writer_id  bigint       not null,
-    age_range  varchar(16)  not null comment '나이범위 (ALL, ZERO_TO_TEN, TEEN, TWENTY, THIRTY, FORTY, FIFTY, SIXTY, SEVENTY, EIGHTY, NINETY)',
-    content    varchar(256) not null,
-    genders    varchar(32)  not null default '[]',
-    mbti_chars varchar(32)  not null default '[]',
-    created_at datetime     not null default now(),
-    updated_at datetime     not null default now() on update now()
+    id             bigint auto_increment primary key,
+    writer_id      bigint                                not null,
+    age_range      varchar(16)                           not null comment '나이범위 (ALL, ZERO_TO_TEN, TEEN, TWENTY, THIRTY, FORTY, FIFTY, SIXTY, SEVENTY, EIGHTY, NINETY)',
+    content        varchar(256)                          not null,
+    visible_target varchar(16)                           not null comment '피드 노출대상 (CHILD, ADULT)',
+    genders        varchar(32) default '[]'              not null,
+    mbti_chars     varchar(32) default '[]'              not null,
+    created_at     datetime    default CURRENT_TIMESTAMP not null,
+    updated_at     datetime    default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP
 );
 
 

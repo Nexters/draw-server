@@ -4,6 +4,7 @@ import com.draw.common.enums.AgeRange
 import com.draw.common.enums.Gender
 import com.draw.common.enums.MBTI
 import com.draw.common.enums.MBTIChar
+import com.draw.common.enums.VisibleTarget
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -19,6 +20,7 @@ class FeedTest {
             genders = mutableListOf(Gender.MALE, Gender.FEMALE),
             mbtiChars = mutableListOf(),
             ageRange = AgeRange.ALL,
+            visibleTarget = VisibleTarget.ADULT,
         )
         // when
         val fit = feed.isFit(Gender.MALE, 29, MBTI.ESTJ)
@@ -36,6 +38,7 @@ class FeedTest {
             genders = mutableListOf(Gender.MALE, Gender.FEMALE),
             mbtiChars = mutableListOf(MBTIChar.E, MBTIChar.S, MBTIChar.T),
             ageRange = AgeRange.ALL,
+            visibleTarget = VisibleTarget.ADULT,
         )
 
         // when
@@ -54,6 +57,7 @@ class FeedTest {
             genders = mutableListOf(Gender.MALE, Gender.FEMALE),
             mbtiChars = mutableListOf(MBTIChar.E, MBTIChar.T),
             ageRange = AgeRange.ALL,
+            visibleTarget = VisibleTarget.ADULT,
         )
 
         // when
@@ -72,6 +76,7 @@ class FeedTest {
             genders = mutableListOf(Gender.MALE, Gender.FEMALE),
             mbtiChars = mutableListOf(MBTIChar.S, MBTIChar.T),
             ageRange = AgeRange.ALL,
+            visibleTarget = VisibleTarget.ADULT,
         )
 
         // when
@@ -90,6 +95,7 @@ class FeedTest {
             genders = mutableListOf(Gender.MALE, Gender.FEMALE),
             mbtiChars = mutableListOf(MBTIChar.N, MBTIChar.T),
             ageRange = AgeRange.ALL,
+            visibleTarget = VisibleTarget.ADULT,
         )
 
         // when
@@ -100,7 +106,7 @@ class FeedTest {
     }
 
     @Test
-    fun `등록한 MBTI중 하나라도 일치하지 않으면 성별 및 나이가 일치하더라도 맞춤 피드가 아니다`() {
+    fun `등록한 MBTI중 같은 위치의 MBTI 두가지중 한가지만 일치하고, 성별 및 나이가 일치하면 맞춤 피드이다`() {
         // given
         val feed = Feed(
             content = "content",
@@ -108,13 +114,14 @@ class FeedTest {
             genders = mutableListOf(Gender.MALE, Gender.FEMALE),
             mbtiChars = mutableListOf(MBTIChar.E, MBTIChar.S, MBTIChar.T, MBTIChar.F),
             ageRange = AgeRange.ALL,
+            visibleTarget = VisibleTarget.ADULT,
         )
 
         // when
         val fit = feed.isFit(Gender.MALE, 29, MBTI.ESTJ)
 
         // then
-        assertFalse(fit)
+        assertTrue(fit)
     }
 
     @Test
@@ -126,6 +133,7 @@ class FeedTest {
             genders = mutableListOf(Gender.FEMALE),
             mbtiChars = mutableListOf(),
             ageRange = AgeRange.ALL,
+            visibleTarget = VisibleTarget.ADULT,
         )
 
         // when
@@ -144,6 +152,7 @@ class FeedTest {
             genders = mutableListOf(Gender.FEMALE),
             mbtiChars = mutableListOf(),
             ageRange = AgeRange.THIRTY,
+            visibleTarget = VisibleTarget.ADULT,
         )
 
         // when

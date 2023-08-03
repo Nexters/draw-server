@@ -4,6 +4,7 @@ import com.draw.common.enums.AgeOption
 import com.draw.common.enums.AgeRange
 import com.draw.common.enums.Gender
 import com.draw.common.enums.MBTIChar
+import com.draw.common.enums.VisibleTarget
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertAll
 import org.junit.jupiter.api.Test
@@ -28,6 +29,7 @@ class FeedCreateReqTest {
             { assertThat(req.content).isEqualTo(feed.content) },
             { assertThat(req.genders).isEqualTo(feed.genders) },
             { assertThat(feed.ageRange).isEqualTo(AgeRange.ALL) },
+            { assertThat(feed.visibleTarget).isEqualTo(VisibleTarget.ADULT) },
             { assertThat(req.mbtiChars).isEqualTo(feed.mbtiChars) },
             { assertThat(feed.writerId).isEqualTo(1L) },
         )

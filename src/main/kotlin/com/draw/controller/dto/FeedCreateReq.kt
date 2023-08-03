@@ -3,6 +3,7 @@ package com.draw.controller.dto
 import com.draw.common.enums.AgeOption
 import com.draw.common.enums.Gender
 import com.draw.common.enums.MBTIChar
+import com.draw.common.enums.VisibleTarget
 import com.draw.domain.feed.Feed
 
 data class FeedCreateReq(
@@ -19,6 +20,7 @@ data class FeedCreateReq(
             writerId = userId,
             genders = genders.toMutableList(),
             ageRange = ageOption.toAgeRange(userIntAge),
+            visibleTarget = VisibleTarget.of(userIntAge),
             mbtiChars = mbtiChars.toMutableList(),
         )
     }

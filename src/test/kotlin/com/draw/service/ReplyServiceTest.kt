@@ -1,5 +1,6 @@
 package com.draw.service
 
+import com.draw.common.enums.VisibleTarget
 import com.draw.controller.dto.ReplyCreateReq
 import com.draw.domain.feed.Feed
 import com.draw.domain.reply.Reply
@@ -10,6 +11,7 @@ import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
@@ -24,10 +26,18 @@ class ReplyServiceTest {
 
     private val replyService = ReplyService(feedRepository, replyRepository, peekReplyRepository)
 
+    private lateinit var feed: Feed
+
+    @BeforeEach
+    fun setUp() {
+        feed = Feed(content = "content", writerId = 1L, visibleTarget = VisibleTarget.ADULT)
+            .apply { id = 1L }
+    }
+
+
     @Test
     fun `피드내 리플이 생성된다`() {
         // given
-        val feed = Feed(content = "content", writerId = 1L)
         every { feedRepository.findByIdOrNull(1L) } returns feed
 
         // when
@@ -40,7 +50,7 @@ class ReplyServiceTest {
     @Test
     fun `리플 차단이 생성된다`() {
         // given
-        val reply = Reply(feed = Feed(content = "feed-content", writerId = 1L), content = "content", writerId = 1L)
+        val reply = Reply(feed = feed, content = "content", writerId = 1L)
         every { replyRepository.findByIdOrNull(1L) } returns reply
 
         // when
@@ -53,7 +63,7 @@ class ReplyServiceTest {
     @Test
     fun `내 리플은 차단할 수 없다`() {
         // given
-        val reply = Reply(feed = Feed(content = "feed-content", writerId = 1L), content = "content", writerId = 1L)
+        val reply = Reply(feed = feed, content = "content", writerId = 1L)
         every { replyRepository.findByIdOrNull(1L) } returns reply
 
         // when, then
@@ -63,7 +73,7 @@ class ReplyServiceTest {
     @Test
     fun `리플 신고시에도 차단이 생성된다`() {
         // given
-        val reply = Reply(feed = Feed(content = "feed-content", writerId = 1L), content = "content", writerId = 1L)
+        val reply = Reply(feed = feed, content = "content", writerId = 1L)
         every { replyRepository.findByIdOrNull(1L) } returns reply
 
         // when
@@ -76,7 +86,7 @@ class ReplyServiceTest {
     @Test
     fun `내 리플은 신고할 수 없다`() {
         // given
-        val reply = Reply(feed = Feed(content = "feed-content", writerId = 1L), content = "content", writerId = 1L)
+        val reply = Reply(feed = feed, content = "content", writerId = 1L)
         every { replyRepository.findByIdOrNull(1L) } returns reply
 
         // when, then
@@ -86,7 +96,7 @@ class ReplyServiceTest {
     @Test
     fun `내 리플은 훔쳐볼 수 없다`() {
         // given
-        val reply = Reply(feed = Feed(content = "feed-content", writerId = 1L), content = "content", writerId = 1L)
+        val reply = Reply(feed = feed, content = "content", writerId = 1L)
         every { replyRepository.findByIdOrNull(1L) } returns reply
 
         // when, then
