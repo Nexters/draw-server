@@ -32,17 +32,10 @@ class FeedController(
     @GetMapping
     @Operation(summary = "피드 조회", description = MOCKING)
     fun getFeeds(
+        @RequestHeader(MOCK_USER_HEADER) userId: Long?,
         @Parameter(description = "마지막 피드 id") @RequestParam("lastFeedId", required = false) lastFeedId: Long?,
     ): FeedsRes {
-
-        // TODO: 2023/07/24 (koi)
-        return FeedsRes(
-            feeds = listOf(
-                FeedRes(1, "저녁먹을사람!", true, 1, true),
-                FeedRes(2, "t도 박은빈 시상식때", false, 1, true),
-            ),
-            hasNext = false
-        )
+        return feedService.getFeeds(userId, lastFeedId)
     }
 
     @PostMapping

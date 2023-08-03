@@ -89,6 +89,24 @@ class FeedService(
         favoriteFeedRepository.deleteByUserIdAndFeedId(userId, feedId)
     }
 
+    fun getFeeds(userId: Long?, lastFeedId: Long?): FeedsRes {
+        // TODO: userEntity 추가시 추가 개발 2023/08/04 (koi)
+        val projections = userId?.let { feedRepository.findAllFeeds(it, 29) } ?: feedRepository.findAllFeeds()
+
+        return FeedsRes(
+            feeds = projections.map {
+                FeedRes(
+                    id = it.id,
+                    content = it.content,
+                    isFavorite = it.isFavorite,
+                    favoriteCount = it.favoriteCount,
+                    isFit = false // TODO: userEntity 추가시 개발 2023/08/04 (koi)
+                )
+            }.toList(),
+            hasNext = false
+        )
+    }
+
     // TODO: lastFeedId 미고려 2023/08/03 (koi)
     fun getMyFeeds(userId: Long, lastFeedId: Long?): FeedsRes {
         val projections = feedRepository.findWriterFeeds(userId)

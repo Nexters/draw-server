@@ -15,7 +15,10 @@ class ReplyRepositorySupportImpl(
 
         return queryFactory.selectFrom(reply)
             .leftJoin(blockReply)
-            .on(reply.eq(blockReply.reply))
+            .on(
+                reply.eq(blockReply.reply)
+                    .and(blockReply.userId.eq(userId))
+            )
             .where(
                 reply.feed.eq(feed),
                 blockReply.id.isNull,
