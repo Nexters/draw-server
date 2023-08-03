@@ -48,7 +48,7 @@ kakao:
     client-secret: ${KAKAO_CLIENT_SECRET}
     js-key: ${KAKAO_JS_KEY}
     rest-api-key: ${KAKAO_REST_API_KEY}
-    callback-url: http://localhost:5173/callback/kakao
+    callback-url: https://draw-nexters.netlify.app/callback/kakao
 
 apple:
   auth:
