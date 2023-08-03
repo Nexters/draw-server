@@ -4,5 +4,7 @@ import com.draw.service.dto.FeedDtoProjection
 
 interface FeedRepositorySupport {
 
-    fun findAllFeedProjectionByWriterId(writerId: Long): List<FeedDtoProjection>
+    fun findWriterFeeds(writerId: Long): List<FeedDtoProjection>
+
+    fun findUserFavoriteFeeds(userId: Long): List<FeedDtoProjection>
 }

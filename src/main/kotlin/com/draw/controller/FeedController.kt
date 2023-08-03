@@ -56,7 +56,7 @@ class FeedController(
 
     @GetMapping("/me")
     @Tag(name = MY_TAG, description = "My 관련 API")
-    @Operation(summary = "내가 쓴 피드 조회", description = MOCKING)
+    @Operation(summary = "내가 쓴 피드 조회")
     fun getFeedsByMe(
         @RequestHeader(MOCK_USER_HEADER, required = false) userId: Long,
         @Parameter(description = "마지막 피드 id") @RequestParam("lastFeedId", required = false) lastFeedId: Long?,
@@ -66,19 +66,13 @@ class FeedController(
 
     @GetMapping("/me/favorites")
     @Tag(name = MY_TAG, description = "My 관련 API")
-    @Operation(summary = "내가 좋아요한 피드 조회", description = MOCKING)
+    @Operation(summary = "내가 좋아요한 피드 조회")
     fun getFeedsByMeFavorites(
+        @RequestHeader(MOCK_USER_HEADER, required = false) userId: Long,
         @Parameter(description = "마지막 피드 id") @RequestParam("lastFeedId", required = false) lastFeedId: Long?,
     ): FeedsRes {
 
-        // TODO: 2023/07/24 (koi)
-        return FeedsRes(
-            feeds = listOf(
-                FeedRes(1, "저녁먹을사람!", true, 1, false),
-                FeedRes(2, "t도 박은빈 시상식때", false, 1, false),
-            ),
-            hasNext = false
-        )
+        return feedService.getMyFavoriteFeeds(userId, lastFeedId)
     }
 
     @GetMapping("/{feedId}")

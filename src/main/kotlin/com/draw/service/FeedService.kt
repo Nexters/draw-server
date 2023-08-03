@@ -91,21 +91,36 @@ class FeedService(
 
     // TODO: lastFeedId 미고려 2023/08/03 (koi)
     fun getMyFeeds(userId: Long, lastFeedId: Long?): FeedsRes {
-        val feedDtoProjections =
-            feedRepository.findAllFeedProjectionByWriterId(userId)
+        val projections = feedRepository.findWriterFeeds(userId)
 
         return FeedsRes(
-            feeds = feedDtoProjections
-                .sortedByDescending { it.createdAt }
-                .map {
-                    FeedRes(
-                        id = it.id,
-                        content = it.content,
-                        isFavorite = it.isFavorite,
-                        favoriteCount = it.favoriteCount,
-                        isFit = false // TODO: userEntity 추가시 개발 2023/08/04 (koi)
-                    )
-                }.toList(),
+            feeds = projections.map {
+                FeedRes(
+                    id = it.id,
+                    content = it.content,
+                    isFavorite = it.isFavorite,
+                    favoriteCount = it.favoriteCount,
+                    isFit = false // TODO: userEntity 추가시 개발 2023/08/04 (koi)
+                )
+            }.toList(),
+            hasNext = false
+        )
+    }
+
+    // TODO: lastFeedId 미고려 2023/08/03 (koi)
+    fun getMyFavoriteFeeds(userId: Long, lastFeedId: Long?): FeedsRes {
+        val projections = feedRepository.findUserFavoriteFeeds(userId)
+
+        return FeedsRes(
+            feeds = projections.map {
+                FeedRes(
+                    id = it.id,
+                    content = it.content,
+                    isFavorite = it.isFavorite,
+                    favoriteCount = it.favoriteCount,
+                    isFit = false // TODO: userEntity 추가시 개발 2023/08/04 (koi)
+                )
+            }.toList(),
             hasNext = false
         )
     }
