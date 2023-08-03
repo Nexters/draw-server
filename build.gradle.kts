@@ -28,7 +28,7 @@ java {
 
 dependencyManagement {
     imports {
-        mavenBom("org.springframework.cloud:spring-cloud-dependencies:2020.0.4")
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:2022.0.3")
     }
 }
 
@@ -44,9 +44,14 @@ dependencies {
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.4")
     implementation("io.sentry:sentry-spring-boot-starter-jakarta:6.25.0")
     implementation("io.github.microutils:kotlin-logging:3.0.5")
+    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
+    implementation("io.jsonwebtoken:jjwt-api:0.11.5")
+    implementation("io.jsonwebtoken:jjwt-impl:0.11.5")
+    implementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
+    implementation("com.nimbusds:nimbus-jose-jwt:9.30.2")
 
     // querydsl
     implementation("com.querydsl:querydsl-jpa:5.0.0:jakarta")

@@ -76,6 +76,6 @@ class LoggingFilter : OncePerRequestFilter() {
 
         private val log = KotlinLogging.logger { }
         private val mapper = ObjectMapper()
-        private val loggingExcludePaths = listOf("/error", "/actuator")
+        private val loggingExcludePaths = listOf("/actuator")
     }
 }
