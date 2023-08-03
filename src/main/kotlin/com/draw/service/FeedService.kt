@@ -7,6 +7,7 @@ import com.draw.common.enums.MBTI
 import com.draw.common.exception.FeedNotFoundException
 import com.draw.controller.dto.FeedCreateReq
 import com.draw.controller.dto.FeedRes
+import com.draw.controller.dto.FeedsRes
 import com.draw.domain.feed.FavoriteFeed
 import com.draw.infra.persistence.FavoriteFeedRepository
 import com.draw.infra.persistence.FeedRepository
@@ -86,5 +87,26 @@ class FeedService(
     @Transactional
     fun deleteFavoriteFeed(userId: Long, feedId: Long) {
         favoriteFeedRepository.deleteByUserIdAndFeedId(userId, feedId)
+    }
+
+    // TODO: lastFeedId 미고려 2023/08/03 (koi)
+    fun getMyFeeds(userId: Long, lastFeedId: Long?): FeedsRes {
+        val feedDtoProjections =
+            feedRepository.findAllFeedProjectionByWriterId(userId)
+
+        return FeedsRes(
+            feeds = feedDtoProjections
+                .sortedByDescending { it.createdAt }
+                .map {
+                    FeedRes(
+                        id = it.id,
+                        content = it.content,
+                        isFavorite = it.isFavorite,
+                        favoriteCount = it.favoriteCount,
+                        isFit = false // TODO: userEntity 추가시 개발 2023/08/04 (koi)
+                    )
+                }.toList(),
+            hasNext = false
+        )
     }
 }
