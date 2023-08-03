@@ -34,7 +34,6 @@ class ReplyServiceTest {
             .apply { id = 1L }
     }
 
-
     @Test
     fun `피드내 리플이 생성된다`() {
         // given
