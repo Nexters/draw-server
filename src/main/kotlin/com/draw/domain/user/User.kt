@@ -10,6 +10,7 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
+import java.time.ZonedDateTime
 
 @Entity
 @Table(name = "draw_user")
@@ -29,4 +30,8 @@ class User(
     var oauthProvider: OAuthProvider? = null,
 
     var refreshToken: String? = null,
+
+    var point: Long = 0L,
+
+    var lastActivatedAt: ZonedDateTime = ZonedDateTime.now(),
 ) : BaseEntity()
