@@ -33,10 +33,10 @@ class ReplyController(
     @GetMapping("/feeds/{feedId}/replies")
     @Operation(summary = "리플 조회")
     fun getReplies(
-        @RequestHeader(MOCK_USER_HEADER, required = false) userId: Long?,
+        @AuthenticationPrincipal user: User?,
         @PathVariable("feedId") feedId: Long,
     ): RepliesRes {
-        return replyService.getReplies(userId, feedId)
+        return replyService.getReplies(user, feedId)
     }
 
     @PostMapping("/{feedId}/replies")

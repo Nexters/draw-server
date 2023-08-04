@@ -28,16 +28,16 @@ class ReplyService(
     private val replyRepository: ReplyRepository,
     private val peekReplyRepository: PeekReplyRepository,
 ) {
-    fun getReplies(inputUserId: Long?, feedId: Long): RepliesRes {
+    fun getReplies(user: User?, feedId: Long): RepliesRes {
         val feed = feedRepository.findByIdOrNull(feedId) ?: throw FeedNotFoundException()
-        val replies = inputUserId?.let { replyRepository.findAllByFeedAndBlockExclude(feed, it) } ?: feed.replies
+        val replies = user?.let { replyRepository.findAllByFeedAndBlockExclude(feed, it.id!!) } ?: feed.replies
 
         // 쿼리량이 많지 않을 것으로 보여져, n+1 쿼리 발생을 허용함, 추후 캐싱 적용 예정
-        val replyReplyWriterResMap = inputUserId?.let { userId ->
-            peekReplyRepository.findAllByUserIdAndReplyIn(userId, replies)
+        val replyReplyWriterResMap = user?.let { user ->
+            peekReplyRepository.findAllByUserIdAndReplyIn(user.id!!, replies)
                 .associateBy(
                     { it.reply },
-                    { ReplyWriterRes(MBTI.ESTJ, Gender.MALE) },
+                    { ReplyWriterRes(MBTI.ESTJ, Gender.MALE, 29) },
                 ) // TODO: userId 기반 user 정보 조회 2023/08/02 (koi)
         } ?: emptyMap()
 
@@ -47,7 +47,7 @@ class ReplyService(
                     ReplyRes(
                         id = reply.id!!,
                         content = reply.content,
-                        status = replyReplyWriterResMap.getStatus(reply, inputUserId),
+                        status = replyReplyWriterResMap.getStatus(reply, user),
                         writerId = reply.writerId,
                         writer = replyReplyWriterResMap[reply],
                     )
@@ -106,11 +106,12 @@ class ReplyService(
             )
         )
 
-        return ReplyWriterRes(MBTI.ENFP, Gender.MALE) // TODO:  2023/08/02 (koi)
+        return ReplyWriterRes(MBTI.ENFP, Gender.MALE, 29) // TODO:  2023/08/02 (koi)
     }
 
-    private fun Map<Reply, ReplyWriterRes>.getStatus(reply: Reply, inputUserId: Long?) =
-        if (this.containsKey(reply)) ReplyStatus.PEEKED
-        else if (reply.writerId == inputUserId) ReplyStatus.MINE
+    private fun Map<Reply, ReplyWriterRes>.getStatus(reply: Reply, user: User?) =
+        if (user == null) ReplyStatus.NORMAL
+        else if (this.containsKey(reply)) ReplyStatus.PEEKED
+        else if (reply.writerId == user.id) ReplyStatus.MINE
         else ReplyStatus.NORMAL
 }

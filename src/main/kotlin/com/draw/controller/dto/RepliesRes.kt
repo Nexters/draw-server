@@ -17,7 +17,8 @@ data class ReplyRes(
 
 data class ReplyWriterRes(
     val mbti: MBTI,
-    val gender: Gender
+    val gender: Gender,
+    val age: Int,
 )
 
 enum class ReplyStatus {
