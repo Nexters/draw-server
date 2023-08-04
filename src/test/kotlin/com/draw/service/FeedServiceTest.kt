@@ -7,6 +7,7 @@ import com.draw.common.exception.FeedNotFoundException
 import com.draw.controller.dto.FeedCreateReq
 import com.draw.domain.feed.FavoriteFeed
 import com.draw.domain.feed.Feed
+import com.draw.domain.user.User
 import com.draw.infra.persistence.FavoriteFeedRepository
 import com.draw.infra.persistence.FeedRepository
 import io.mockk.every
@@ -32,11 +33,21 @@ class FeedServiceTest {
     private val feedService = FeedService(feedRepository, favoriteFeedRepository)
 
     private lateinit var feed: Feed
+    private lateinit var user: User
+    private lateinit var user2: User
 
     @BeforeEach
     fun setUp() {
         feed = Feed(content = "content", writerId = 1L, visibleTarget = VisibleTarget.ADULT)
             .apply { id = 1L }
+
+        user = User(
+            id = 1L,
+        )
+
+        user2 = User(
+            id = 2L,
+        )
     }
 
     @Test
@@ -60,7 +71,7 @@ class FeedServiceTest {
             FeedCreateReq(content = "content", genders = listOf(), ageOption = AgeOption.ALL, mbtiChars = listOf())
 
         // when
-        feedService.createFeed(1L, req)
+        feedService.createFeed(user, req)
 
         // then
         verify { feedRepository.save(any()) }
@@ -72,7 +83,7 @@ class FeedServiceTest {
         every { feedRepository.findByIdOrNull(1L) } returns feed
 
         // when
-        feedService.createFeedView(1L, 1L)
+        feedService.createFeedView(user, 1L)
 
         // then
         assertThat(feed.feedViewHistories).hasSize(1)
@@ -84,7 +95,7 @@ class FeedServiceTest {
         every { feedRepository.findByIdOrNull(1L) } returns feed
 
         // when
-        feedService.blockFeed(2L, 1L)
+        feedService.blockFeed(user2, 1L)
 
         // then
         assertThat(feed.blockFeeds).hasSize(1)
@@ -96,7 +107,7 @@ class FeedServiceTest {
         every { feedRepository.findByIdOrNull(1L) } returns feed
 
         // when, then
-        assertThrows<IllegalArgumentException> { feedService.blockFeed(1L, 1L) }
+        assertThrows<IllegalArgumentException> { feedService.blockFeed(user, 1L) }
     }
 
     @Test
@@ -105,7 +116,7 @@ class FeedServiceTest {
         every { feedRepository.findByIdOrNull(1L) } returns feed
 
         // when
-        feedService.claimFeed(2L, 1L)
+        feedService.claimFeed(user2, 1L)
 
         // then
         assertThat(feed.blockFeeds).hasSize(1)
@@ -117,7 +128,7 @@ class FeedServiceTest {
         every { feedRepository.findByIdOrNull(1L) } returns feed
 
         // when, then
-        assertThrows<IllegalArgumentException> { feedService.claimFeed(1L, 1L) }
+        assertThrows<IllegalArgumentException> { feedService.claimFeed(user, 1L) }
     }
 
     @Test
@@ -130,7 +141,7 @@ class FeedServiceTest {
         )
 
         // when
-        feedService.createFavoriteFeed(1L, 1L)
+        feedService.createFavoriteFeed(user, 1L)
 
         // then
         verify { favoriteFeedRepository.save(any()) }
@@ -143,10 +154,10 @@ class FeedServiceTest {
         every { favoriteFeedRepository.save(any()) } throws DataIntegrityViolationException("중복 키 예외 발생")
 
         // when
-        val e = assertThrows<BusinessException> { feedService.createFavoriteFeed(1L, 1L) }
+        val e = assertThrows<BusinessException> { feedService.createFavoriteFeed(user, 1L) }
 
         // then
-        assertThat(e.errorType.code).isEqualTo(4002)
+        assertThat(e.errorType.code).isEqualTo(40002)
     }
 
     @Test
@@ -156,7 +167,7 @@ class FeedServiceTest {
 
         // when, then
         assertThrows(FeedNotFoundException::class.java) {
-            feedService.createFavoriteFeed(1L, 1L)
+            feedService.createFavoriteFeed(user, 1L)
         }
     }
 
@@ -166,6 +177,6 @@ class FeedServiceTest {
         every { favoriteFeedRepository.deleteByUserIdAndFeedId(1L, 1L) } returns Unit
 
         // when, then
-        assertDoesNotThrow { feedService.deleteFavoriteFeed(1L, 1L) }
+        assertDoesNotThrow { feedService.deleteFavoriteFeed(user, 1L) }
     }
 }

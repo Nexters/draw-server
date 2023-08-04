@@ -8,10 +8,12 @@ import com.draw.controller.dto.MyRepliesRes
 import com.draw.controller.dto.RepliesRes
 import com.draw.controller.dto.ReplyCreateReq
 import com.draw.controller.dto.ReplyWriterRes
+import com.draw.domain.user.User
 import com.draw.service.ReplyService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -40,47 +42,47 @@ class ReplyController(
     @PostMapping("/{feedId}/replies")
     @Operation(summary = "리플 작성")
     fun createReply(
-        @RequestHeader(MOCK_USER_HEADER) userId: Long,
+        @AuthenticationPrincipal user: User,
         @PathVariable("feedId") feedId: Long,
         @RequestBody replyCreateReq: ReplyCreateReq,
     ) {
-        replyService.createReply(userId, feedId, replyCreateReq)
+        replyService.createReply(user, feedId, replyCreateReq)
     }
 
     @GetMapping("/replies/me")
     @Tag(name = Const.MY_TAG, description = "My 관련 API")
     @Operation(summary = "내가 쓴 리플 조회", description = MOCKING)
     fun getMyReplies(
-        @RequestHeader(MOCK_USER_HEADER) userId: Long,
+        @AuthenticationPrincipal user: User,
         @Parameter(description = "마지막 리플 id") @RequestParam("lastReplyId", required = false) lastReplyId: Long?,
     ): MyRepliesRes {
-        return replyService.getMyReplies(userId, lastReplyId)
+        return replyService.getMyReplies(user, lastReplyId)
     }
 
     @PostMapping("/replies/{replyId}/blocks")
     @Operation(summary = "리플 차단")
     fun blockReply(
-        @RequestHeader(MOCK_USER_HEADER) userId: Long,
+        @AuthenticationPrincipal user: User,
         @PathVariable("replyId") replyId: Long,
     ) {
-        replyService.blockReply(userId, replyId)
+        replyService.blockReply(user, replyId)
     }
 
     @PostMapping("/replies/{replyId}/claims")
     @Operation(summary = "리플 신고")
     fun claimReply(
-        @RequestHeader(MOCK_USER_HEADER) userId: Long,
+        @AuthenticationPrincipal user: User,
         @PathVariable("replyId") replyId: Long,
     ) {
-        replyService.claimReply(userId, replyId)
+        replyService.claimReply(user, replyId)
     }
 
     @PostMapping("/replies/{replyId}/peek")
     @Operation(summary = "리플 훔쳐보기", description = MOCKING)
     fun peekReply(
-        @RequestHeader(MOCK_USER_HEADER) userId: Long,
+        @AuthenticationPrincipal user: User,
         @PathVariable("replyId") replyId: Long,
     ): ReplyWriterRes {
-        return replyService.peekReply(userId, replyId)
+        return replyService.peekReply(user, replyId)
     }
 }

@@ -7,11 +7,13 @@ import com.draw.common.Const.MY_TAG
 import com.draw.controller.dto.FeedCreateReq
 import com.draw.controller.dto.FeedRes
 import com.draw.controller.dto.FeedsRes
+import com.draw.domain.user.User
 import com.draw.service.FeedService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -32,7 +34,7 @@ class FeedController(
     @GetMapping
     @Operation(summary = "피드 조회", description = MOCKING)
     fun getFeeds(
-        @RequestHeader(MOCK_USER_HEADER) userId: Long?,
+        @RequestHeader(MOCK_USER_HEADER, required = false) userId: Long?,
         @Parameter(description = "마지막 피드 id") @RequestParam("lastFeedId", required = false) lastFeedId: Long?,
     ): FeedsRes {
         return feedService.getFeeds(userId, lastFeedId)
@@ -41,35 +43,35 @@ class FeedController(
     @PostMapping
     @Operation(summary = "피드 작성")
     fun createFeed(
-        @RequestHeader(MOCK_USER_HEADER) userId: Long,
+        @AuthenticationPrincipal user: User,
         @RequestBody feedCreateReq: FeedCreateReq
     ) {
-        feedService.createFeed(userId, feedCreateReq)
+        feedService.createFeed(user, feedCreateReq)
     }
 
     @GetMapping("/me")
     @Tag(name = MY_TAG, description = "My 관련 API")
     @Operation(summary = "내가 쓴 피드 조회")
     fun getFeedsByMe(
-        @RequestHeader(MOCK_USER_HEADER, required = false) userId: Long,
+        @AuthenticationPrincipal user: User,
         @Parameter(description = "마지막 피드 id") @RequestParam("lastFeedId", required = false) lastFeedId: Long?,
     ): FeedsRes {
-        return feedService.getMyFeeds(userId, lastFeedId)
+        return feedService.getMyFeeds(user, lastFeedId)
     }
 
     @GetMapping("/me/favorites")
     @Tag(name = MY_TAG, description = "My 관련 API")
     @Operation(summary = "내가 좋아요한 피드 조회")
     fun getFeedsByMeFavorites(
-        @RequestHeader(MOCK_USER_HEADER, required = false) userId: Long,
+        @AuthenticationPrincipal user: User,
         @Parameter(description = "마지막 피드 id") @RequestParam("lastFeedId", required = false) lastFeedId: Long?,
     ): FeedsRes {
 
-        return feedService.getMyFavoriteFeeds(userId, lastFeedId)
+        return feedService.getMyFavoriteFeeds(user, lastFeedId)
     }
 
     @GetMapping("/{feedId}")
-    @Operation(summary = "피드 조회 (상세)", description = MOCKING)
+    @Operation(summary = "피드 조회 (상세)")
     fun getFeed(
         @RequestHeader(MOCK_USER_HEADER, required = false) userId: Long?,
         @Parameter(description = "피드 id") @PathVariable("feedId") feedId: Long,
@@ -80,28 +82,28 @@ class FeedController(
     @PostMapping("/{feedId}/views")
     @Operation(summary = "피드 확인 기록 저장")
     fun createFeedView(
-        @RequestHeader(MOCK_USER_HEADER) userId: Long,
+        @AuthenticationPrincipal user: User,
         @Parameter(description = "피드 id") @PathVariable("feedId") feedId: Long,
     ) {
-        feedService.createFeedView(userId, feedId)
+        feedService.createFeedView(user, feedId)
     }
 
     @PostMapping("/{feedId}/blocks")
     @Operation(summary = "피드 차단")
     fun blockFeed(
-        @RequestHeader(MOCK_USER_HEADER) userId: Long,
+        @AuthenticationPrincipal user: User,
         @Parameter(description = "피드 id") @PathVariable("feedId") feedId: Long,
     ) {
-        feedService.blockFeed(userId, feedId)
+        feedService.blockFeed(user, feedId)
     }
 
     @PostMapping("/{feedId}/claims")
     @Operation(summary = "피드 신고")
     fun claimFeed(
-        @RequestHeader(MOCK_USER_HEADER) userId: Long,
+        @AuthenticationPrincipal user: User,
         @Parameter(description = "피드 id") @PathVariable("feedId") feedId: Long,
     ) {
-        feedService.claimFeed(userId, feedId)
+        feedService.claimFeed(user, feedId)
     }
 
     @PostMapping("/{feedId}/favorites")
@@ -110,18 +112,18 @@ class FeedController(
         responses = [ApiResponse(responseCode = "400(40002)", description = "FAVORITE_FEED_ALREADY_EXISTS")]
     )
     fun createFavoriteFeed(
-        @RequestHeader(MOCK_USER_HEADER) userId: Long,
+        @AuthenticationPrincipal user: User,
         @PathVariable("feedId") feedId: Long,
     ) {
-        feedService.createFavoriteFeed(userId, feedId)
+        feedService.createFavoriteFeed(user, feedId)
     }
 
     @DeleteMapping("/{feedId}/favorites")
     @Operation(summary = "피드 좋아요 취소")
     fun deleteFavoriteFeed(
-        @RequestHeader(MOCK_USER_HEADER) userId: Long,
+        @AuthenticationPrincipal user: User,
         @PathVariable("feedId") feedId: Long,
     ) {
-        feedService.deleteFavoriteFeed(userId, feedId)
+        feedService.deleteFavoriteFeed(user, feedId)
     }
 }

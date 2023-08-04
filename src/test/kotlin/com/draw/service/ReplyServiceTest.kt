@@ -4,6 +4,7 @@ import com.draw.common.enums.VisibleTarget
 import com.draw.controller.dto.ReplyCreateReq
 import com.draw.domain.feed.Feed
 import com.draw.domain.reply.Reply
+import com.draw.domain.user.User
 import com.draw.infra.persistence.FeedRepository
 import com.draw.infra.persistence.PeekReplyRepository
 import com.draw.infra.persistence.ReplyRepository
@@ -27,11 +28,21 @@ class ReplyServiceTest {
     private val replyService = ReplyService(feedRepository, replyRepository, peekReplyRepository)
 
     private lateinit var feed: Feed
+    private lateinit var user: User
+    private lateinit var user2: User
 
     @BeforeEach
     fun setUp() {
         feed = Feed(content = "content", writerId = 1L, visibleTarget = VisibleTarget.ADULT)
             .apply { id = 1L }
+
+        user = User(
+            id = 1L,
+        )
+
+        user2 = User(
+            id = 2L,
+        )
     }
 
     @Test
@@ -40,7 +51,7 @@ class ReplyServiceTest {
         every { feedRepository.findByIdOrNull(1L) } returns feed
 
         // when
-        replyService.createReply(1L, 1L, ReplyCreateReq(content = "content"))
+        replyService.createReply(user, 1L, ReplyCreateReq(content = "content"))
 
         // then
         assertThat(feed.replies).hasSize(1)
@@ -53,7 +64,7 @@ class ReplyServiceTest {
         every { replyRepository.findByIdOrNull(1L) } returns reply
 
         // when
-        replyService.blockReply(2L, 1L)
+        replyService.blockReply(user2, 1L)
 
         // then
         assertThat(reply.blockReplies).hasSize(1)
@@ -66,7 +77,7 @@ class ReplyServiceTest {
         every { replyRepository.findByIdOrNull(1L) } returns reply
 
         // when, then
-        assertThrows<IllegalArgumentException> { replyService.blockReply(1L, 1L) }
+        assertThrows<IllegalArgumentException> { replyService.blockReply(user, 1L) }
     }
 
     @Test
@@ -76,7 +87,7 @@ class ReplyServiceTest {
         every { replyRepository.findByIdOrNull(1L) } returns reply
 
         // when
-        replyService.claimReply(2L, 1L)
+        replyService.claimReply(user2, 1L)
 
         // then
         assertThat(reply.blockReplies).hasSize(1)
@@ -89,7 +100,7 @@ class ReplyServiceTest {
         every { replyRepository.findByIdOrNull(1L) } returns reply
 
         // when, then
-        assertThrows<IllegalArgumentException> { replyService.claimReply(1L, 1L) }
+        assertThrows<IllegalArgumentException> { replyService.claimReply(user, 1L) }
     }
 
     @Test
@@ -99,6 +110,6 @@ class ReplyServiceTest {
         every { replyRepository.findByIdOrNull(1L) } returns reply
 
         // when, then
-        assertThrows<IllegalArgumentException> { replyService.peekReply(1L, 1L) }
+        assertThrows<IllegalArgumentException> { replyService.peekReply(user, 1L) }
     }
 }

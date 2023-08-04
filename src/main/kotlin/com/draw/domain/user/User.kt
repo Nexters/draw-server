@@ -29,4 +29,10 @@ class User(
     var oauthProvider: OAuthProvider? = null,
 
     var refreshToken: String? = null,
-) : BaseEntity()
+) : BaseEntity() {
+
+    // TODO: 개발용 임시 2023/08/04 (koi)
+    fun getIntAge(): Int {
+        return 29
+    }
+}

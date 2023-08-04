@@ -13,6 +13,7 @@ import com.draw.controller.dto.ReplyStatus
 import com.draw.controller.dto.ReplyWriterRes
 import com.draw.domain.reply.PeekReply
 import com.draw.domain.reply.Reply
+import com.draw.domain.user.User
 import com.draw.infra.persistence.FeedRepository
 import com.draw.infra.persistence.PeekReplyRepository
 import com.draw.infra.persistence.ReplyRepository
@@ -55,29 +56,29 @@ class ReplyService(
     }
 
     @Transactional
-    fun createReply(userId: Long, feedId: Long, reqReplyCreateReq: ReplyCreateReq) {
+    fun createReply(user: User, feedId: Long, reqReplyCreateReq: ReplyCreateReq) {
         val feed = feedRepository.findByIdOrNull(feedId) ?: throw FeedNotFoundException()
-        feed.addReply(userId, reqReplyCreateReq.content)
+        feed.addReply(user.id!!, reqReplyCreateReq.content)
     }
 
     @Transactional
-    fun blockReply(userId: Long, replyId: Long) {
+    fun blockReply(user: User, replyId: Long) {
         val reply = replyRepository.findByIdOrNull(replyId) ?: throw ReplyNotFoundException()
-        require(reply.writerId != userId) { "Not allowed block own reply" }
+        require(reply.writerId != user.id!!) { "Not allowed block own reply" }
 
-        reply.addBlockReply(userId)
+        reply.addBlockReply(user.id!!)
     }
 
     @Transactional
-    fun claimReply(userId: Long, replyId: Long) {
-        blockReply(userId, replyId)
+    fun claimReply(user: User, replyId: Long) {
+        blockReply(user, replyId)
 
         // TODO: claim 적재 로직 추가 2023/08/02 (koi)
     }
 
     // TODO: 페이징 이후 고민 2023/07/29 (koi)
-    fun getMyReplies(userId: Long, lastReplyId: Long?): MyRepliesRes {
-        val replies = replyRepository.findAllByWriterIdOrderByCreatedAtDesc(userId)
+    fun getMyReplies(user: User, lastReplyId: Long?): MyRepliesRes {
+        val replies = replyRepository.findAllByWriterIdOrderByCreatedAtDesc(user.id!!)
 
         return MyRepliesRes(
             myReplies = replies.map {
@@ -93,14 +94,14 @@ class ReplyService(
     }
 
     @Transactional
-    fun peekReply(userId: Long, replyId: Long): ReplyWriterRes {
+    fun peekReply(user: User, replyId: Long): ReplyWriterRes {
         val reply = replyRepository.findByIdOrNull(replyId) ?: throw ReplyNotFoundException()
-        require(reply.writerId != userId) { "Not allowed peek own reply" }
+        require(reply.writerId != user.id!!) { "Not allowed peek own reply" }
 
         // TODO: 여기에서 포인트 제외 & peek 저장 & 관련 서비스로직 적용 필요 2023/07/24 (koi)
         peekReplyRepository.save(
             PeekReply(
-                userId = userId,
+                userId = user.id!!,
                 reply = reply
             )
         )

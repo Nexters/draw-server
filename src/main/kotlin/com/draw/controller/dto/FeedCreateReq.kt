@@ -13,7 +13,6 @@ data class FeedCreateReq(
     val mbtiChars: List<MBTIChar> = emptyList(),
 ) {
 
-    // TODO: user 객체 추가시 변경 2023/08/03 (koi)
     fun toEntity(userId: Long, userIntAge: Int): Feed {
         return Feed(
             content = content,

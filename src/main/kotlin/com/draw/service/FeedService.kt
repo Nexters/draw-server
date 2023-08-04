@@ -9,6 +9,7 @@ import com.draw.controller.dto.FeedCreateReq
 import com.draw.controller.dto.FeedRes
 import com.draw.controller.dto.FeedsRes
 import com.draw.domain.feed.FavoriteFeed
+import com.draw.domain.user.User
 import com.draw.infra.persistence.FavoriteFeedRepository
 import com.draw.infra.persistence.FeedRepository
 import mu.KotlinLogging
@@ -39,43 +40,40 @@ class FeedService(
     }
 
     @Transactional
-    fun createFeed(userId: Long, feedCreateReq: FeedCreateReq) {
-
-        // TODO: userAge반환 로직으로 변경 2023/08/03 (koi)
+    fun createFeed(user: User, feedCreateReq: FeedCreateReq) {
         feedRepository.save(
-            feedCreateReq.toEntity(userId, 29)
+            feedCreateReq.toEntity(user.id!!, user.getIntAge())
         )
     }
 
     @Transactional
-    fun createFeedView(userId: Long, feedId: Long) {
+    fun createFeedView(user: User, feedId: Long) {
         val feed = feedRepository.findByIdOrNull(feedId) ?: throw FeedNotFoundException()
-        feed.addFeedViewHistory(userId)
+        feed.addFeedViewHistory(user.id!!)
     }
 
     @Transactional
-    fun blockFeed(userId: Long, feedId: Long) {
+    fun blockFeed(user: User, feedId: Long) {
         val feed = feedRepository.findByIdOrNull(feedId) ?: throw FeedNotFoundException()
-        require(feed.writerId != userId) { "Not allowed block own feed" }
+        require(feed.writerId != user.id!!) { "Not allowed block own feed" }
 
-        feed.addBlockFeed(userId)
+        feed.addBlockFeed(user.id!!)
     }
 
     @Transactional
-    fun claimFeed(userId: Long, feedId: Long) {
-        blockFeed(userId, feedId)
+    fun claimFeed(user: User, feedId: Long) {
+        blockFeed(user, feedId)
 
-        // TODO: claim 적재 로직 추가 2023/08/02 (koi)
     }
 
     @Transactional
-    fun createFavoriteFeed(userId: Long, feedId: Long) {
+    fun createFavoriteFeed(user: User, feedId: Long) {
         val feed = feedRepository.findByIdOrNull(feedId) ?: throw FeedNotFoundException()
 
         try {
             favoriteFeedRepository.save(
                 FavoriteFeed(
-                    userId = userId,
+                    userId = user.id!!,
                     feed = feed,
                 )
             )
@@ -85,8 +83,8 @@ class FeedService(
     }
 
     @Transactional
-    fun deleteFavoriteFeed(userId: Long, feedId: Long) {
-        favoriteFeedRepository.deleteByUserIdAndFeedId(userId, feedId)
+    fun deleteFavoriteFeed(user: User, feedId: Long) {
+        favoriteFeedRepository.deleteByUserIdAndFeedId(user.id!!, feedId)
     }
 
     fun getFeeds(userId: Long?, lastFeedId: Long?): FeedsRes {
@@ -108,8 +106,8 @@ class FeedService(
     }
 
     // TODO: lastFeedId 미고려 2023/08/03 (koi)
-    fun getMyFeeds(userId: Long, lastFeedId: Long?): FeedsRes {
-        val projections = feedRepository.findWriterFeeds(userId)
+    fun getMyFeeds(user: User, lastFeedId: Long?): FeedsRes {
+        val projections = feedRepository.findWriterFeeds(user.id!!)
 
         return FeedsRes(
             feeds = projections.map {
@@ -126,8 +124,8 @@ class FeedService(
     }
 
     // TODO: lastFeedId 미고려 2023/08/03 (koi)
-    fun getMyFavoriteFeeds(userId: Long, lastFeedId: Long?): FeedsRes {
-        val projections = feedRepository.findUserFavoriteFeeds(userId)
+    fun getMyFavoriteFeeds(user: User, lastFeedId: Long?): FeedsRes {
+        val projections = feedRepository.findUserFavoriteFeeds(user.id!!)
 
         return FeedsRes(
             feeds = projections.map {
