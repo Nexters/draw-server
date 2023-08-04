@@ -37,7 +37,7 @@ class ReplyService(
             peekReplyRepository.findAllByUserIdAndReplyIn(user.id!!, replies)
                 .associateBy(
                     { it.reply },
-                    { ReplyWriterRes(MBTI.ESTJ, Gender.MALE, 29) },
+                    { ReplyWriterRes(MBTI.ESTJ, Gender.MALE, 29) }, // TODO: 기능 개발 필요  2023/08/05 (koi)
                 ) // TODO: userId 기반 user 정보 조회 2023/08/02 (koi)
         } ?: emptyMap()
 
