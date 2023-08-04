@@ -1,8 +1,6 @@
 package com.draw.controller
 
 import com.draw.common.Const.FEED_TAG
-import com.draw.common.Const.MOCKING
-import com.draw.common.Const.MOCK_USER_HEADER
 import com.draw.common.Const.MY_TAG
 import com.draw.controller.dto.FeedCreateReq
 import com.draw.controller.dto.FeedRes
@@ -19,7 +17,6 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -32,12 +29,13 @@ class FeedController(
 ) {
 
     @GetMapping
-    @Operation(summary = "피드 조회", description = MOCKING)
+    @Operation(summary = "피드 조회")
     fun getFeeds(
-        @RequestHeader(MOCK_USER_HEADER, required = false) userId: Long?,
+        @AuthenticationPrincipal user: User?,
         @Parameter(description = "마지막 피드 id") @RequestParam("lastFeedId", required = false) lastFeedId: Long?,
     ): FeedsRes {
-        return feedService.getFeeds(userId, lastFeedId)
+
+        return feedService.getFeeds(user, lastFeedId)
     }
 
     @PostMapping
@@ -73,10 +71,10 @@ class FeedController(
     @GetMapping("/{feedId}")
     @Operation(summary = "피드 조회 (상세)")
     fun getFeed(
-        @RequestHeader(MOCK_USER_HEADER, required = false) userId: Long?,
+        @AuthenticationPrincipal user: User?,
         @Parameter(description = "피드 id") @PathVariable("feedId") feedId: Long,
     ): FeedRes {
-        return feedService.getFeed(userId, feedId)
+        return feedService.getFeed(user, feedId)
     }
 
     @PostMapping("/{feedId}/views")

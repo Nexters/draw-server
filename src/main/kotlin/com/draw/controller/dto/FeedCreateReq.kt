@@ -13,13 +13,13 @@ data class FeedCreateReq(
     val mbtiChars: List<MBTIChar> = emptyList(),
 ) {
 
-    fun toEntity(userId: Long, userIntAge: Int): Feed {
+    fun toEntity(userId: Long, userAge: Int): Feed {
         return Feed(
             content = content,
             writerId = userId,
             genders = genders.toMutableList(),
-            ageRange = ageOption.toAgeRange(userIntAge),
-            visibleTarget = VisibleTarget.of(userIntAge),
+            ageRange = ageOption.toAgeRange(userAge),
+            visibleTarget = VisibleTarget.of(userAge),
             mbtiChars = mbtiChars.toMutableList(),
         )
     }

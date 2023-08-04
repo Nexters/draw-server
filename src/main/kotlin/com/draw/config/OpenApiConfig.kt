@@ -10,8 +10,6 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 class OpenApiConfig {
-
-
     @Bean
     fun openAPI(): OpenAPI {
 
@@ -19,7 +17,8 @@ class OpenApiConfig {
             .components(
                 Components()
                     .addSecuritySchemes(
-                        "Authorization", SecurityScheme()
+                        "Authorization",
+                        SecurityScheme()
                             .type(SecurityScheme.Type.HTTP)
                             .scheme("bearer").bearerFormat("JWT")
                     )

@@ -2,6 +2,9 @@ package com.draw.service
 
 import com.draw.common.BusinessException
 import com.draw.common.enums.AgeOption
+import com.draw.common.enums.AgeRange
+import com.draw.common.enums.Gender
+import com.draw.common.enums.MBTIChar
 import com.draw.common.enums.VisibleTarget
 import com.draw.common.exception.FeedNotFoundException
 import com.draw.controller.dto.FeedCreateReq
@@ -10,6 +13,7 @@ import com.draw.domain.feed.Feed
 import com.draw.domain.user.User
 import com.draw.infra.persistence.FavoriteFeedRepository
 import com.draw.infra.persistence.FeedRepository
+import com.draw.service.dto.FeedProjection
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
@@ -23,6 +27,7 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.data.repository.findByIdOrNull
+import java.time.ZonedDateTime
 
 @ExtendWith(value = [MockKExtension::class])
 class FeedServiceTest {
@@ -53,11 +58,19 @@ class FeedServiceTest {
     @Test
     fun `내가 좋아요를 누른 피드면, isFavorite 값이 true로 반환된다`() {
         // given
-        every { feedRepository.findByIdOrNull(1L) } returns feed
-        every { favoriteFeedRepository.existsByUserIdAndFeed(1L, feed) } returns true
+        every { feedRepository.findFeedProjection(1L, user.id!!) } returns FeedProjection(
+            id = 1L,
+            content = "content",
+            genders = mutableListOf(Gender.MALE, Gender.FEMALE),
+            mbtiChars = mutableListOf(MBTIChar.E, MBTIChar.S, MBTIChar.T),
+            ageRange = AgeRange.ALL,
+            isFavorite = true,
+            createdAt = ZonedDateTime.now(),
+            favoriteCount = 10,
+        )
 
         // when
-        val res = feedService.getFeed(1L, 1L)
+        val res = feedService.getFeed(user, 1L)
 
         // then
         assertThat(res.isFavorite).isTrue

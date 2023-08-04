@@ -2,8 +2,6 @@ package com.draw.service
 
 import com.draw.common.BusinessException
 import com.draw.common.enums.ErrorType
-import com.draw.common.enums.Gender
-import com.draw.common.enums.MBTI
 import com.draw.common.exception.FeedNotFoundException
 import com.draw.controller.dto.FeedCreateReq
 import com.draw.controller.dto.FeedRes
@@ -26,23 +24,24 @@ class FeedService(
 ) {
     private val log = KotlinLogging.logger { }
 
-    fun getFeed(inputUserId: Long?, feedId: Long): FeedRes {
-        val feed = feedRepository.findByIdOrNull(feedId) ?: throw FeedNotFoundException()
-        val isFavorite = inputUserId?.let { favoriteFeedRepository.existsByUserIdAndFeed(it, feed) } ?: false
+    fun getFeed(user: User?, feedId: Long): FeedRes {
+        val feedProjection = user?.let { feedRepository.findFeedProjection(feedId, it.id!!) }
+            ?: feedRepository.findFeedProjection(feedId)
+            ?: throw FeedNotFoundException()
 
         return FeedRes(
-            id = feed.id!!,
-            content = feed.content,
-            isFavorite = isFavorite,
-            favoriteCount = feed.favoriteCount,
-            isFit = feed.isFit(userGender = Gender.MALE, 29, MBTI.ESTJ) // TODO: userAge 연동시 변경 2023/08/03 (koi)
+            id = feedProjection.id,
+            content = feedProjection.content,
+            isFavorite = feedProjection.isFavorite,
+            favoriteCount = feedProjection.favoriteCount,
+            isFit = user?.let { feedProjection.isFit(it.gender, it.getAge(), it.mbti) } ?: false
         )
     }
 
     @Transactional
     fun createFeed(user: User, feedCreateReq: FeedCreateReq) {
         feedRepository.save(
-            feedCreateReq.toEntity(user.id!!, user.getIntAge())
+            feedCreateReq.toEntity(user.id!!, user.getAge())
         )
     }
 
@@ -64,6 +63,7 @@ class FeedService(
     fun claimFeed(user: User, feedId: Long) {
         blockFeed(user, feedId)
 
+        // TODO: 신고하기 로직 추가 2023/08/04 (koi)
     }
 
     @Transactional
@@ -87,18 +87,18 @@ class FeedService(
         favoriteFeedRepository.deleteByUserIdAndFeedId(user.id!!, feedId)
     }
 
-    fun getFeeds(userId: Long?, lastFeedId: Long?): FeedsRes {
-        // TODO: userEntity 추가시 추가 개발 2023/08/04 (koi)
-        val projections = userId?.let { feedRepository.findAllFeeds(it, 29) } ?: feedRepository.findAllFeeds()
+    fun getFeeds(user: User?, lastFeedId: Long?): FeedsRes {
+        val projections =
+            user?.let { feedRepository.findAllFeedProjections(it.id!!, it.getAge()) } ?: feedRepository.findAllFeedProjections()
 
         return FeedsRes(
-            feeds = projections.map {
+            feeds = projections.map { feedProjection ->
                 FeedRes(
-                    id = it.id,
-                    content = it.content,
-                    isFavorite = it.isFavorite,
-                    favoriteCount = it.favoriteCount,
-                    isFit = false // TODO: userEntity 추가시 개발 2023/08/04 (koi)
+                    id = feedProjection.id,
+                    content = feedProjection.content,
+                    isFavorite = feedProjection.isFavorite,
+                    favoriteCount = feedProjection.favoriteCount,
+                    isFit = user?.let { feedProjection.isFit(it.gender, it.getAge(), it.mbti) } ?: false
                 )
             }.toList(),
             hasNext = false
@@ -107,16 +107,16 @@ class FeedService(
 
     // TODO: lastFeedId 미고려 2023/08/03 (koi)
     fun getMyFeeds(user: User, lastFeedId: Long?): FeedsRes {
-        val projections = feedRepository.findWriterFeeds(user.id!!)
+        val projections = feedRepository.findWriterFeedProjections(user.id!!)
 
         return FeedsRes(
-            feeds = projections.map {
+            feeds = projections.map { feedProjection ->
                 FeedRes(
-                    id = it.id,
-                    content = it.content,
-                    isFavorite = it.isFavorite,
-                    favoriteCount = it.favoriteCount,
-                    isFit = false // TODO: userEntity 추가시 개발 2023/08/04 (koi)
+                    id = feedProjection.id,
+                    content = feedProjection.content,
+                    isFavorite = feedProjection.isFavorite,
+                    favoriteCount = feedProjection.favoriteCount,
+                    isFit = feedProjection.isFit(user.gender, user.getAge(), user.mbti)
                 )
             }.toList(),
             hasNext = false
@@ -125,16 +125,16 @@ class FeedService(
 
     // TODO: lastFeedId 미고려 2023/08/03 (koi)
     fun getMyFavoriteFeeds(user: User, lastFeedId: Long?): FeedsRes {
-        val projections = feedRepository.findUserFavoriteFeeds(user.id!!)
+        val projections = feedRepository.findUserFavoriteFeedProjections(user.id!!)
 
         return FeedsRes(
-            feeds = projections.map {
+            feeds = projections.map { feedProjection ->
                 FeedRes(
-                    id = it.id,
-                    content = it.content,
-                    isFavorite = it.isFavorite,
-                    favoriteCount = it.favoriteCount,
-                    isFit = false // TODO: userEntity 추가시 개발 2023/08/04 (koi)
+                    id = feedProjection.id,
+                    content = feedProjection.content,
+                    isFavorite = feedProjection.isFavorite,
+                    favoriteCount = feedProjection.favoriteCount,
+                    isFit = feedProjection.isFit(user.gender, user.getAge(), user.mbti)
                 )
             }.toList(),
             hasNext = false

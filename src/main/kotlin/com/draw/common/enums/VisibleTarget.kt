@@ -7,8 +7,8 @@ enum class VisibleTarget {
 
     companion object {
         private const val ADULT_MIN_AGE = 19
-        fun of(userIntAge: Int): VisibleTarget {
-            if (userIntAge >= ADULT_MIN_AGE) {
+        fun of(age: Int): VisibleTarget {
+            if (age >= ADULT_MIN_AGE) {
                 return ADULT
             }
 

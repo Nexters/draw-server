@@ -2,7 +2,6 @@ package com.draw.domain.feed
 
 import com.draw.common.enums.AgeRange
 import com.draw.common.enums.Gender
-import com.draw.common.enums.MBTI
 import com.draw.common.enums.MBTIChar
 import com.draw.common.enums.VisibleTarget
 import com.draw.domain.common.BaseEntity
@@ -107,28 +106,4 @@ class Feed(
         val blockFeed = BlockFeed(feed = this, userId = userId)
         mutableBlockFeeds.add(blockFeed)
     }
-
-    // TODO: user로 변경 2023/08/02 (koi)
-    fun isFit(userGender: Gender, userAge: Int, userMBTI: MBTI): Boolean {
-        if (!this.genders.contains(userGender)) {
-            return false
-        }
-
-        val hasNonMatchMBTIChar = userMBTI.name
-            .map { MBTIChar.valueOf(it.toString()) }
-            .any { userMbtiChar -> existSamePosAndOppositeMBTIChar(userMbtiChar) }
-        if (mbtiChars.isNotEmpty() && hasNonMatchMBTIChar) {
-            return false
-        }
-
-        if (!ageRange.isInScope(userAge)) {
-            return false
-        }
-
-        return true
-    }
-
-    // 동일한 pos의 MBTIChar이 하나라도 포함되어있고, 해당 MBTIChar이 포함되어있지 않은 경우
-    private fun existSamePosAndOppositeMBTIChar(userMbtiChar: MBTIChar) =
-        mbtiChars.any { it.pos == userMbtiChar.pos } && !this.mbtiChars.contains(userMbtiChar)
 }
