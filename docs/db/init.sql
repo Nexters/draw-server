@@ -65,8 +65,8 @@ create table if not exists block_feed
     updated_at datetime not null default now() on update now()
 );
 
-create unique index feed_id_user_id_uniq
-    on block_feed (feed_id, user_id);
+create unique index user_id_feed_id_uniq
+    on block_feed (user_id, feed_id);
 
 
 create table if not exists block_reply
