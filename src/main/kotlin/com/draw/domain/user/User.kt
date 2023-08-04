@@ -72,5 +72,4 @@ class User(
 
         return now.year - userYear - 1
     }
-
 }

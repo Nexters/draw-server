@@ -1,8 +1,6 @@
 package com.draw.controller
 
 import com.draw.common.Const
-import com.draw.common.Const.MOCKING
-import com.draw.common.Const.MOCK_USER_HEADER
 import com.draw.common.Const.REPLY_TAG
 import com.draw.controller.dto.MyRepliesRes
 import com.draw.controller.dto.RepliesRes
@@ -18,7 +16,6 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -51,7 +48,7 @@ class ReplyController(
 
     @GetMapping("/replies/me")
     @Tag(name = Const.MY_TAG, description = "My 관련 API")
-    @Operation(summary = "내가 쓴 리플 조회", description = MOCKING)
+    @Operation(summary = "내가 쓴 리플 조회")
     fun getMyReplies(
         @AuthenticationPrincipal user: User,
         @Parameter(description = "마지막 리플 id") @RequestParam("lastReplyId", required = false) lastReplyId: Long?,
@@ -78,7 +75,7 @@ class ReplyController(
     }
 
     @PostMapping("/replies/{replyId}/peek")
-    @Operation(summary = "리플 훔쳐보기", description = MOCKING)
+    @Operation(summary = "리플 훔쳐보기")
     fun peekReply(
         @AuthenticationPrincipal user: User,
         @PathVariable("replyId") replyId: Long,
