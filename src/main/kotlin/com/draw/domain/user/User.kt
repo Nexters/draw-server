@@ -38,7 +38,7 @@ class User(
 
     // TODO: 개발용 임시 2023/08/04 (koi)
     @Transient
-    var mbti: MBTI = MBTI.INFJ
+    var mbti: MBTI = MBTI.ESTJ
         protected set
 
     // TODO: 개발용 임시 2023/08/04 (koi)
