@@ -29,8 +29,11 @@ class AppleOAuthService(
     fun registerOrLogin(idToken: String): LoginResult {
         val header =
             objectMapper.readValue(String(Base64.decodeBase64(idToken)), Map::class.java) as Map<String, String>
+        println(header, idToken)
+        println("${header["kid"]!!}, ${header["alg"]!!}")
         val publicKey = genPubKey(header["kid"]!!, header["alg"]!!)
         val parsedToken = Jwts.parserBuilder().setSigningKey(publicKey).build().parseClaimsJws(idToken)
+        println(parsedToken.body)
         val iss = parsedToken.body["iss"]
         if (iss != appleOauthProperties.aud) {
             throw IllegalArgumentException("apple token issuer is invalid")
