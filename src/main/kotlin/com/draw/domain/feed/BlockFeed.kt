@@ -10,20 +10,15 @@ import jakarta.persistence.ManyToOne
 
 @Entity
 class BlockFeed(
-    feed: Feed,
-    userId: Long,
+    @ManyToOne
+    @JoinColumn(name = "feed_id", nullable = false)
+    val feed: Feed,
+
+    @Column(nullable = false)
+    val userId: Long,
 ) {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
-
-    @ManyToOne
-    @JoinColumn(name = "feed_id", nullable = false)
-    var feed: Feed = feed
-        protected set
-
-    @Column(nullable = false)
-    var userId: Long = userId
-        protected set
 }

@@ -27,7 +27,6 @@ class JwtProvider(
         Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).body!!
 
     fun authenticate(token: String): Authentication {
-        println("요청토큰 : $token")
         val user = userRepository.findByIdOrNull(getId(token).toLong())
             ?: throw RuntimeException("authentication user not found")
         return UsernamePasswordAuthenticationToken(user, javaClass, listOf())

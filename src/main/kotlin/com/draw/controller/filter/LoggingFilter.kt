@@ -25,10 +25,6 @@ class LoggingFilter : OncePerRequestFilter() {
         val contentCachingResponseWrapper = ContentCachingResponseWrapper(response)
         try {
             filterChain.doFilter(contentCachingRequestWrapper, contentCachingResponseWrapper)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            log.error { "error occurred: ${e.message}" }
-            throw e
         } finally {
             printLog(contentCachingRequestWrapper, contentCachingResponseWrapper)
             contentCachingResponseWrapper.copyBodyToResponse()

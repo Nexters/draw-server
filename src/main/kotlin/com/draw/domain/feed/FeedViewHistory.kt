@@ -11,20 +11,15 @@ import jakarta.persistence.ManyToOne
 
 @Entity
 class FeedViewHistory(
-    userId: Long,
-    feed: Feed,
+    @Column(nullable = false)
+    val userId: Long,
+
+    @ManyToOne
+    @JoinColumn(name = "feed_id", nullable = false)
+    val feed: Feed,
 ) : BaseEntity() {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
-
-    @Column(nullable = false)
-    var userId: Long = userId
-        protected set
-
-    @ManyToOne
-    @JoinColumn(name = "feed_id", nullable = false)
-    var feed: Feed = feed
-        protected set
 }

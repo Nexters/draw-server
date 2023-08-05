@@ -10,20 +10,15 @@ import jakarta.persistence.ManyToOne
 
 @Entity
 class BlockReply(
-    reply: Reply,
-    userId: Long,
+    @ManyToOne
+    @JoinColumn(name = "reply_id", nullable = false)
+    val reply: Reply,
+
+    @Column(nullable = false)
+    val userId: Long
 ) {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
-
-    @ManyToOne
-    @JoinColumn(name = "reply_id", nullable = false)
-    var reply: Reply = reply
-        protected set
-
-    @Column(nullable = false)
-    var userId: Long = userId
-        protected set
 }
