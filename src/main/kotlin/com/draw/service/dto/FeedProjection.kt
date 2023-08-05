@@ -10,13 +10,18 @@ import java.time.ZonedDateTime
 data class FeedProjection @QueryProjection constructor(
     val id: Long,
     val content: String,
-    val isFavorite: Boolean,
+    val favoriteId: Long? = null,
     val favoriteCount: Int,
     val genders: MutableList<Gender>, // 맞춤 피드용도
     val ageRange: AgeRange, // 맞춤 피드용도
     val mbtiChars: MutableList<MBTIChar>, // 맞춤 피드용도
     val createdAt: ZonedDateTime, // 정렬용도
 ) {
+
+    fun isFavorite(): Boolean {
+        return favoriteId != null
+    }
+
     fun isFit(userGender: Gender, userAge: Int, userMBTI: MBTI): Boolean {
         if (!this.genders.contains(userGender)) {
             return false

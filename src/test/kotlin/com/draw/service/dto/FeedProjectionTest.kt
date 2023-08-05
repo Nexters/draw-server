@@ -20,7 +20,6 @@ class FeedProjectionTest {
             genders = mutableListOf(Gender.MALE, Gender.FEMALE),
             mbtiChars = mutableListOf(),
             ageRange = AgeRange.ALL,
-            isFavorite = false,
             createdAt = ZonedDateTime.now(),
             favoriteCount = 10,
         )
@@ -40,7 +39,6 @@ class FeedProjectionTest {
             genders = mutableListOf(Gender.MALE, Gender.FEMALE),
             mbtiChars = mutableListOf(MBTIChar.E, MBTIChar.S, MBTIChar.T),
             ageRange = AgeRange.ALL,
-            isFavorite = false,
             createdAt = ZonedDateTime.now(),
             favoriteCount = 10,
         )
@@ -61,7 +59,6 @@ class FeedProjectionTest {
             genders = mutableListOf(Gender.MALE, Gender.FEMALE),
             mbtiChars = mutableListOf(MBTIChar.E, MBTIChar.T),
             ageRange = AgeRange.ALL,
-            isFavorite = false,
             createdAt = ZonedDateTime.now(),
             favoriteCount = 10,
         )
@@ -82,7 +79,6 @@ class FeedProjectionTest {
             genders = mutableListOf(Gender.MALE, Gender.FEMALE),
             mbtiChars = mutableListOf(MBTIChar.S, MBTIChar.T),
             ageRange = AgeRange.ALL,
-            isFavorite = false,
             createdAt = ZonedDateTime.now(),
             favoriteCount = 10,
         )
@@ -103,7 +99,6 @@ class FeedProjectionTest {
             genders = mutableListOf(Gender.MALE, Gender.FEMALE),
             mbtiChars = mutableListOf(MBTIChar.N, MBTIChar.T),
             ageRange = AgeRange.ALL,
-            isFavorite = false,
             createdAt = ZonedDateTime.now(),
             favoriteCount = 10,
         )
@@ -124,7 +119,6 @@ class FeedProjectionTest {
             genders = mutableListOf(Gender.MALE, Gender.FEMALE),
             mbtiChars = mutableListOf(MBTIChar.E, MBTIChar.S, MBTIChar.T, MBTIChar.F),
             ageRange = AgeRange.ALL,
-            isFavorite = false,
             createdAt = ZonedDateTime.now(),
             favoriteCount = 10,
         )
@@ -145,7 +139,6 @@ class FeedProjectionTest {
             genders = mutableListOf(Gender.FEMALE),
             mbtiChars = mutableListOf(),
             ageRange = AgeRange.ALL,
-            isFavorite = false,
             createdAt = ZonedDateTime.now(),
             favoriteCount = 10,
         )
@@ -166,7 +159,6 @@ class FeedProjectionTest {
             genders = mutableListOf(Gender.FEMALE),
             mbtiChars = mutableListOf(),
             ageRange = AgeRange.THIRTY,
-            isFavorite = false,
             createdAt = ZonedDateTime.now(),
             favoriteCount = 10,
         )

@@ -6,6 +6,8 @@ import com.draw.common.exception.FeedNotFoundException
 import com.draw.controller.dto.FeedCreateReq
 import com.draw.controller.dto.FeedRes
 import com.draw.controller.dto.FeedsRes
+import com.draw.controller.dto.MyFavoriteFeedRes
+import com.draw.controller.dto.MyFavoriteFeedsRes
 import com.draw.domain.feed.FavoriteFeed
 import com.draw.domain.user.User
 import com.draw.infra.persistence.FavoriteFeedRepository
@@ -32,7 +34,7 @@ class FeedService(
         return FeedRes(
             id = feedProjection.id,
             content = feedProjection.content,
-            isFavorite = feedProjection.isFavorite,
+            isFavorite = feedProjection.isFavorite(),
             favoriteCount = feedProjection.favoriteCount,
             isFit = user?.let { feedProjection.isFit(it.gender, it.getAge(), it.mbti) } ?: false
         )
@@ -97,7 +99,7 @@ class FeedService(
                 FeedRes(
                     id = feedProjection.id,
                     content = feedProjection.content,
-                    isFavorite = feedProjection.isFavorite,
+                    isFavorite = feedProjection.isFavorite(),
                     favoriteCount = feedProjection.favoriteCount,
                     isFit = user?.let { feedProjection.isFit(it.gender, it.getAge(), it.mbti) } ?: false
                 )
@@ -114,7 +116,7 @@ class FeedService(
                 FeedRes(
                     id = feedProjection.id,
                     content = feedProjection.content,
-                    isFavorite = feedProjection.isFavorite,
+                    isFavorite = feedProjection.isFavorite(),
                     favoriteCount = feedProjection.favoriteCount,
                     isFit = feedProjection.isFit(user.gender, user.getAge(), user.mbti)
                 )
@@ -123,16 +125,17 @@ class FeedService(
         )
     }
 
-    fun getMyFavoriteFeeds(user: User, lastFeedId: Long?): FeedsRes {
-        val slice = feedRepository.findUserFavoriteFeedProjections(user.id!!, lastFeedId)
+    fun getMyFavoriteFeeds(user: User, lastFavoriteId: Long?): MyFavoriteFeedsRes {
+        val slice = feedRepository.findUserFavoriteFeedProjections(user.id!!, lastFavoriteId)
 
-        return FeedsRes(
-            feeds = slice.content.map { feedProjection ->
-                FeedRes(
+        return MyFavoriteFeedsRes(
+            myFavoriteFeeds = slice.content.map { feedProjection ->
+                MyFavoriteFeedRes(
                     id = feedProjection.id,
                     content = feedProjection.content,
-                    isFavorite = feedProjection.isFavorite,
+                    isFavorite = feedProjection.isFavorite(),
                     favoriteCount = feedProjection.favoriteCount,
+                    favoriteId = feedProjection.favoriteId!!,
                     isFit = feedProjection.isFit(user.gender, user.getAge(), user.mbti)
                 )
             }.toList(),

@@ -5,6 +5,7 @@ import com.draw.common.Const.MY_TAG
 import com.draw.controller.dto.FeedCreateReq
 import com.draw.controller.dto.FeedRes
 import com.draw.controller.dto.FeedsRes
+import com.draw.controller.dto.MyFavoriteFeedsRes
 import com.draw.domain.user.User
 import com.draw.service.FeedService
 import io.swagger.v3.oas.annotations.Operation
@@ -62,10 +63,10 @@ class FeedController(
     @Operation(summary = "내가 좋아요한 피드 조회")
     fun getFeedsByMeFavorites(
         @AuthenticationPrincipal user: User,
-        @Parameter(description = "마지막 피드 id") @RequestParam("lastFeedId", required = false) lastFeedId: Long?,
-    ): FeedsRes {
+        @Parameter(description = "마지막 좋아요 id") @RequestParam("lastFavoriteId", required = false) lastFavoriteId: Long?,
+    ): MyFavoriteFeedsRes {
 
-        return feedService.getMyFavoriteFeeds(user, lastFeedId)
+        return feedService.getMyFavoriteFeeds(user, lastFavoriteId)
     }
 
     @GetMapping("/{feedId}")

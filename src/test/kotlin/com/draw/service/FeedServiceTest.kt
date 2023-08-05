@@ -64,8 +64,8 @@ class FeedServiceTest {
             genders = mutableListOf(Gender.MALE, Gender.FEMALE),
             mbtiChars = mutableListOf(MBTIChar.E, MBTIChar.S, MBTIChar.T),
             ageRange = AgeRange.ALL,
-            isFavorite = true,
             createdAt = ZonedDateTime.now(),
+            favoriteId = 1L,
             favoriteCount = 10,
         )
 

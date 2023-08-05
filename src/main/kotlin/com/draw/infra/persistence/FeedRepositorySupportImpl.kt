@@ -8,7 +8,6 @@ import com.draw.domain.feed.QFeedViewHistory
 import com.draw.domain.user.User
 import com.draw.service.dto.FeedProjection
 import com.draw.service.dto.QFeedProjection
-import com.querydsl.core.types.dsl.Expressions
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Slice
@@ -121,21 +120,23 @@ class FeedRepositorySupportImpl(
         return resultsToSlice(results)
     }
 
-    override fun findUserFavoriteFeedProjections(userId: Long, lastFeedId: Long?): Slice<FeedProjection> {
+    override fun findUserFavoriteFeedProjections(userId: Long, lastFavoriteId: Long?): Slice<FeedProjection> {
         val favoriteFeed = QFavoriteFeed.favoriteFeed
 
         val results = queryFactory.select(
             feedProjection(favoriteFeed)
         ).from(feed)
             .leftJoin(favoriteFeed)
-            .on(feed.eq(favoriteFeed.feed)
-                .and(favoriteFeed.userId.eq(userId)))
+            .on(
+                feed.eq(favoriteFeed.feed)
+                    .and(favoriteFeed.userId.eq(userId))
+            )
             .where(
-                ltFeedId(lastFeedId),
+                lastFavoriteId?.let { favoriteFeed.id.lt(it) },
                 favoriteFeed.id.isNotNull,
                 favoriteFeed.userId.eq(userId),
             )
-            .orderBy(feed.id.desc())
+            .orderBy(favoriteFeed.id.desc())
             .limit((FEED_PAGE_SIZE + 1).toLong())
             .fetch()
 
@@ -147,7 +148,7 @@ class FeedRepositorySupportImpl(
     private fun feedProjection(favoriteFeed: QFavoriteFeed? = null) = QFeedProjection(
         feed.id!!,
         feed.content,
-        favoriteFeed?.let { it.id!!.isNotNull } ?: Expressions.asBoolean(false),
+        favoriteFeed?.id,
         feed.favoriteCount,
         feed.genders,
         feed.ageRange,
