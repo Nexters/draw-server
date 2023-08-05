@@ -15,7 +15,12 @@ import org.springframework.web.util.ContentCachingResponseWrapper
 import kotlin.math.min
 
 class LoggingFilter : OncePerRequestFilter() {
-    override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, filterChain: FilterChain) {
+
+    override fun doFilterInternal(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        filterChain: FilterChain
+    ) {
         val contentCachingRequestWrapper = ContentCachingRequestWrapper(request)
         val contentCachingResponseWrapper = ContentCachingResponseWrapper(response)
         try {

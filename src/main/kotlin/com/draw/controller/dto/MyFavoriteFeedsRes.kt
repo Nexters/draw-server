@@ -1,13 +1,14 @@
 package com.draw.controller.dto
 
-data class FeedsRes(
-    val feeds: List<FeedRes>,
+data class MyFavoriteFeedsRes(
+    val myFavoriteFeeds: List<MyFavoriteFeedRes>,
     val hasNext: Boolean
 )
 
-data class FeedRes(
+data class MyFavoriteFeedRes(
     val id: Long,
     val content: String,
+    val favoriteId: Long,
     val isFavorite: Boolean,
     val favoriteCount: Int,
     val isFit: Boolean,

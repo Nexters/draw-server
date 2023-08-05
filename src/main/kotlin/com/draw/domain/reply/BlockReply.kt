@@ -1,6 +1,5 @@
-package com.draw.domain.feed
+package com.draw.domain.reply
 
-import com.draw.domain.common.BaseEntity
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
@@ -10,14 +9,14 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 
 @Entity
-class FeedViewHistory(
-    @Column(nullable = false)
-    val userId: Long,
-
+class BlockReply(
     @ManyToOne
-    @JoinColumn(name = "feed_id", nullable = false)
-    val feed: Feed,
-) : BaseEntity() {
+    @JoinColumn(name = "reply_id", nullable = false)
+    val reply: Reply,
+
+    @Column(nullable = false)
+    val userId: Long
+) {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
