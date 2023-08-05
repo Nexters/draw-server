@@ -5,10 +5,14 @@ import com.draw.domain.feed.QBlockFeed
 import com.draw.domain.feed.QFavoriteFeed
 import com.draw.domain.feed.QFeed
 import com.draw.domain.feed.QFeedViewHistory
+import com.draw.domain.user.User
 import com.draw.service.dto.FeedProjection
 import com.draw.service.dto.QFeedProjection
 import com.querydsl.core.types.dsl.Expressions
 import com.querydsl.jpa.impl.JPAQueryFactory
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Slice
+import org.springframework.data.domain.SliceImpl
 
 class FeedRepositorySupportImpl(
     private val queryFactory: JPAQueryFactory,
@@ -16,7 +20,7 @@ class FeedRepositorySupportImpl(
     override fun findFeedProjection(id: Long): FeedProjection? {
 
         return queryFactory.select(
-            feedDtoProjection()
+            feedProjection()
         ).from(feed)
             .where(
                 feed.id.eq(id)
@@ -28,7 +32,7 @@ class FeedRepositorySupportImpl(
         val favoriteFeed = QFavoriteFeed.favoriteFeed
 
         return queryFactory.select(
-            feedDtoProjection(favoriteFeed)
+            feedProjection(favoriteFeed)
         ).from(feed)
             .leftJoin(favoriteFeed)
             .on(
@@ -40,22 +44,30 @@ class FeedRepositorySupportImpl(
             .fetchOne()
     }
 
-    override fun findAllFeedProjections(): List<FeedProjection> {
-
-        return queryFactory.select(
-            feedDtoProjection()
+    override fun findAllFeedProjections(lastFeedId: Long?): Slice<FeedProjection> {
+        val results = queryFactory.select(
+            feedProjection()
         ).from(feed)
+            .where(
+                ltFeedId(lastFeedId)
+            )
+            .orderBy(feed.id.desc())
+            .limit((FEED_PAGE_SIZE + 1).toLong())
             .fetch()
-            .sortedByDescending { it.createdAt }
+
+        return resultsToSlice(results)
     }
 
-    override fun findAllFeedProjections(userId: Long, userAge: Int): List<FeedProjection> {
+    override fun findAllFeedProjections(user: User, lastFeedId: Long?): Slice<FeedProjection> {
         val favoriteFeed = QFavoriteFeed.favoriteFeed
         val blockFeed = QBlockFeed.blockFeed
         val feedViewHistory = QFeedViewHistory.feedViewHistory
 
-        return queryFactory.select(
-            feedDtoProjection(favoriteFeed)
+        val userId = user.id!!
+        val userAge = user.getAge()
+
+        val results = queryFactory.select(
+            feedProjection(favoriteFeed)
         ).from(feed)
             .leftJoin(favoriteFeed)
             .on(
@@ -73,48 +85,66 @@ class FeedRepositorySupportImpl(
                     .and(feedViewHistory.userId.eq(userId))
             )
             .where(
+                ltFeedId(lastFeedId),
                 blockFeed.id.isNull,
                 feedViewHistory.id.isNull,
                 feed.writerId.ne(userId),
                 feed.visibleTarget.eq(VisibleTarget.of(userAge))
             )
+            .orderBy(feed.id.desc())
+            .limit((FEED_PAGE_SIZE + 1).toLong())
             .fetch()
-            .sortedByDescending { it.createdAt }
+
+        return resultsToSlice(results)
     }
 
-    override fun findWriterFeedProjections(writerId: Long): List<FeedProjection> {
+    override fun findWriterFeedProjections(writerId: Long, lastFeedId: Long?): Slice<FeedProjection> {
         val favoriteFeed = QFavoriteFeed.favoriteFeed
 
-        return queryFactory.select(
-            feedDtoProjection(favoriteFeed)
+        val results = queryFactory.select(
+            feedProjection(favoriteFeed)
         )
             .from(feed)
             .leftJoin(favoriteFeed)
-            .on(feed.eq(favoriteFeed.feed))
+            .on(
+                feed.eq(favoriteFeed.feed)
+                    .and(favoriteFeed.userId.eq(writerId))
+            )
             .where(
+                ltFeedId(lastFeedId),
                 feed.writerId.eq(writerId),
             )
+            .orderBy(feed.id.desc())
+            .limit((FEED_PAGE_SIZE + 1).toLong())
             .fetch()
-            .sortedByDescending { it.createdAt }
+
+        return resultsToSlice(results)
     }
 
-    override fun findUserFavoriteFeedProjections(userId: Long): List<FeedProjection> {
+    override fun findUserFavoriteFeedProjections(userId: Long, lastFeedId: Long?): Slice<FeedProjection> {
         val favoriteFeed = QFavoriteFeed.favoriteFeed
 
-        return queryFactory.select(
-            feedDtoProjection(favoriteFeed)
+        val results = queryFactory.select(
+            feedProjection(favoriteFeed)
         ).from(feed)
             .leftJoin(favoriteFeed)
-            .on(feed.eq(favoriteFeed.feed))
+            .on(feed.eq(favoriteFeed.feed)
+                .and(favoriteFeed.userId.eq(userId)))
             .where(
+                ltFeedId(lastFeedId),
                 favoriteFeed.id.isNotNull,
                 favoriteFeed.userId.eq(userId),
             )
+            .orderBy(feed.id.desc())
+            .limit((FEED_PAGE_SIZE + 1).toLong())
             .fetch()
-            .sortedByDescending { it.createdAt }
+
+        return resultsToSlice(results)
     }
 
-    private fun feedDtoProjection(favoriteFeed: QFavoriteFeed? = null) = QFeedProjection(
+    private fun ltFeedId(lastFeedId: Long?) = lastFeedId?.let { feed.id.lt(lastFeedId) }
+
+    private fun feedProjection(favoriteFeed: QFavoriteFeed? = null) = QFeedProjection(
         feed.id!!,
         feed.content,
         favoriteFeed?.let { it.id!!.isNotNull } ?: Expressions.asBoolean(false),
@@ -125,7 +155,15 @@ class FeedRepositorySupportImpl(
         feed.createdAt,
     )
 
+    private fun resultsToSlice(results: MutableList<FeedProjection>): SliceImpl<FeedProjection> {
+        if (results.size > FEED_PAGE_SIZE) {
+            return SliceImpl(results.subList(0, FEED_PAGE_SIZE), Pageable.unpaged(), true)
+        }
+        return SliceImpl(results, Pageable.unpaged(), false)
+    }
+
     companion object {
         private val feed = QFeed.feed
+        private const val FEED_PAGE_SIZE = 20
     }
 }

@@ -88,11 +88,12 @@ class FeedService(
     }
 
     fun getFeeds(user: User?, lastFeedId: Long?): FeedsRes {
-        val projections =
-            user?.let { feedRepository.findAllFeedProjections(it.id!!, it.getAge()) } ?: feedRepository.findAllFeedProjections()
+        val slice =
+            user?.let { feedRepository.findAllFeedProjections(it, lastFeedId) }
+                ?: feedRepository.findAllFeedProjections(lastFeedId)
 
         return FeedsRes(
-            feeds = projections.map { feedProjection ->
+            feeds = slice.content.map { feedProjection ->
                 FeedRes(
                     id = feedProjection.id,
                     content = feedProjection.content,
@@ -101,16 +102,15 @@ class FeedService(
                     isFit = user?.let { feedProjection.isFit(it.gender, it.getAge(), it.mbti) } ?: false
                 )
             }.toList(),
-            hasNext = false
+            hasNext = slice.hasNext()
         )
     }
 
-    // TODO: lastFeedId 미고려 2023/08/03 (koi)
     fun getMyFeeds(user: User, lastFeedId: Long?): FeedsRes {
-        val projections = feedRepository.findWriterFeedProjections(user.id!!)
+        val slice = feedRepository.findWriterFeedProjections(user.id!!, lastFeedId)
 
         return FeedsRes(
-            feeds = projections.map { feedProjection ->
+            feeds = slice.content.map { feedProjection ->
                 FeedRes(
                     id = feedProjection.id,
                     content = feedProjection.content,
@@ -119,16 +119,15 @@ class FeedService(
                     isFit = feedProjection.isFit(user.gender, user.getAge(), user.mbti)
                 )
             }.toList(),
-            hasNext = false
+            hasNext = slice.hasNext()
         )
     }
 
-    // TODO: lastFeedId 미고려 2023/08/03 (koi)
     fun getMyFavoriteFeeds(user: User, lastFeedId: Long?): FeedsRes {
-        val projections = feedRepository.findUserFavoriteFeedProjections(user.id!!)
+        val slice = feedRepository.findUserFavoriteFeedProjections(user.id!!, lastFeedId)
 
         return FeedsRes(
-            feeds = projections.map { feedProjection ->
+            feeds = slice.content.map { feedProjection ->
                 FeedRes(
                     id = feedProjection.id,
                     content = feedProjection.content,
@@ -137,7 +136,7 @@ class FeedService(
                     isFit = feedProjection.isFit(user.gender, user.getAge(), user.mbti)
                 )
             }.toList(),
-            hasNext = false
+            hasNext = slice.hasNext()
         )
     }
 }
