@@ -11,6 +11,9 @@ create table feed
     updated_at     datetime    default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP
 );
 
+create index writer_id_idx
+    on feed (writer_id);
+
 
 
 create table if not exists favorite_feed
@@ -22,7 +25,7 @@ create table if not exists favorite_feed
     updated_at datetime not null default now() on update now()
 );
 
-create unique index favorite_feed_feed_id_user_id_uindex
+create unique index feed_id_user_id_uniq
     on favorite_feed (feed_id, user_id);
 
 create table if not exists feed_view_history
@@ -33,6 +36,9 @@ create table if not exists feed_view_history
     created_at datetime not null default now(),
     updated_at datetime not null default now() on update now()
 );
+
+create index user_id_feed_id_idx
+    on feed_view_history (user_id, feed_id);
 
 
 create table reply
@@ -45,6 +51,12 @@ create table reply
     updated_at datetime     not null default now() on update now()
 );
 
+create index feed_id_idx
+    on reply (feed_id);
+
+create index writer_id_idx
+    on reply (writer_id);
+
 
 create table peek_reply
 (
@@ -54,6 +66,10 @@ create table peek_reply
     created_at datetime not null default now(),
     updated_at datetime not null default now() on update now()
 );
+
+create index reply_id_user_id_idx
+    on peek_reply (reply_id, user_id);
+
 
 
 create table if not exists block_feed
