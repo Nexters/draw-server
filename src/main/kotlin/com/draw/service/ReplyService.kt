@@ -76,12 +76,11 @@ class ReplyService(
         // TODO: claim 적재 로직 추가 2023/08/02 (koi)
     }
 
-    // TODO: 페이징 이후 고민 2023/07/29 (koi)
     fun getMyReplies(user: User, lastReplyId: Long?): MyRepliesRes {
-        val replies = replyRepository.findAllByWriterIdOrderByCreatedAtDesc(user.id!!)
+        val slice = replyRepository.findWriterReplies(user.id!!, lastReplyId)
 
         return MyRepliesRes(
-            myReplies = replies.map {
+            myReplies = slice.content.map {
                 MyReplyRes(
                     feedId = it.feed.id!!,
                     feedContent = it.feed.content,
@@ -89,7 +88,7 @@ class ReplyService(
                     replyContent = it.content,
                 )
             }.toList(),
-            hasNext = false
+            hasNext = slice.hasNext(),
         )
     }
 
