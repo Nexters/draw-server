@@ -34,10 +34,10 @@ class KakaoOAuthService(
             return LoginResult.normal(jwtProvider.generateAccessToken(user), jwtProvider.generateRefreshToken(user))
         }
         val newUser = User(kakaoId = userInfo.id.toString(), oauthProvider = OAuthProvider.KAKAO)
-        promotionService.grant(newlyRegisterPromotionGenerator.generate(newUser))
         val accessToken = jwtProvider.generateAccessToken(newUser)
         newUser.refreshToken = jwtProvider.generateRefreshToken(newUser)
         userRepository.save(newUser)
+        promotionService.grant(newlyRegisterPromotionGenerator.generate(newUser))
         return LoginResult.newlyRegistered(accessToken, newUser.refreshToken!!)
     }
 
