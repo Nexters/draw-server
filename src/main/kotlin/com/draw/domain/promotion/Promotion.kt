@@ -14,12 +14,27 @@ import java.time.ZonedDateTime
 class Promotion(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long? = null,
+    var id: Long = 0L,
 
     @ManyToOne
     val user: User,
 
     val promotionType: PromotionType,
 
-    val consumedAt: ZonedDateTime? = null,
-) : BaseEntity()
+    var consumedAt: ZonedDateTime? = null,
+) : BaseEntity() {
+    fun consume() {
+        if (consumedAt != null) {
+            return
+        }
+        consumedAt = ZonedDateTime.now()
+    }
+
+    fun isConsumed(): Boolean {
+        return consumedAt != null
+    }
+
+    fun toResult(): PromotionType.Result {
+        return promotionType.toResult(user)
+    }
+}

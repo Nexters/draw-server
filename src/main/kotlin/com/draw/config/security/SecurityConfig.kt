@@ -1,6 +1,6 @@
 package com.draw.config.security
 
-import com.draw.component.JwtProvider
+import com.draw.service.oauth.UserAuthenticationService
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -14,7 +14,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
-    private val jwtProvider: JwtProvider,
+    private val userAuthenticationService: UserAuthenticationService,
     private val objectMapper: ObjectMapper,
 ) {
 
@@ -31,7 +31,7 @@ class SecurityConfig(
                 it.anyRequest().authenticated()
             }
             .addFilterBefore(
-                OAuthSecurityFilter(jwtProvider, objectMapper),
+                OAuthSecurityFilter(userAuthenticationService, objectMapper),
                 BasicAuthenticationFilter::class.java,
             )
             .exceptionHandling { handling ->
@@ -52,12 +52,5 @@ class SecurityConfig(
                 it.anyRequest().permitAll()
             }
             .build()
-    }
-
-    private fun permitAllUrls(): Array<String> {
-        return arrayOf(
-            "/health",
-            "/ready",
-        )
     }
 }

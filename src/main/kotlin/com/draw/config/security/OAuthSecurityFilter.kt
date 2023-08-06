@@ -2,7 +2,7 @@ package com.draw.config.security
 
 import com.draw.common.enums.ErrorType
 import com.draw.common.response.ErrorRes
-import com.draw.component.JwtProvider
+import com.draw.service.oauth.UserAuthenticationService
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.jsonwebtoken.ExpiredJwtException
 import jakarta.servlet.FilterChain
@@ -17,7 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.filter.GenericFilterBean
 
 class OAuthSecurityFilter(
-    private val jwtProvider: JwtProvider,
+    private val userAuthenticationService: UserAuthenticationService,
     private val objectMapper: ObjectMapper,
 ) : GenericFilterBean() {
     override fun doFilter(request: ServletRequest?, response: ServletResponse, chain: FilterChain) {
@@ -25,7 +25,7 @@ class OAuthSecurityFilter(
 
         runCatching {
             val token = tokenHeader.toString().removePrefix("Bearer")
-            val authentication = jwtProvider.authenticate(token)
+            val authentication = userAuthenticationService.authenticate(token)
             SecurityContextHolder.getContext().authentication = authentication
         }.onFailure { e ->
             when (e) {

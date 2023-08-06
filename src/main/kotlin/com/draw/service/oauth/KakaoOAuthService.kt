@@ -2,6 +2,7 @@ package com.draw.service.oauth
 
 import com.draw.common.enums.OAuthProvider
 import com.draw.component.JwtProvider
+import com.draw.domain.promotion.NewlyRegisterPromotionGenerator
 import com.draw.domain.user.User
 import com.draw.infra.external.kakao.KakaoApiClient
 import com.draw.infra.external.kakao.KakaoAuthClient
@@ -10,7 +11,9 @@ import com.draw.infra.external.kakao.KauthTokenResponse
 import com.draw.infra.persistence.user.UserRepository
 import com.draw.properties.KakaoOAuthProperties
 import com.draw.service.oauth.dto.LoginResult
+import com.draw.service.promotion.PromotionService
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class KakaoOAuthService(
@@ -19,7 +22,10 @@ class KakaoOAuthService(
     private val kakaoApiClient: KakaoApiClient,
     private val userRepository: UserRepository,
     private val jwtProvider: JwtProvider,
+    private val newlyRegisterPromotionGenerator: NewlyRegisterPromotionGenerator,
+    private val promotionService: PromotionService,
 ) {
+    @Transactional
     fun registerOrLogin(authCode: String): LoginResult {
         val tokenResponse = fetchKakaoUserAccessToken(authCode)
         val userInfo = kakaoApiClient.getUserInfo("Bearer ${tokenResponse.accessToken}")
@@ -28,6 +34,7 @@ class KakaoOAuthService(
             return LoginResult.normal(jwtProvider.generateAccessToken(user), jwtProvider.generateRefreshToken(user))
         }
         val newUser = User(kakaoId = userInfo.id.toString(), oauthProvider = OAuthProvider.KAKAO)
+        promotionService.grant(newlyRegisterPromotionGenerator.generate(newUser))
         val accessToken = jwtProvider.generateAccessToken(newUser)
         newUser.refreshToken = jwtProvider.generateRefreshToken(newUser)
         userRepository.save(newUser)

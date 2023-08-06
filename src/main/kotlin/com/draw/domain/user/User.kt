@@ -1,6 +1,7 @@
 package com.draw.domain.user
 
 import com.draw.common.enums.OAuthProvider
+import com.draw.domain.Point
 import com.draw.domain.common.BaseEntity
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -31,7 +32,18 @@ class User(
 
     var refreshToken: String? = null,
 
-    var point: Long = 0L,
+    private var point: Long = 0L,
 
-    var lastActivatedAt: ZonedDateTime = ZonedDateTime.now(),
-) : BaseEntity()
+    var lastLoggedAt: ZonedDateTime? = null,
+) : BaseEntity() {
+    fun grantPoint(point: Point) {
+        this.point = point.value
+    }
+    fun getPoint(): Point {
+        return Point(this.point)
+    }
+
+    fun isFirstActivity(): Boolean {
+        return lastLoggedAt == null
+    }
+}
