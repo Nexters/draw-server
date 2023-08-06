@@ -17,7 +17,7 @@ data class ErrorRes(
         fun of(errorType: ErrorType, message: String): ErrorRes {
             return ErrorRes(
                 code = errorType.code,
-                message = "$errorType.message ($message)"
+                message = "${errorType.message} ($message)"
             )
         }
     }

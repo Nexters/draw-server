@@ -30,6 +30,7 @@ class JwtProvider(
 
     fun authenticate(token: String): Authentication {
         log.info("요청토큰 : $token")
+
         val user = userRepository.findByIdOrNull(getId(token).toLong())
             ?: throw RuntimeException("authentication user not found")
         return UsernamePasswordAuthenticationToken(user, javaClass, listOf())

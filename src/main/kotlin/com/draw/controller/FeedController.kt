@@ -1,15 +1,18 @@
 package com.draw.controller
 
 import com.draw.common.Const.FEED_TAG
-import com.draw.common.Const.MOCKING
 import com.draw.common.Const.MY_TAG
 import com.draw.controller.dto.FeedCreateReq
 import com.draw.controller.dto.FeedRes
 import com.draw.controller.dto.FeedsRes
+import com.draw.controller.dto.MyFavoriteFeedsRes
+import com.draw.domain.user.User
+import com.draw.service.FeedService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
-import mu.KotlinLogging
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -20,91 +23,106 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/feeds")
 @Tag(name = FEED_TAG, description = "피드 API")
-class FeedController {
-    private val log = KotlinLogging.logger { }
+class FeedController(
+    private val feedService: FeedService,
+) {
 
-    @GetMapping("/feeds")
-    @Operation(summary = "피드 조회", description = MOCKING)
+    @GetMapping
+    @Operation(summary = "피드 조회")
     fun getFeeds(
+        @AuthenticationPrincipal user: User?,
         @Parameter(description = "마지막 피드 id") @RequestParam("lastFeedId", required = false) lastFeedId: Long?,
     ): FeedsRes {
 
-        // TODO: 2023/07/24 (koi)
-        return FeedsRes(
-            feeds = listOf(
-                FeedRes(1, "저녁먹을사람!", 1, true),
-                FeedRes(2, "t도 박은빈 시상식때", 1, true),
-            ),
-            hasNext = false
-        )
+        return feedService.getFeeds(user, lastFeedId)
     }
 
-    @PostMapping("/feeds")
-    @Operation(summary = "피드 작성", description = MOCKING)
+    @PostMapping
+    @Operation(summary = "피드 작성")
     fun createFeed(
+        @AuthenticationPrincipal user: User,
         @RequestBody feedCreateReq: FeedCreateReq
     ) {
-
-        // TODO:  2023/07/24 (koi)
+        feedService.createFeed(user, feedCreateReq)
     }
 
-    @GetMapping("/feeds/me")
+    @GetMapping("/me")
     @Tag(name = MY_TAG, description = "My 관련 API")
-    @Operation(summary = "내가 쓴 피드 조회", description = MOCKING)
+    @Operation(summary = "내가 쓴 피드 조회")
     fun getFeedsByMe(
+        @AuthenticationPrincipal user: User,
         @Parameter(description = "마지막 피드 id") @RequestParam("lastFeedId", required = false) lastFeedId: Long?,
     ): FeedsRes {
-
-        // TODO: 2023/07/24 (koi)
-        return FeedsRes(
-            feeds = listOf(
-                FeedRes(1, "저녁먹을사람!", 1, false),
-                FeedRes(2, "t도 박은빈 시상식때", 1, false),
-            ),
-            hasNext = false
-        )
+        return feedService.getMyFeeds(user, lastFeedId)
     }
 
-    @GetMapping("/feeds/me/favorites")
+    @GetMapping("/me/favorites")
     @Tag(name = MY_TAG, description = "My 관련 API")
-    @Operation(summary = "내가 좋아요한 피드 조회", description = MOCKING)
+    @Operation(summary = "내가 좋아요한 피드 조회")
     fun getFeedsByMeFavorites(
-        @Parameter(description = "마지막 피드 id") @RequestParam("lastFeedId", required = false) lastFeedId: Long?,
-    ): FeedsRes {
+        @AuthenticationPrincipal user: User,
+        @Parameter(description = "마지막 좋아요 id") @RequestParam("lastFavoriteId", required = false) lastFavoriteId: Long?,
+    ): MyFavoriteFeedsRes {
 
-        // TODO: 2023/07/24 (koi)
-        return FeedsRes(
-            feeds = listOf(
-                FeedRes(1, "저녁먹을사람!", 1, false),
-                FeedRes(2, "t도 박은빈 시상식때", 1, false),
-            ),
-            hasNext = false
-        )
+        return feedService.getMyFavoriteFeeds(user, lastFavoriteId)
     }
 
-    @PostMapping("/feeds/{feedId}/view")
-    @Operation(summary = "피드 조회 (기록)", description = MOCKING)
+    @GetMapping("/{feedId}")
+    @Operation(summary = "피드 조회 (상세)")
+    fun getFeed(
+        @AuthenticationPrincipal user: User?,
+        @Parameter(description = "피드 id") @PathVariable("feedId") feedId: Long,
+    ): FeedRes {
+        return feedService.getFeed(user, feedId)
+    }
+
+    @PostMapping("/{feedId}/views")
+    @Operation(summary = "피드 확인 기록 저장")
     fun createFeedView(
+        @AuthenticationPrincipal user: User,
         @Parameter(description = "피드 id") @PathVariable("feedId") feedId: Long,
     ) {
-        // TODO:  2023/07/24 (koi)
+        feedService.createFeedView(user, feedId)
     }
 
-    @PostMapping("/feeds/{feedId}/favorites")
-    @Operation(summary = "피드 좋아요", description = MOCKING)
+    @PostMapping("/{feedId}/blocks")
+    @Operation(summary = "피드 차단")
+    fun blockFeed(
+        @AuthenticationPrincipal user: User,
+        @Parameter(description = "피드 id") @PathVariable("feedId") feedId: Long,
+    ) {
+        feedService.blockFeed(user, feedId)
+    }
+
+    @PostMapping("/{feedId}/claims")
+    @Operation(summary = "피드 신고")
+    fun claimFeed(
+        @AuthenticationPrincipal user: User,
+        @Parameter(description = "피드 id") @PathVariable("feedId") feedId: Long,
+    ) {
+        feedService.claimFeed(user, feedId)
+    }
+
+    @PostMapping("/{feedId}/favorites")
+    @Operation(
+        summary = "피드 좋아요",
+        responses = [ApiResponse(responseCode = "400(40002)", description = "FAVORITE_FEED_ALREADY_EXISTS")]
+    )
     fun createFavoriteFeed(
+        @AuthenticationPrincipal user: User,
         @PathVariable("feedId") feedId: Long,
     ) {
-        // TODO:  2023/07/24 (koi)
+        feedService.createFavoriteFeed(user, feedId)
     }
 
-    @DeleteMapping("/feeds/{feedId}/favorites")
-    @Operation(summary = "피드 좋아요 취소", description = MOCKING)
+    @DeleteMapping("/{feedId}/favorites")
+    @Operation(summary = "피드 좋아요 취소")
     fun deleteFavoriteFeed(
+        @AuthenticationPrincipal user: User,
         @PathVariable("feedId") feedId: Long,
     ) {
-        // TODO:  2023/07/24 (koi)
+        feedService.deleteFavoriteFeed(user, feedId)
     }
 }

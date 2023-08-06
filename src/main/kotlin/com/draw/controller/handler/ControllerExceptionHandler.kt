@@ -37,7 +37,7 @@ class ControllerExceptionHandler(
     fun handleIllegalArgumentException(e: IllegalArgumentException, request: HttpServletRequest): ResponseEntity<ErrorRes> {
         sendNotification(e, request)
         return ResponseEntity.badRequest().body(
-            ErrorRes.of(ErrorType.BAD_REQUEST),
+            ErrorRes.of(ErrorType.BAD_REQUEST, e.message ?: ""),
         )
     }
 
