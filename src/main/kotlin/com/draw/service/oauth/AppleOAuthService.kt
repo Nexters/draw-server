@@ -10,6 +10,7 @@ import com.draw.properties.AppleOAuthProperties
 import com.draw.service.oauth.dto.LoginResult
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.jsonwebtoken.Jwts
+import mu.KotlinLogging
 import org.apache.tomcat.util.codec.binary.Base64
 import org.springframework.stereotype.Service
 import java.lang.IllegalArgumentException
@@ -26,11 +27,13 @@ class AppleOAuthService(
     private val jwtProvider: JwtProvider,
     private val objectMapper: ObjectMapper,
 ) {
+    private val log = KotlinLogging.logger { }
+
     fun registerOrLogin(idToken: String): LoginResult {
         val header =
             objectMapper.readValue(String(Base64.decodeBase64(idToken)), Map::class.java) as Map<String, String>
-        println("$header, $idToken")
-        println("${header["kid"]!!}, ${header["alg"]!!}")
+        log.info("$header, $idToken")
+        log.info("${header["kid"]!!}, ${header["alg"]!!}")
         val publicKey = genPubKey(header["kid"]!!, header["alg"]!!)
         val parsedToken = Jwts.parserBuilder().setSigningKey(publicKey).build().parseClaimsJws(idToken)
         println(parsedToken.body)
