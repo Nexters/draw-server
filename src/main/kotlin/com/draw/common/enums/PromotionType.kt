@@ -6,7 +6,7 @@ import com.draw.domain.user.User
 enum class PromotionType(val title: String, val grantPoint: Point) {
     WELCOME("웰컴 선물이에요!", Point(500L)),
     DAILY_ATTENDANCE("반가워요!", Point(100L)),
-    
+
     ;
 
     fun toResult(user: User): Result {
