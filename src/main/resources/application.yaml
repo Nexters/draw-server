@@ -48,7 +48,12 @@ kakao:
     client-secret: ${KAKAO_CLIENT_SECRET}
     js-key: ${KAKAO_JS_KEY}
     rest-api-key: ${KAKAO_REST_API_KEY}
-    callback-url: http://localhost:8080/auth/v1/kakao/login
+    callback-url: https://draw-nexters.netlify.app/callback/kakao
+
+apple:
+  auth:
+    team-id: ${APPLE_TEAM_ID}
+    aud: https://appleid.apple.com
 
 discord:
   webhook:

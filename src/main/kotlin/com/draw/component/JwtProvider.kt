@@ -8,6 +8,7 @@ import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.io.Decoders
 import io.jsonwebtoken.security.Keys
+import mu.KotlinLogging
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
@@ -20,6 +21,7 @@ class JwtProvider(
     private val jwtProperties: JwtProperties,
 ) {
     private val secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtProperties.secretKey))
+    private val log = KotlinLogging.logger { }
 
     fun getId(token: String) = getUser(token)["id"] as String
 
@@ -27,6 +29,8 @@ class JwtProvider(
         Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).body!!
 
     fun authenticate(token: String): Authentication {
+        log.info("요청토큰 : $token")
+
         val user = userRepository.findByIdOrNull(getId(token).toLong())
             ?: throw RuntimeException("authentication user not found")
         return UsernamePasswordAuthenticationToken(user, javaClass, listOf())
