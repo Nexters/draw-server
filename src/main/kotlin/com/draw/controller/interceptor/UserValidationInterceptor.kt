@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.security.authentication.AnonymousAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.servlet.HandlerInterceptor
 
@@ -24,6 +25,10 @@ class UserValidationInterceptor(
         response.contentType = MediaType.APPLICATION_JSON_VALUE
 
         if (authentication != null && authentication.isAuthenticated) {
+            if (authentication is AnonymousAuthenticationToken) {
+                return true
+            }
+
             val user = authentication.principal as User
             if (!user.registrationCompleted) {
                 response.status = HttpStatus.FORBIDDEN.value()

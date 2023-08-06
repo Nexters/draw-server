@@ -14,6 +14,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
+    private val drawApiRequestMatcher: DrawApiRequestMatcher,
     private val jwtProvider: JwtProvider,
     private val objectMapper: ObjectMapper,
 ) {
@@ -26,7 +27,7 @@ class SecurityConfig(
             .httpBasic { httpBasic -> httpBasic.disable() }
             .formLogin { formLogin -> formLogin.disable() }
             .sessionManagement { mgmt -> mgmt.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
-            .securityMatcher("/api/v1/**")
+            .securityMatcher(drawApiRequestMatcher)
             .authorizeHttpRequests {
                 it.anyRequest().authenticated()
             }
@@ -52,12 +53,5 @@ class SecurityConfig(
                 it.anyRequest().permitAll()
             }
             .build()
-    }
-
-    private fun permitAllUrls(): Array<String> {
-        return arrayOf(
-            "/health",
-            "/ready",
-        )
     }
 }
