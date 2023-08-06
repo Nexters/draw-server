@@ -5,4 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface UserRepository : JpaRepository<User, Long>, UserCustomRepository {
     fun findByKakaoId(kakaoId: String): User?
+    fun findByAppleId(appleId: String): User?
 }

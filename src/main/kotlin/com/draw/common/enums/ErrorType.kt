@@ -6,6 +6,9 @@ enum class ErrorType(
 ) {
     BAD_REQUEST(40000, "Bad request"),
     VALIDATION_FAILED(40001, "validation failed"),
+    FAVORITE_FEED_ALREADY_EXISTS(40002, "Favorite feed already exists"),
+    FEED_NOT_FOUND(40003, "Feed not found"),
+    REPLY_NOT_FOUND(40004, "Reply not found"),
 
     UNKNOWN_ERROR(50000, "Unknown error"),
 

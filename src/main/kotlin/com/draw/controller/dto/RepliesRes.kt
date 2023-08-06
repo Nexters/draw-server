@@ -5,7 +5,6 @@ import com.draw.common.enums.MBTI
 
 data class RepliesRes(
     val replies: List<ReplyRes>,
-    val hasNext: Boolean,
 )
 
 data class ReplyRes(
@@ -18,7 +17,8 @@ data class ReplyRes(
 
 data class ReplyWriterRes(
     val mbti: MBTI,
-    val gender: Gender
+    val gender: Gender,
+    val age: Int,
 )
 
 enum class ReplyStatus {
