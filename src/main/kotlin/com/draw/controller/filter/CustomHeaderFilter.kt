@@ -11,10 +11,11 @@ class CustomHeaderFilter : OncePerRequestFilter() {
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-
+        // TODO: cors 테스트 용도 2023/08/08 (koi)
         if (request.method == "OPTIONS") {
             response.status = HttpServletResponse.SC_OK
             return
         }
+        filterChain.doFilter(request, response)
     }
 }
