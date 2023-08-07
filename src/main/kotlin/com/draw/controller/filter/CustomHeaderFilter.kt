@@ -11,11 +11,11 @@ class CustomHeaderFilter : OncePerRequestFilter() {
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        response.setHeader("Access-Control-Allow-Origin", "*")
-        response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD, PATCH")
-        response.setHeader("Access-Control-Allow-Headers", "x-requested-with, Authorization, Content-Type")
-        response.setHeader("Access-Control-Max-Age", "3600")
 
-        filterChain.doFilter(request, response)
+        if (request.method == "OPTIONS") {
+            response.status = HttpServletResponse.SC_OK
+            return
+        }
+
     }
 }
