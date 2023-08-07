@@ -16,6 +16,5 @@ class CustomHeaderFilter : OncePerRequestFilter() {
             response.status = HttpServletResponse.SC_OK
             return
         }
-
     }
 }
