@@ -12,8 +12,7 @@ class CorsConfig {
         return object : WebMvcConfigurer {
             override fun addCorsMappings(registry: CorsRegistry) {
                 registry.addMapping("/**")
-//                    .allowedOrigins("http://localhost:5173", "https://draw-nexters.kro.kr", "https://draw-nexters.netlify.app")
-                    .allowedOrigins("*")
+                    .allowedOrigins("http://localhost:5173", "https://draw-nexters.kro.kr", "https://draw-nexters.netlify.app")
                     .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH")
                     .allowCredentials(true)
                     .allowedHeaders("*")
