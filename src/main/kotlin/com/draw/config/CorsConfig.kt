@@ -16,7 +16,6 @@ class CorsConfig {
                     .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH")
                     .allowedHeaders("*")
                     .exposedHeaders("Authorization")
-                    .exposedHeaders()
             }
         }
     }
