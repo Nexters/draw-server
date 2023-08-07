@@ -14,6 +14,7 @@ class CorsConfig {
                 registry.addMapping("/**")
                     .allowedOrigins("http://localhost:5173", "https://draw-nexters.kro.kr", "https://draw-nexters.netlify.app")
                     .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH")
+                    .allowCredentials(true)
                     .allowedHeaders("*")
                     .exposedHeaders("Authorization")
             }
