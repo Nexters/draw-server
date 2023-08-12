@@ -101,7 +101,7 @@ class ControllerExceptionHandler(
             )
 
             Sentry.captureEvent(
-                SentryEvent().apply {
+                SentryEvent(e).apply {
                     message = Message().apply {
                         message = """${e.javaClass.simpleName}: ${e.message}"""
                     }
@@ -109,7 +109,6 @@ class ControllerExceptionHandler(
                     setExtra("requestURI", request.requestURI)
                     setExtra("method", request.method)
                     setExtra("parameterMap", request.parameterMap)
-                    setExtra("stackTrace", e.stackTraceToString())
                 }
             )
         } catch (e: Exception) {
