@@ -43,11 +43,16 @@ class OAuthSecurityFilter(
                 SecurityContextHolder.getContext().authentication = authentication
             }.onFailure { e ->
                 when (e) {
-                    is ExpiredJwtException -> response.writer.write(
-                        objectMapper.writeValueAsString(
-                            ErrorRes.of(ErrorType.ACCESS_TOKEN_EXPIRED),
-                        ),
-                    )
+                    is ExpiredJwtException -> {
+                        response.status = HttpStatus.UNAUTHORIZED.value()
+                        response.contentType = MediaType.APPLICATION_JSON_VALUE
+                        response.writer.write(
+                            objectMapper.writeValueAsString(
+                                ErrorRes.of(ErrorType.ACCESS_TOKEN_EXPIRED),
+                            ),
+                        )
+                    }
+
                     else -> writeUnAuthorizedResponse(response)
                 }
                 return
