@@ -2,12 +2,14 @@ package com.draw.service.oauth
 
 import com.draw.common.enums.OAuthProvider
 import com.draw.component.JwtProvider
+import com.draw.domain.promotion.NewlyRegisterPromotionGenerator
 import com.draw.domain.user.User
 import com.draw.infra.external.apple.AppleOauthClient
 import com.draw.infra.external.apple.ApplePubKey
 import com.draw.infra.persistence.user.UserRepository
 import com.draw.properties.AppleOAuthProperties
 import com.draw.service.oauth.dto.LoginResult
+import com.draw.service.promotion.PromotionService
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.jsonwebtoken.Jwts
 import mu.KotlinLogging
@@ -26,6 +28,8 @@ class AppleOAuthService(
     private val userRepository: UserRepository,
     private val jwtProvider: JwtProvider,
     private val objectMapper: ObjectMapper,
+    private val newlyRegisterPromotionGenerator: NewlyRegisterPromotionGenerator,
+    private val promotionService: PromotionService,
 ) {
     private val log = KotlinLogging.logger { }
 
@@ -50,6 +54,7 @@ class AppleOAuthService(
         val accessToken = jwtProvider.generateAccessToken(newUser)
         newUser.refreshToken = jwtProvider.generateRefreshToken(newUser)
         userRepository.save(newUser)
+        promotionService.grant(newlyRegisterPromotionGenerator.generate(newUser))
         return LoginResult.newlyRegistered(accessToken, newUser.refreshToken!!)
     }
 
