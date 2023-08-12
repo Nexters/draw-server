@@ -10,6 +10,7 @@ import com.draw.domain.user.User
 import com.draw.service.ReplyService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
@@ -75,7 +76,14 @@ class ReplyController(
     }
 
     @PostMapping("/replies/{replyId}/peek")
-    @Operation(summary = "리플 훔쳐보기")
+    @Operation(
+        summary = "리플 훔쳐보기",
+        responses = [
+            ApiResponse(responseCode = "400(40005)", description = "POINT_IS_NOT_ENOUGH"),
+            ApiResponse(responseCode = "400(40006)", description = "USER_NOT_FOUND"),
+            ApiResponse(responseCode = "400(40007)", description = "ALREADY_PEEKED"),
+        ],
+    )
     fun peekReply(
         @AuthenticationPrincipal user: User,
         @PathVariable("replyId") replyId: Long,
