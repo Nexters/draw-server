@@ -17,32 +17,41 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.filter.GenericFilterBean
 
 class OAuthSecurityFilter(
+    private val authorizationRequiredRequestMatcher: DrawApiRequestMatcher,
     private val userAuthenticationService: UserAuthenticationService,
     private val objectMapper: ObjectMapper,
 ) : GenericFilterBean() {
     override fun doFilter(request: ServletRequest?, response: ServletResponse, chain: FilterChain) {
+        (response as HttpServletResponse).setHeader("Access-Control-Allow-Origin", "*")
+        response.setHeader("Access-Control-Allow-Credentials", "false")
+        response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD")
+        response.setHeader(
+            "Access-Control-Allow-Headers",
+            "*",
+        )
         val tokenHeader = (request as HttpServletRequest).getHeader(HttpHeaders.AUTHORIZATION)
-
-        runCatching {
-            val token = tokenHeader.toString().removePrefix("Bearer")
-            val authentication = userAuthenticationService.authenticate(token)
-            SecurityContextHolder.getContext().authentication = authentication
-        }.onFailure { e ->
-            when (e) {
-                is ExpiredJwtException -> {
-                    response as HttpServletResponse
-                    response.status = HttpStatus.UNAUTHORIZED.value()
-                    response.contentType = MediaType.APPLICATION_JSON_VALUE
-                    response.writer.write(
+        if (request.method == "OPTIONS") {
+            writeOptionSuccess(response)
+            return
+        }
+        if (tokenHeader == null && !authorizationRequiredRequestMatcher.matches(request)) {
+            chain.doFilter(request, response)
+        } else {
+            runCatching {
+                val token = tokenHeader.toString().removePrefix("Bearer")
+                val authentication = userAuthenticationService.authenticate(token)
+                SecurityContextHolder.getContext().authentication = authentication
+            }.onFailure { e ->
+                when (e) {
+                    is ExpiredJwtException -> response.writer.write(
                         objectMapper.writeValueAsString(
                             ErrorRes.of(ErrorType.ACCESS_TOKEN_EXPIRED),
                         ),
                     )
+                    else -> writeUnAuthorizedResponse(response)
                 }
-
-                else -> writeUnAuthorizedResponse(response)
+                return
             }
-            return
         }
         chain.doFilter(request, response)
     }
@@ -53,6 +62,13 @@ class OAuthSecurityFilter(
         response.status = HttpStatus.UNAUTHORIZED.value()
         response.contentType = MediaType.APPLICATION_JSON_VALUE
         writer.print(objectMapper.writeValueAsString(ErrorRes.of(ErrorType.UNAUTHORIZED)))
+        writer.flush()
+    }
+
+    private fun writeOptionSuccess(response: ServletResponse) {
+        response as HttpServletResponse
+        val writer = response.writer
+        response.status = 204
         writer.flush()
     }
 }
