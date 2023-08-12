@@ -5,6 +5,10 @@ import com.draw.common.enums.ErrorType
 import com.draw.common.response.ErrorRes
 import com.draw.infra.external.DiscordApiClient
 import com.draw.infra.external.DiscordMessage
+import io.sentry.Sentry
+import io.sentry.SentryEvent
+import io.sentry.SentryLevel
+import io.sentry.protocol.Message
 import jakarta.servlet.http.HttpServletRequest
 import mu.KotlinLogging
 import org.springframework.core.env.Environment
@@ -22,7 +26,10 @@ class ControllerExceptionHandler(
     private val log = KotlinLogging.logger { }
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
-    fun handleMethodArgumentNotValidException(e: MethodArgumentNotValidException, request: HttpServletRequest): ResponseEntity<ErrorRes> {
+    fun handleMethodArgumentNotValidException(
+        e: MethodArgumentNotValidException,
+        request: HttpServletRequest
+    ): ResponseEntity<ErrorRes> {
         val errorMessage = e.bindingResult.fieldErrors.map {
             "field: ${it.field}, value: ${it.rejectedValue}, message: ${it.defaultMessage}"
         }.joinToString { "\n" }
@@ -34,7 +41,10 @@ class ControllerExceptionHandler(
     }
 
     @ExceptionHandler(IllegalArgumentException::class)
-    fun handleIllegalArgumentException(e: IllegalArgumentException, request: HttpServletRequest): ResponseEntity<ErrorRes> {
+    fun handleIllegalArgumentException(
+        e: IllegalArgumentException,
+        request: HttpServletRequest
+    ): ResponseEntity<ErrorRes> {
         sendNotification(e, request)
         return ResponseEntity.badRequest().body(
             ErrorRes.of(ErrorType.BAD_REQUEST, e.message ?: ""),
@@ -75,19 +85,31 @@ class ControllerExceptionHandler(
         val contentTemplate = """
                         ${e.javaClass.simpleName}: ${e.message}
                         
-                        ${e.stackTraceToString().subSequence(0, 500)}
+                        ${e.stackTraceToString().subSequence(0, 1000)}
                         ${request.method} ${request.requestURI}
                         
                         ${request.parameterMap.map { "${it.key}: ${it.value.joinToString()}" }.joinToString("\n")}
                         """
             .trimIndent()
 
-        val length = min(contentTemplate.length, 2000)
+        val length = min(contentTemplate.length, 3000)
         try {
             discordApiClient.sendMessage(
                 DiscordMessage(
                     content = contentTemplate.substring(0, length),
                 ),
+            )
+
+            Sentry.captureEvent(
+                SentryEvent(e).apply {
+                    message = Message().apply {
+                        message = """${e.javaClass.simpleName}: ${e.message}"""
+                    }
+                    level = SentryLevel.ERROR
+                    setExtra("requestURI", request.requestURI)
+                    setExtra("method", request.method)
+                    setExtra("parameterMap", request.parameterMap)
+                }
             )
         } catch (e: Exception) {
             log.error("Failed to send slack notification", e)

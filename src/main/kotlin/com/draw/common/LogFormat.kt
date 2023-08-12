@@ -12,7 +12,6 @@ data class LogFormat(
     val logType: LogType,
     val duration: Long,
     val requestId: String,
-    val userId: String,
     val time: String,
     val host: String,
 )
