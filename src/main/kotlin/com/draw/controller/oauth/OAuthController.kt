@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.Operation
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -29,10 +30,11 @@ class OAuthController(
     @PostMapping("/login")
     @Operation(summary = "공통 Oauth 로그인 콜백", description = Const.AUTH_TAG)
     fun login(
+        @RequestHeader("Origin") origin: String,
         @RequestBody req: OAuthReq,
     ): LoginResult {
         return if (req.provider == OAuthProvider.KAKAO) {
-            kakaoOAuthService.registerOrLogin(req.code)
+            kakaoOAuthService.registerOrLogin(req.code, origin)
         } else {
             appleOAuthService.registerOrLogin(req.code)
         }
@@ -43,7 +45,7 @@ class OAuthController(
     fun localKakaoLoginCallBack(
         @RequestParam("code") code: String,
     ): LoginResult {
-        return kakaoOAuthService.registerOrLogin(code)
+        return kakaoOAuthService.registerOrLogin(code, "")
     }
 
     @PostMapping("/local/apple/login")
