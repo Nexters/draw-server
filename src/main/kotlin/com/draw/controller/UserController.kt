@@ -1,5 +1,6 @@
 package com.draw.controller
 
+import com.draw.controller.dto.FcmTokenRegReq
 import com.draw.controller.dto.RegisterReq
 import com.draw.domain.user.User
 import com.draw.service.UserService
@@ -24,5 +25,13 @@ class UserController(
         @RequestBody req: RegisterReq,
     ) {
         userService.register(user, UserUpdateInfo(req.birthday, req.gender, req.mbti))
+    }
+
+    @PostMapping("/fcm")
+    fun registerFcmToken(
+        @AuthenticationPrincipal user: User,
+        @RequestBody fcmTokenRegReq: FcmTokenRegReq,
+    ) {
+        userService.registerFcmToken(user, fcmTokenRegReq.fcmToken)
     }
 }

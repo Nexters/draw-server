@@ -45,6 +45,10 @@ class User(
     var gender: Gender? = null,
 
     var dateOfBirth: String? = null,
+
+    var fcmToken: String? = null,
+
+    var lastFitPushReceivedAt: ZonedDateTime? = null,
 ) : BaseEntity() {
     fun grantPoint(point: Point) {
         this.point = point.value

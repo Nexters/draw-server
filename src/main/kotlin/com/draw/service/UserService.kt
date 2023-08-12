@@ -19,6 +19,11 @@ class UserService(
         user.registrationCompleted = true
         userRepository.save(user)
     }
+
+    fun registerFcmToken(user: User, fcmToken: String) {
+        user.fcmToken = fcmToken
+        userRepository.save(user)
+    }
 }
 
 data class UserUpdateInfo(

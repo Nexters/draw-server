@@ -5,6 +5,7 @@ import com.draw.common.enums.ErrorType
 import com.draw.common.enums.Gender
 import com.draw.common.enums.MBTI
 import com.draw.common.exception.FeedNotFoundException
+import com.draw.common.exception.UserNotFoundException
 import com.draw.controller.dto.FeedCreateReq
 import com.draw.controller.dto.FeedRes
 import com.draw.controller.dto.FeedsRes
@@ -14,18 +15,22 @@ import com.draw.domain.feed.FavoriteFeed
 import com.draw.domain.user.User
 import com.draw.infra.persistence.FavoriteFeedRepository
 import com.draw.infra.persistence.FeedRepository
+import com.draw.infra.persistence.user.UserRepository
 import com.draw.service.dto.FeedProjection
 import mu.KotlinLogging
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import kotlin.jvm.optionals.getOrElse
 
 @Service
 @Transactional(readOnly = true)
 class FeedService(
     private val feedRepository: FeedRepository,
+    private val userRepository: UserRepository,
     private val favoriteFeedRepository: FavoriteFeedRepository,
+    private val fmcService: FcmService,
 ) {
     private val log = KotlinLogging.logger { }
 
@@ -76,7 +81,6 @@ class FeedService(
     @Transactional
     fun createFavoriteFeed(user: User, feedId: Long) {
         val feed = feedRepository.findByIdOrNull(feedId) ?: throw FeedNotFoundException()
-
         try {
             favoriteFeedRepository.save(
                 FavoriteFeed(
@@ -84,6 +88,8 @@ class FeedService(
                     feed = feed,
                 ),
             )
+            val writer = userRepository.findById(feed.writerId).getOrElse { throw UserNotFoundException() }
+            fmcService.pushLike(fromUser = user, receiveUser = writer, detailId = feed.id!!)
         } catch (e: DataIntegrityViolationException) {
             throw BusinessException(ErrorType.FAVORITE_FEED_ALREADY_EXISTS, e)
         }

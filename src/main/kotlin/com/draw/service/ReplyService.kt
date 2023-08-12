@@ -4,6 +4,7 @@ import com.draw.common.enums.Gender
 import com.draw.common.enums.MBTI
 import com.draw.common.exception.FeedNotFoundException
 import com.draw.common.exception.ReplyNotFoundException
+import com.draw.common.exception.UserNotFoundException
 import com.draw.controller.dto.MyRepliesRes
 import com.draw.controller.dto.MyReplyRes
 import com.draw.controller.dto.RepliesRes
@@ -17,6 +18,7 @@ import com.draw.domain.user.User
 import com.draw.infra.persistence.FeedRepository
 import com.draw.infra.persistence.PeekReplyRepository
 import com.draw.infra.persistence.ReplyRepository
+import com.draw.infra.persistence.user.UserRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -27,6 +29,8 @@ class ReplyService(
     private val feedRepository: FeedRepository,
     private val replyRepository: ReplyRepository,
     private val peekReplyRepository: PeekReplyRepository,
+    private val userRepository: UserRepository,
+    private val fcmService: FcmService,
 ) {
     fun getReplies(user: User?, feedId: Long): RepliesRes {
         val feed = feedRepository.findByIdOrNull(feedId) ?: throw FeedNotFoundException()
@@ -101,16 +105,22 @@ class ReplyService(
         peekReplyRepository.save(
             PeekReply(
                 userId = user.id!!,
-                reply = reply
-            )
+                reply = reply,
+            ),
         )
-
+        val replyWriter = userRepository.findById(reply.writerId).orElseThrow { throw UserNotFoundException() }
+        fcmService.pushLike(fromUser = user, receiveUser = replyWriter, detailId = reply.feed.id!!)
         return ReplyWriterRes(MBTI.ENFP, Gender.MALE, 29) // TODO:  2023/08/02 (koi)
     }
 
     private fun Map<Reply, ReplyWriterRes>.getStatus(reply: Reply, user: User?) =
-        if (user == null) ReplyStatus.NORMAL
-        else if (this.containsKey(reply)) ReplyStatus.PEEKED
-        else if (reply.writerId == user.id) ReplyStatus.MINE
-        else ReplyStatus.NORMAL
+        if (user == null) {
+            ReplyStatus.NORMAL
+        } else if (this.containsKey(reply)) {
+            ReplyStatus.PEEKED
+        } else if (reply.writerId == user.id) {
+            ReplyStatus.MINE
+        } else {
+            ReplyStatus.NORMAL
+        }
 }
