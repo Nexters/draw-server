@@ -34,7 +34,6 @@ class UserController(
     fun getMyInfo(
         @AuthenticationPrincipal user: User,
     ): UserRes {
-
         return UserRes(
             id = user.id!!,
             gender = user.gender!!,
