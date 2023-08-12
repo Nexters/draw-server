@@ -21,8 +21,14 @@ open class GenericJsonConverter<T>(private val typeReference: TypeReference<T>) 
         }
     }
 
-    override fun convertToEntityAttribute(jsonStr: String): T {
+    override fun convertToEntityAttribute(jsonStr: String?): T? {
         // Json 문자열 -> Object
+
+        // TODO (larry.x) writerInfo 가 null 인 경우에 jsonStr not-nullable 이어서
+        // 실패하는 문제가 있어서 임시로 처리해두었음
+        if (jsonStr == null) {
+            return null
+        }
         return try {
             objectMapper.readValue(jsonStr, typeReference)
         } catch (e: IOException) {
