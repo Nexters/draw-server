@@ -26,8 +26,8 @@ class KakaoOAuthService(
     private val promotionService: PromotionService,
 ) {
     @Transactional
-    fun registerOrLogin(authCode: String, origin: String): LoginResult {
-        val tokenResponse = fetchKakaoUserAccessToken(authCode)
+    fun registerOrLogin(authCode: String, callbackOrigin: String): LoginResult {
+        val tokenResponse = fetchKakaoUserAccessToken(authCode, callbackOrigin)
         val userInfo = kakaoApiClient.getUserInfo("Bearer ${tokenResponse.accessToken}")
         val user = userRepository.findByKakaoId(userInfo.id.toString())
         if (user != null) {
@@ -41,12 +41,12 @@ class KakaoOAuthService(
         return LoginResult.newlyRegistered(accessToken, newUser.refreshToken!!)
     }
 
-    private fun fetchKakaoUserAccessToken(authCode: String): KauthTokenResponse {
+    private fun fetchKakaoUserAccessToken(authCode: String, callbackOrigin: String): KauthTokenResponse {
         return kakaoAuthClient.getToken(
             KauthTokenRequest(
                 grantType = "authorization_code",
                 clientId = kakaoOAuthProperties.restApiKey,
-                redirectUri = kakaoOAuthProperties.callbackUrl,
+                redirectUri = callbackOrigin,
                 code = authCode,
                 clientSecret = kakaoOAuthProperties.clientSecret,
             ).toMap(),
