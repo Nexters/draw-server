@@ -1,33 +1,21 @@
 package com.draw.controller
 
-import com.draw.common.enums.OAuthProvider
 import com.draw.common.enums.PromotionType
 import com.draw.component.JwtProvider
 import com.draw.domain.promotion.Promotion
 import com.draw.domain.promotion.PromotionRepository
-import com.draw.domain.user.User
-import com.draw.infra.persistence.user.UserRepository
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import org.springframework.transaction.annotation.Transactional
 
-@Transactional
-@AutoConfigureMockMvc
-@SpringBootTest
-class PromotionControllerTest {
+class PromotionControllerTest : MvcTestBase() {
 
     @Autowired
     private lateinit var mockMvc: MockMvc
-
-    @Autowired
-    private lateinit var userRepository: UserRepository
 
     @Autowired
     private lateinit var promotionRepository: PromotionRepository
@@ -82,9 +70,5 @@ class PromotionControllerTest {
                 .header("Authorization", "Bearer $token"),
         )
             .andExpect(status().`is`(400))
-    }
-
-    private fun saveUser(): User {
-        return userRepository.save(User(oauthProvider = OAuthProvider.KAKAO, registrationCompleted = true))
     }
 }
