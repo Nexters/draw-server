@@ -1,6 +1,6 @@
 package com.draw.service.oauth
 
-import com.draw.common.AccessTokenExpiredException
+import com.draw.common.RefreshTokenExpiredException
 import com.draw.component.JwtProvider
 import com.draw.domain.user.User
 import com.draw.infra.persistence.user.UserRepository
@@ -14,8 +14,8 @@ class CommonOAuthService(
     private val userRepository: UserRepository,
     private val jwtProvider: JwtProvider,
 ) {
-    fun refreshToken(accessToken: String, refreshToken: String): TokenRefreshResult {
-        val user = extractUserFromAccessToken(accessToken)
+    fun refreshToken(refreshToken: String): TokenRefreshResult {
+        val user = extractUserFromRefreshToken(refreshToken)
 
         if (user.refreshToken != refreshToken) {
             throw IllegalStateException("전달받은 리프레시 토큰이 실제 유저의 리프레시 토큰과 일치하지 않습니다.")
@@ -28,12 +28,12 @@ class CommonOAuthService(
         return TokenRefreshResult(accessToken = newAccessToken, refreshToken = newRefreshToken)
     }
 
-    private fun extractUserFromAccessToken(accessToken: String): User {
+    private fun extractUserFromRefreshToken(refreshToken: String): User {
         val userIdInToken = runCatching {
-            jwtProvider.getId(accessToken).toLong()
+            jwtProvider.getId(refreshToken).toLong()
         }.onFailure { e ->
             when (e) {
-                is ExpiredJwtException -> throw AccessTokenExpiredException()
+                is ExpiredJwtException -> throw RefreshTokenExpiredException()
                 else -> throw Exception(e.message)
             }
         }.getOrThrow()
