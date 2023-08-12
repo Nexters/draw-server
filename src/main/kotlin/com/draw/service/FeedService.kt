@@ -34,8 +34,8 @@ class FeedService(
     private val feedRepository: FeedRepository,
     private val userRepository: UserRepository,
     private val favoriteFeedRepository: FavoriteFeedRepository,
-    private val claimRepository: ClaimRepository,
     private val fcmService: FcmService,
+    private val claimRepository: ClaimRepository,
 ) {
     private val log = KotlinLogging.logger { }
 

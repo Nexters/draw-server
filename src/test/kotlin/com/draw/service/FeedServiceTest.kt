@@ -38,10 +38,10 @@ class FeedServiceTest {
     private val feedRepository = mockk<FeedRepository>()
     private val userRepository = mockk<UserRepository>()
     private val favoriteFeedRepository = mockk<FavoriteFeedRepository>(relaxUnitFun = true)
-    private val claimRepository = mockk<ClaimRepository>(relaxUnitFun = true)
     private val fcmService = mockk<FcmService>(relaxUnitFun = true)
-    private val feedService =
-        FeedService(feedRepository, userRepository, favoriteFeedRepository, claimRepository, fcmService)
+    private val claimRepository = mockk<ClaimRepository>(relaxUnitFun = true)
+
+    private val feedService = FeedService(feedRepository, userRepository, favoriteFeedRepository, fcmService, claimRepository)
 
     private lateinit var feed: Feed
     private lateinit var user: User
