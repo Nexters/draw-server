@@ -1,6 +1,7 @@
 package com.draw.domain.claim
 
 import com.draw.common.enums.ClaimOriginType
+import com.draw.domain.common.BaseEntity
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
@@ -23,7 +24,7 @@ class Claim(
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     val originType: ClaimOriginType,
-) {
+) : BaseEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null

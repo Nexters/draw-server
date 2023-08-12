@@ -16,10 +16,10 @@ import com.draw.domain.claim.Claim
 import com.draw.domain.reply.PeekReply
 import com.draw.domain.reply.Reply
 import com.draw.domain.user.User
+import com.draw.infra.persistence.ClaimRepository
 import com.draw.infra.persistence.FeedRepository
 import com.draw.infra.persistence.PeekReplyRepository
 import com.draw.infra.persistence.ReplyRepository
-import com.draw.infra.persistence.ClaimRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

@@ -11,9 +11,9 @@ import com.draw.controller.dto.FeedCreateReq
 import com.draw.domain.feed.FavoriteFeed
 import com.draw.domain.feed.Feed
 import com.draw.domain.user.User
+import com.draw.infra.persistence.ClaimRepository
 import com.draw.infra.persistence.FavoriteFeedRepository
 import com.draw.infra.persistence.FeedRepository
-import com.draw.infra.persistence.ClaimRepository
 import com.draw.service.dto.FeedProjection
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
