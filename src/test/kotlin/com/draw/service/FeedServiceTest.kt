@@ -11,6 +11,7 @@ import com.draw.controller.dto.FeedCreateReq
 import com.draw.domain.feed.FavoriteFeed
 import com.draw.domain.feed.Feed
 import com.draw.domain.user.User
+import com.draw.infra.persistence.ClaimRepository
 import com.draw.infra.persistence.FavoriteFeedRepository
 import com.draw.infra.persistence.FeedRepository
 import com.draw.service.dto.FeedProjection
@@ -34,8 +35,9 @@ class FeedServiceTest {
 
     private val feedRepository = mockk<FeedRepository>()
     private val favoriteFeedRepository = mockk<FavoriteFeedRepository>(relaxUnitFun = true)
+    private val claimRepository = mockk<ClaimRepository>(relaxUnitFun = true)
 
-    private val feedService = FeedService(feedRepository, favoriteFeedRepository)
+    private val feedService = FeedService(feedRepository, favoriteFeedRepository, claimRepository)
 
     private lateinit var feed: Feed
     private lateinit var user: User
@@ -127,12 +129,14 @@ class FeedServiceTest {
     fun `피드 신고시에도 차단이 생성된다`() {
         // given
         every { feedRepository.findByIdOrNull(1L) } returns feed
+        every { claimRepository.save(any()) } returns mockk()
 
         // when
         feedService.claimFeed(user2, 1L)
 
         // then
         assertThat(feed.blockFeeds).hasSize(1)
+        verify(exactly = 1) { claimRepository.save(any()) }
     }
 
     @Test

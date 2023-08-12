@@ -8,6 +8,7 @@ import com.draw.domain.feed.QFeedViewHistory
 import com.draw.domain.user.User
 import com.draw.service.dto.FeedProjection
 import com.draw.service.dto.QFeedProjection
+import com.querydsl.core.types.dsl.Expressions
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Slice
@@ -148,7 +149,7 @@ class FeedRepositorySupportImpl(
     private fun feedProjection(favoriteFeed: QFavoriteFeed? = null) = QFeedProjection(
         feed.id!!,
         feed.content,
-        favoriteFeed?.id,
+        favoriteFeed?.id ?: Expressions.nullExpression(),
         feed.favoriteCount,
         feed.genders,
         feed.ageRange,
