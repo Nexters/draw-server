@@ -84,6 +84,19 @@ class FeedServiceTest {
     fun `피드가 생성된다`() {
         // given
         every { feedRepository.save(any()) } returns feed
+        every { userRepository.findById(any()) } returns Optional.of(User())
+        every { userRepository.findAll() } returns emptyList()
+        every { feedRepository.findFeedProjection(any()) } returns
+            FeedProjection(
+                id = 0L,
+                content = "content",
+                null,
+                0,
+                mutableListOf(),
+                AgeRange.ALL,
+                mutableListOf(),
+                ZonedDateTime.now(),
+            )
         val req =
             FeedCreateReq(content = "content", genders = listOf(), ageOption = AgeOption.ALL, mbtiChars = listOf())
 
