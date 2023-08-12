@@ -2,10 +2,13 @@ package com.draw.controller
 
 import com.draw.common.enums.PromotionType
 import com.draw.component.JwtProvider
+import com.draw.controller.dto.PromotionConsumeReq
 import com.draw.domain.promotion.Promotion
 import com.draw.domain.promotion.PromotionRepository
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
@@ -22,6 +25,9 @@ class PromotionControllerTest : MvcTestBase() {
 
     @Autowired
     private lateinit var jwtProvider: JwtProvider
+
+    @Autowired
+    private lateinit var objectMapper: ObjectMapper
 
     @Test
     fun `유저의 사용하지 않은 모든 프로모션 리스트를 반환한다`() {
@@ -52,8 +58,10 @@ class PromotionControllerTest : MvcTestBase() {
         )
         val token = jwtProvider.generateAccessToken(user)
         mockMvc.perform(
-            post("/api/v1/promotions/consume/${promotion.id}")
-                .header("Authorization", "Bearer $token"),
+            post("/api/v1/promotions/consume")
+                .header("Authorization", "Bearer $token")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsBytes(PromotionConsumeReq(listOf(promotion.id)))),
         )
             .andExpect(status().isOk)
     }
@@ -66,8 +74,10 @@ class PromotionControllerTest : MvcTestBase() {
         )
         val token = jwtProvider.generateAccessToken(user)
         mockMvc.perform(
-            post("/api/v1/promotions/consume/${promotion.id}")
-                .header("Authorization", "Bearer $token"),
+            post("/api/v1/promotions/consume")
+                .header("Authorization", "Bearer $token")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsBytes(PromotionConsumeReq(listOf(promotion.id)))),
         )
             .andExpect(status().`is`(400))
     }
