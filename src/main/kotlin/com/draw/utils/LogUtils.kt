@@ -23,7 +23,6 @@ object LogUtils {
         duration: Long,
         host: String,
     ) {
-
         val format = LogFormat(
             path = path,
             method = method,

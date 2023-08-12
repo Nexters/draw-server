@@ -59,6 +59,9 @@ discord:
   webhook:
     url: ${DISCORD_WEBHOOK_URL}
 
+firebase:
+  fmc:
+    credential: ${FIREBASE_FCM_CREDENTIAL}
 ---
 spring:
   config:

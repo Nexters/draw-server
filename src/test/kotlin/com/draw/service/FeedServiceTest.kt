@@ -14,6 +14,7 @@ import com.draw.domain.user.User
 import com.draw.infra.persistence.ClaimRepository
 import com.draw.infra.persistence.FavoriteFeedRepository
 import com.draw.infra.persistence.FeedRepository
+import com.draw.infra.persistence.user.UserRepository
 import com.draw.service.dto.FeedProjection
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
@@ -29,15 +30,18 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.data.repository.findByIdOrNull
 import java.time.ZonedDateTime
+import java.util.Optional
 
 @ExtendWith(value = [MockKExtension::class])
 class FeedServiceTest {
 
     private val feedRepository = mockk<FeedRepository>()
+    private val userRepository = mockk<UserRepository>()
     private val favoriteFeedRepository = mockk<FavoriteFeedRepository>(relaxUnitFun = true)
     private val claimRepository = mockk<ClaimRepository>(relaxUnitFun = true)
-
-    private val feedService = FeedService(feedRepository, favoriteFeedRepository, claimRepository)
+    private val fcmService = mockk<FcmService>(relaxUnitFun = true)
+    private val feedService =
+        FeedService(feedRepository, userRepository, favoriteFeedRepository, claimRepository, fcmService)
 
     private lateinit var feed: Feed
     private lateinit var user: User
@@ -82,6 +86,19 @@ class FeedServiceTest {
     fun `피드가 생성된다`() {
         // given
         every { feedRepository.save(any()) } returns feed
+        every { userRepository.findById(any()) } returns Optional.of(User())
+        every { userRepository.findAll() } returns emptyList()
+        every { feedRepository.findFeedProjection(any()) } returns
+            FeedProjection(
+                id = 0L,
+                content = "content",
+                null,
+                0,
+                mutableListOf(),
+                AgeRange.ALL,
+                mutableListOf(),
+                ZonedDateTime.now(),
+            )
         val req =
             FeedCreateReq(content = "content", genders = listOf(), ageOption = AgeOption.ALL, mbtiChars = listOf())
 
@@ -154,8 +171,9 @@ class FeedServiceTest {
         every { feedRepository.findByIdOrNull(1L) } returns feed
         every { favoriteFeedRepository.save(any()) } returns FavoriteFeed(
             userId = 1L,
-            feed = feed
+            feed = feed,
         )
+        every { userRepository.findById(1L) } returns Optional.of(User())
 
         // when
         feedService.createFavoriteFeed(user, 1L)

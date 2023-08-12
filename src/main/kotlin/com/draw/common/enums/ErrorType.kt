@@ -12,7 +12,6 @@ enum class ErrorType(
     POINT_IS_NOT_ENOUGH(40005, "Point is not enough"),
     USER_NOT_FOUND(40006, "User not found"),
     ALREADY_PEEKED(40007, "already peeked"),
-
     UNKNOWN_ERROR(50000, "Unknown error"),
 
     // 에러코드들을 5자리로 하면 Http status 코드랑 조금 더 직관적으로 매칭될 것 같다

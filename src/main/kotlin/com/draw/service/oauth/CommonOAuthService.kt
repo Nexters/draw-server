@@ -7,7 +7,6 @@ import com.draw.infra.persistence.user.UserRepository
 import com.draw.service.oauth.dto.TokenRefreshResult
 import io.jsonwebtoken.ExpiredJwtException
 import org.springframework.stereotype.Service
-import java.lang.IllegalArgumentException
 import kotlin.jvm.optionals.getOrNull
 
 @Service
