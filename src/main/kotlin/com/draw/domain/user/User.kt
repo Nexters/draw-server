@@ -13,7 +13,6 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
-import jakarta.persistence.Transient
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -40,6 +39,12 @@ class User(
     private var point: Long = 0L,
 
     var lastLoggedAt: ZonedDateTime? = null,
+
+    var mbti: MBTI? = null,
+
+    var gender: Gender? = null,
+
+    var dateOfBirth: String? = null,
 ) : BaseEntity() {
     fun grantPoint(point: Point) {
         this.point = point.value
@@ -53,25 +58,14 @@ class User(
         return lastLoggedAt == null
     }
 
-    // TODO: 개발용 임시 2023/08/04 (koi)
-    @Transient
-    var mbti: MBTI = MBTI.ESTJ
-        protected set
-
-    // TODO: 개발용 임시 2023/08/04 (koi)
-    @Transient
-    var gender: Gender = Gender.MALE
-        protected set
-
-    // TODO:  2023/08/04 (koi)
-    @Transient
-    var dateOfBirth: String = "950731"
-        protected set
-
     fun getAge(): Int {
-        require(dateOfBirth.length == 6) { "dateOfBirth length must be 6" }
+        // 백도어 API 로 가입완료 시킨 유저들 대응하기 위해서 임시로 추가
+        if (dateOfBirth == null) {
+            return 20
+        }
+        require(dateOfBirth!!.length == 6) { "dateOfBirth length must be 6" }
 
-        val userYear = dateOfBirth.substring(0, 2).let {
+        val userYear = dateOfBirth!!.substring(0, 2).let {
             if (it.toInt() > 40) {
                 "19$it"
             } else {
@@ -81,7 +75,7 @@ class User(
 
         val now = LocalDate.now(ZoneId.of("Asia/Seoul"))
         val thisYearBirthDay =
-            LocalDate.of(now.year, dateOfBirth.substring(2, 4).toInt(), dateOfBirth.substring(4, 6).toInt())
+            LocalDate.of(now.year, dateOfBirth!!.substring(2, 4).toInt(), dateOfBirth!!.substring(4, 6).toInt())
 
         if (now.isAfter(thisYearBirthDay)) {
             return now.year - userYear
