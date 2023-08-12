@@ -55,11 +55,12 @@ class FeedService(
         val feed = feedRepository.save(
             feedCreateReq.toEntity(user.id!!, user.getAge()),
         )
+        val writer = userRepository.findById(feed.writerId).orElseThrow { UserNotFoundException() }
         val candidates = userRepository.findAll()
         // TODO 개선필요 (성능상 문제될 수 있음)
         val feedProjection = feedRepository.findFeedProjection(feed.id!!) ?: throw FeedNotFoundException()
         candidates.filter { isFit(feedProjection, it) }
-            .forEach { fcmService.pushFeedRecommended(it, feed.id!!) }
+            .forEach { fcmService.pushFeedRecommendation(writer, it, feed.id!!) }
     }
 
     @Transactional

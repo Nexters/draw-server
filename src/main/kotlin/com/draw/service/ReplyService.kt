@@ -109,7 +109,7 @@ class ReplyService(
             ),
         )
         val replyWriter = userRepository.findById(reply.writerId).orElseThrow { throw UserNotFoundException() }
-        fcmService.pushLike(fromUser = user, receiveUser = replyWriter, detailId = reply.feed.id!!)
+        fcmService.pushPeekNotification(peekUser = user, receiveUser = replyWriter, detailId = reply.feed.id!!)
         return ReplyWriterRes(MBTI.ENFP, Gender.MALE, 29) // TODO:  2023/08/02 (koi)
     }
 

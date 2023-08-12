@@ -12,6 +12,6 @@ class FakeFcmService : FcmService {
     override fun pushPeekNotification(peekUser: User, receiveUser: User, detailId: Long) {
     }
 
-    override fun pushFeedRecommended(receiveUser: User, detailId: Long) {
+    override fun pushFeedRecommendation(feedWriter: User, receiveUser: User, detailId: Long) {
     }
 }

@@ -13,6 +13,7 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
+import java.time.Duration
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -86,5 +87,21 @@ class User(
         }
 
         return now.year - userYear - 1
+    }
+
+    fun isFitRecommendationIntervalElapsed(): Boolean {
+        if (lastFitPushReceivedAt == null) {
+            return true
+        }
+        val gap = Duration.between(ZonedDateTime.now(), lastFitPushReceivedAt)
+        val minGap = Duration.ofHours(6)
+        if (gap >= minGap) {
+            return true
+        }
+        return false
+    }
+
+    fun markFitRecommendationReceived() {
+        this.lastFitPushReceivedAt = ZonedDateTime.now()
     }
 }
