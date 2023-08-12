@@ -9,6 +9,9 @@ enum class ErrorType(
     FAVORITE_FEED_ALREADY_EXISTS(40002, "Favorite feed already exists"),
     FEED_NOT_FOUND(40003, "Feed not found"),
     REPLY_NOT_FOUND(40004, "Reply not found"),
+    POINT_IS_NOT_ENOUGH(40005, "Point is not enough"),
+    USER_NOT_FOUND(40006, "User not found"),
+    ALREADY_PEEKED(40007, "already peeked"),
 
     UNKNOWN_ERROR(50000, "Unknown error"),
 

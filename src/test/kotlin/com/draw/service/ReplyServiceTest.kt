@@ -1,16 +1,22 @@
 package com.draw.service
 
+import com.draw.common.enums.Gender
+import com.draw.common.enums.MBTI
 import com.draw.common.enums.VisibleTarget
 import com.draw.controller.dto.ReplyCreateReq
 import com.draw.domain.feed.Feed
 import com.draw.domain.reply.Reply
+import com.draw.domain.reply.WriterInfo
 import com.draw.domain.user.User
+import com.draw.infra.persistence.ClaimRepository
 import com.draw.infra.persistence.FeedRepository
 import com.draw.infra.persistence.PeekReplyRepository
 import com.draw.infra.persistence.ReplyRepository
+import com.draw.infra.persistence.user.UserRepository
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -24,8 +30,11 @@ class ReplyServiceTest {
     private val feedRepository = mockk<FeedRepository>()
     private val replyRepository = mockk<ReplyRepository>()
     private val peekReplyRepository = mockk<PeekReplyRepository>()
+    private val claimRepository = mockk<ClaimRepository>()
+    private val userRepository = mockk<UserRepository>()
 
-    private val replyService = ReplyService(feedRepository, replyRepository, peekReplyRepository)
+    private val replyService =
+        ReplyService(feedRepository, replyRepository, peekReplyRepository, claimRepository, userRepository)
 
     private lateinit var feed: Feed
     private lateinit var user: User
@@ -38,10 +47,16 @@ class ReplyServiceTest {
 
         user = User(
             id = 1L,
+            mbti = MBTI.ESTJ,
+            gender = Gender.MALE,
+            dateOfBirth = "950731",
         )
 
         user2 = User(
             id = 2L,
+            mbti = MBTI.ESTJ,
+            gender = Gender.MALE,
+            dateOfBirth = "950731",
         )
     }
 
@@ -60,7 +75,8 @@ class ReplyServiceTest {
     @Test
     fun `리플 차단이 생성된다`() {
         // given
-        val reply = Reply(feed = feed, content = "content", writerId = 1L)
+        val reply =
+            Reply(feed = feed, content = "content", writerId = 1L, writerInfo = WriterInfo(MBTI.ESTJ, Gender.MALE, 20))
         every { replyRepository.findByIdOrNull(1L) } returns reply
 
         // when
@@ -73,7 +89,8 @@ class ReplyServiceTest {
     @Test
     fun `내 리플은 차단할 수 없다`() {
         // given
-        val reply = Reply(feed = feed, content = "content", writerId = 1L)
+        val reply =
+            Reply(feed = feed, content = "content", writerId = 1L, writerInfo = WriterInfo(MBTI.ESTJ, Gender.MALE, 20))
         every { replyRepository.findByIdOrNull(1L) } returns reply
 
         // when, then
@@ -83,20 +100,24 @@ class ReplyServiceTest {
     @Test
     fun `리플 신고시에도 차단이 생성된다`() {
         // given
-        val reply = Reply(feed = feed, content = "content", writerId = 1L)
+        val reply =
+            Reply(feed = feed, content = "content", writerId = 1L, writerInfo = WriterInfo(MBTI.ESTJ, Gender.MALE, 20))
         every { replyRepository.findByIdOrNull(1L) } returns reply
+        every { claimRepository.save(any()) } returns mockk()
 
         // when
         replyService.claimReply(user2, 1L)
 
         // then
         assertThat(reply.blockReplies).hasSize(1)
+        verify(exactly = 1) { claimRepository.save(any()) }
     }
 
     @Test
     fun `내 리플은 신고할 수 없다`() {
         // given
-        val reply = Reply(feed = feed, content = "content", writerId = 1L)
+        val reply =
+            Reply(feed = feed, content = "content", writerId = 1L, writerInfo = WriterInfo(MBTI.ESTJ, Gender.MALE, 20))
         every { replyRepository.findByIdOrNull(1L) } returns reply
 
         // when, then
@@ -106,7 +127,8 @@ class ReplyServiceTest {
     @Test
     fun `내 리플은 훔쳐볼 수 없다`() {
         // given
-        val reply = Reply(feed = feed, content = "content", writerId = 1L)
+        val reply =
+            Reply(feed = feed, content = "content", writerId = 1L, writerInfo = WriterInfo(MBTI.ESTJ, Gender.MALE, 20))
         every { replyRepository.findByIdOrNull(1L) } returns reply
 
         // when, then
