@@ -22,11 +22,8 @@ class OAuthSecurityFilter(
     private val objectMapper: ObjectMapper,
 ) : GenericFilterBean() {
     override fun doFilter(request: ServletRequest?, response: ServletResponse, chain: FilterChain) {
-        (response as HttpServletResponse).setHeader(
-            "Access-Control-Allow-Origin",
-            "http://localhost:5173, https://draw-nexters.kro.kr, https://draw-nexters.netlify.app",
-        )
-        response.setHeader("Access-Control-Allow-Credentials", "true")
+        (response as HttpServletResponse).setHeader("Access-Control-Allow-Origin", "*")
+        response.setHeader("Access-Control-Allow-Credentials", "false")
         response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD")
         response.setHeader(
             "Access-Control-Allow-Headers",
