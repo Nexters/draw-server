@@ -1,6 +1,7 @@
 package com.draw.config.security
 
 import com.draw.component.JwtProvider
+import com.draw.service.oauth.UserAuthenticationService
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletRequest
@@ -21,6 +22,7 @@ import org.springframework.web.filter.GenericFilterBean
 class SecurityConfig(
     private val jwtProvider: JwtProvider,
     private val authorizationRequiredRequestMatcher: DrawApiRequestMatcher,
+    private val userAuthenticationService: UserAuthenticationService,
     private val objectMapper: ObjectMapper,
 ) {
 
@@ -34,7 +36,7 @@ class SecurityConfig(
             .sessionManagement { mgmt -> mgmt.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .securityMatcher("/api/v1/**")
             .addFilterBefore(
-                OAuthSecurityFilter(jwtProvider, authorizationRequiredRequestMatcher, objectMapper),
+                OAuthSecurityFilter(jwtProvider, authorizationRequiredRequestMatcher, userAuthenticationService, objectMapper),
                 BasicAuthenticationFilter::class.java,
             )
             .exceptionHandling { handling ->
@@ -74,12 +76,5 @@ class SecurityConfig(
                 BasicAuthenticationFilter::class.java,
             )
             .build()
-    }
-
-    private fun permitAllUrls(): Array<String> {
-        return arrayOf(
-            "/health",
-            "/ready",
-        )
     }
 }

@@ -3,6 +3,7 @@ package com.draw.domain.user
 import com.draw.common.enums.Gender
 import com.draw.common.enums.MBTI
 import com.draw.common.enums.OAuthProvider
+import com.draw.domain.Point
 import com.draw.domain.common.BaseEntity
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -15,6 +16,7 @@ import jakarta.persistence.Table
 import jakarta.persistence.Transient
 import java.time.LocalDate
 import java.time.ZoneId
+import java.time.ZonedDateTime
 
 @Entity
 @Table(name = "draw_user")
@@ -34,7 +36,22 @@ class User(
     var oauthProvider: OAuthProvider? = null,
 
     var refreshToken: String? = null,
+
+    private var point: Long = 0L,
+
+    var lastLoggedAt: ZonedDateTime? = null,
 ) : BaseEntity() {
+    fun grantPoint(point: Point) {
+        this.point = point.value
+    }
+
+    fun getPoint(): Point {
+        return Point(this.point)
+    }
+
+    fun isFirstActivity(): Boolean {
+        return lastLoggedAt == null
+    }
 
     // TODO: 개발용 임시 2023/08/04 (koi)
     @Transient

@@ -3,6 +3,7 @@ package com.draw.config.security
 import com.draw.common.enums.ErrorType
 import com.draw.common.response.ErrorRes
 import com.draw.component.JwtProvider
+import com.draw.service.oauth.UserAuthenticationService
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.jsonwebtoken.ExpiredJwtException
 import jakarta.servlet.FilterChain
@@ -19,6 +20,7 @@ import org.springframework.web.filter.GenericFilterBean
 class OAuthSecurityFilter(
     private val jwtProvider: JwtProvider,
     private val authorizationRequiredRequestMatcher: DrawApiRequestMatcher,
+    private val userAuthenticationService: UserAuthenticationService,
     private val objectMapper: ObjectMapper,
 ) : GenericFilterBean() {
     override fun doFilter(request: ServletRequest?, response: ServletResponse, chain: FilterChain) {
@@ -28,7 +30,6 @@ class OAuthSecurityFilter(
         response.setHeader(
             "Access-Control-Allow-Headers",
             "*",
-
         )
         val tokenHeader = (request as HttpServletRequest).getHeader(HttpHeaders.AUTHORIZATION)
         if (request.method == "OPTIONS") {
