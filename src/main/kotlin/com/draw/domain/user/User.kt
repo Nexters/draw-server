@@ -40,8 +40,10 @@ class User(
 
     var lastLoggedAt: ZonedDateTime? = null,
 
+    @Enumerated(EnumType.STRING)
     var mbti: MBTI? = null,
 
+    @Enumerated(EnumType.STRING)
     var gender: Gender? = null,
 
     var dateOfBirth: String? = null,
