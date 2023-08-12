@@ -46,7 +46,7 @@ class KakaoOAuthService(
             KauthTokenRequest(
                 grantType = "authorization_code",
                 clientId = kakaoOAuthProperties.restApiKey,
-                redirectUri = callbackOrigin,
+                redirectUri = "$callbackOrigin/callback/kakao",
                 code = authCode,
                 clientSecret = kakaoOAuthProperties.clientSecret,
             ).toMap(),
