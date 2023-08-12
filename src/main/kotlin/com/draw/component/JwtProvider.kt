@@ -1,5 +1,7 @@
 package com.draw.component
 
+import com.draw.common.AccessTokenExpiredException
+import com.draw.common.RefreshTokenExpiredException
 import com.draw.domain.user.User
 import com.draw.infra.persistence.user.UserRepository
 import com.draw.properties.JwtProperties
@@ -85,11 +87,13 @@ class JwtProvider(
             if (isExpired) {
                 user.refreshToken = null
                 userRepository.save(user)
-                throw RuntimeException("RefreshToken expired")
+                throw RefreshTokenExpiredException()
             }
         }
-        if (isExpired) {
-            throw RuntimeException("AccessToken expired")
+        if (tokenType == ACCESS_TOKEN) {
+            if (isExpired) {
+                throw AccessTokenExpiredException()
+            }
         }
     }
 
