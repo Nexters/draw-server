@@ -41,8 +41,10 @@ class User(
 
     var lastLoggedAt: ZonedDateTime? = null,
 
+    @Enumerated(EnumType.STRING)
     var mbti: MBTI? = null,
 
+    @Enumerated(EnumType.STRING)
     var gender: Gender? = null,
 
     var dateOfBirth: String? = null,
@@ -53,6 +55,20 @@ class User(
 ) : BaseEntity() {
     fun grantPoint(point: Point) {
         this.point = point.value
+    }
+
+    fun canUsePoint(value: Long): Boolean {
+        return this.point >= value
+    }
+
+    fun usePoint(value: Long) {
+        check(canUsePoint(value)) { "can't use point" }
+
+        this.point = this.point - value
+    }
+
+    fun addPoint(value: Long) {
+        this.point = this.point + value
     }
 
     fun getPoint(): Point {

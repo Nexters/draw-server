@@ -33,7 +33,6 @@ object LogUtils {
             logType = LogType.ACCESS,
             duration = duration,
             requestId = MDC.get(Const.REQUEST_ID),
-            userId = MDC.get(Const.USER_ID),
             time = ZonedDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME),
             host = host,
         )

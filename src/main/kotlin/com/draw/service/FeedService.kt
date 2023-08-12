@@ -1,6 +1,7 @@
 package com.draw.service
 
 import com.draw.common.BusinessException
+import com.draw.common.enums.ClaimOriginType
 import com.draw.common.enums.ErrorType
 import com.draw.common.enums.Gender
 import com.draw.common.enums.MBTI
@@ -11,8 +12,11 @@ import com.draw.controller.dto.FeedRes
 import com.draw.controller.dto.FeedsRes
 import com.draw.controller.dto.MyFavoriteFeedRes
 import com.draw.controller.dto.MyFavoriteFeedsRes
+import com.draw.domain.claim.Claim
 import com.draw.domain.feed.FavoriteFeed
+import com.draw.domain.feed.Feed
 import com.draw.domain.user.User
+import com.draw.infra.persistence.ClaimRepository
 import com.draw.infra.persistence.FavoriteFeedRepository
 import com.draw.infra.persistence.FeedRepository
 import com.draw.infra.persistence.user.UserRepository
@@ -31,6 +35,7 @@ class FeedService(
     private val userRepository: UserRepository,
     private val favoriteFeedRepository: FavoriteFeedRepository,
     private val fcmService: FcmService,
+    private val claimRepository: ClaimRepository,
 ) {
     private val log = KotlinLogging.logger { }
 
@@ -70,18 +75,25 @@ class FeedService(
     }
 
     @Transactional
-    fun blockFeed(user: User, feedId: Long) {
+    fun blockFeed(user: User, feedId: Long): Feed {
         val feed = feedRepository.findByIdOrNull(feedId) ?: throw FeedNotFoundException()
         require(feed.writerId != user.id!!) { "Not allowed block own feed" }
 
         feed.addBlockFeed(user.id!!)
+        return feed
     }
 
     @Transactional
     fun claimFeed(user: User, feedId: Long) {
-        blockFeed(user, feedId)
-
-        // TODO: 신고하기 로직 추가 2023/08/04 (koi)
+        val feed = blockFeed(user, feedId)
+        claimRepository.save(
+            Claim(
+                reportedUserId = feed.writerId,
+                informantUserId = user.id!!,
+                originId = feedId,
+                originType = ClaimOriginType.FEED,
+            )
+        )
     }
 
     @Transactional

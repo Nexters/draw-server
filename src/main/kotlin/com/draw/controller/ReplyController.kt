@@ -77,7 +77,14 @@ class ReplyController(
     }
 
     @PostMapping("/replies/{replyId}/peek")
-    @Operation(summary = "리플 훔쳐보기")
+    @Operation(
+        summary = "리플 훔쳐보기",
+        description = """
+            40005: 포인트가 부족합니다.
+            40006: 유저를 찾을 수 없습니다.
+            40007: 이미 훔쳐보았습니다.
+            """,
+    )
     fun peekReply(
         @AuthenticationPrincipal user: User,
         @PathVariable("replyId") replyId: Long,
