@@ -37,8 +37,7 @@ class FeedController(
         @RequestParam("lastFeedId", required = false)
         lastFeedId: Long?,
     ): FeedsRes {
-        return FeedsRes(emptyList(), true)
-        // return feedService.getFeeds(user, lastFeedId)
+        return feedService.getFeeds(user, lastFeedId)
     }
 
     @PostMapping
