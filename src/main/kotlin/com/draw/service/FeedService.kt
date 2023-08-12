@@ -30,7 +30,7 @@ class FeedService(
     private val feedRepository: FeedRepository,
     private val userRepository: UserRepository,
     private val favoriteFeedRepository: FavoriteFeedRepository,
-    private val fmcService: FcmService,
+    private val fcmService: FcmService,
 ) {
     private val log = KotlinLogging.logger { }
 
@@ -89,7 +89,7 @@ class FeedService(
                 ),
             )
             val writer = userRepository.findById(feed.writerId).getOrElse { throw UserNotFoundException() }
-            fmcService.pushLike(fromUser = user, receiveUser = writer, detailId = feed.id!!)
+            fcmService.pushLike(fromUser = user, receiveUser = writer, detailId = feed.id!!)
         } catch (e: DataIntegrityViolationException) {
             throw BusinessException(ErrorType.FAVORITE_FEED_ALREADY_EXISTS, e)
         }

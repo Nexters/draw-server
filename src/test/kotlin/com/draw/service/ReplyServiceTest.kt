@@ -8,6 +8,7 @@ import com.draw.domain.user.User
 import com.draw.infra.persistence.FeedRepository
 import com.draw.infra.persistence.PeekReplyRepository
 import com.draw.infra.persistence.ReplyRepository
+import com.draw.infra.persistence.user.UserRepository
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
@@ -24,8 +25,10 @@ class ReplyServiceTest {
     private val feedRepository = mockk<FeedRepository>()
     private val replyRepository = mockk<ReplyRepository>()
     private val peekReplyRepository = mockk<PeekReplyRepository>()
+    private val userRepository = mockk<UserRepository>()
+    private val fcmService = mockk<FcmService>(relaxUnitFun = true)
 
-    private val replyService = ReplyService(feedRepository, replyRepository, peekReplyRepository)
+    private val replyService = ReplyService(feedRepository, replyRepository, peekReplyRepository, userRepository, fcmService)
 
     private lateinit var feed: Feed
     private lateinit var user: User
