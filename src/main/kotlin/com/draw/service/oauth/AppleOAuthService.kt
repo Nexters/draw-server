@@ -48,6 +48,9 @@ class AppleOAuthService(
         val appleId = parsedToken.body["sub"] as String
         val user = userRepository.findByAppleId(appleId)
         if (user != null) {
+            if (!user.registrationCompleted) {
+                return LoginResult.newlyRegistered(jwtProvider.generateAccessToken(user), jwtProvider.generateRefreshToken(user))
+            }
             return LoginResult.normal(jwtProvider.generateAccessToken(user), jwtProvider.generateRefreshToken(user))
         }
         val newUser = User(appleId = appleId, oauthProvider = OAuthProvider.APPLE)

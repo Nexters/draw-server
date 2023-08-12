@@ -31,6 +31,9 @@ class KakaoOAuthService(
         val userInfo = kakaoApiClient.getUserInfo("Bearer ${tokenResponse.accessToken}")
         val user = userRepository.findByKakaoId(userInfo.id.toString())
         if (user != null) {
+            if (!user.registrationCompleted) {
+                return LoginResult.newlyRegistered(jwtProvider.generateAccessToken(user), jwtProvider.generateRefreshToken(user))
+            }
             return LoginResult.normal(jwtProvider.generateAccessToken(user), jwtProvider.generateRefreshToken(user))
         }
         val newUser = User(kakaoId = userInfo.id.toString(), oauthProvider = OAuthProvider.KAKAO)
