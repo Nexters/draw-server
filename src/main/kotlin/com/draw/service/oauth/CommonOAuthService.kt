@@ -1,6 +1,6 @@
 package com.draw.service.oauth
 
-import com.draw.common.RefreshTokenExpiredException
+import com.draw.common.AccessTokenExpiredException
 import com.draw.component.JwtProvider
 import com.draw.domain.user.User
 import com.draw.infra.persistence.user.UserRepository
@@ -33,7 +33,7 @@ class CommonOAuthService(
             jwtProvider.getId(accessToken).toLong()
         }.onFailure { e ->
             when (e) {
-                is ExpiredJwtException -> throw RefreshTokenExpiredException()
+                is ExpiredJwtException -> throw AccessTokenExpiredException()
                 else -> throw Exception(e.message)
             }
         }.getOrThrow()
