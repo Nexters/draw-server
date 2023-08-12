@@ -2,6 +2,10 @@ package com.draw.config.security
 
 import com.draw.component.JwtProvider
 import com.fasterxml.jackson.databind.ObjectMapper
+import jakarta.servlet.FilterChain
+import jakarta.servlet.ServletRequest
+import jakarta.servlet.ServletResponse
+import jakarta.servlet.http.HttpServletResponse
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
@@ -10,11 +14,13 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter
+import org.springframework.web.filter.GenericFilterBean
 
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
     private val jwtProvider: JwtProvider,
+    private val authorizationRequiredRequestMatcher: DrawApiRequestMatcher,
     private val objectMapper: ObjectMapper,
 ) {
 
@@ -27,11 +33,8 @@ class SecurityConfig(
             .formLogin { formLogin -> formLogin.disable() }
             .sessionManagement { mgmt -> mgmt.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .securityMatcher("/api/v1/**")
-            .authorizeHttpRequests {
-                it.anyRequest().authenticated()
-            }
             .addFilterBefore(
-                OAuthSecurityFilter(jwtProvider, objectMapper),
+                OAuthSecurityFilter(jwtProvider, authorizationRequiredRequestMatcher, objectMapper),
                 BasicAuthenticationFilter::class.java,
             )
             .exceptionHandling { handling ->
@@ -51,6 +54,25 @@ class SecurityConfig(
             .authorizeHttpRequests {
                 it.anyRequest().permitAll()
             }
+            .addFilterBefore(
+                object : GenericFilterBean() {
+                    override fun doFilter(request: ServletRequest?, response: ServletResponse?, chain: FilterChain) {
+                        (response as HttpServletResponse).setHeader("Access-Control-Allow-Origin", "*")
+                        response.setHeader("Access-Control-Allow-Credentials", "false")
+                        response.setHeader(
+                            "Access-Control-Allow-Methods",
+                            "GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD",
+                        )
+                        response.setHeader(
+                            "Access-Control-Allow-Headers",
+                            "*",
+
+                        )
+                        chain.doFilter(request, response)
+                    }
+                },
+                BasicAuthenticationFilter::class.java,
+            )
             .build()
     }
 

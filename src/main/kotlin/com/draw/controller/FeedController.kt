@@ -33,17 +33,19 @@ class FeedController(
     @Operation(summary = "피드 조회")
     fun getFeeds(
         @AuthenticationPrincipal user: User?,
-        @Parameter(description = "마지막 피드 id") @RequestParam("lastFeedId", required = false) lastFeedId: Long?,
+        @Parameter(description = "마지막 피드 id")
+        @RequestParam("lastFeedId", required = false)
+        lastFeedId: Long?,
     ): FeedsRes {
-
-        return feedService.getFeeds(user, lastFeedId)
+        return FeedsRes(emptyList(), true)
+        // return feedService.getFeeds(user, lastFeedId)
     }
 
     @PostMapping
     @Operation(summary = "피드 작성")
     fun createFeed(
         @AuthenticationPrincipal user: User,
-        @RequestBody feedCreateReq: FeedCreateReq
+        @RequestBody feedCreateReq: FeedCreateReq,
     ) {
         feedService.createFeed(user, feedCreateReq)
     }
@@ -53,7 +55,9 @@ class FeedController(
     @Operation(summary = "내가 쓴 피드 조회")
     fun getFeedsByMe(
         @AuthenticationPrincipal user: User,
-        @Parameter(description = "마지막 피드 id") @RequestParam("lastFeedId", required = false) lastFeedId: Long?,
+        @Parameter(description = "마지막 피드 id")
+        @RequestParam("lastFeedId", required = false)
+        lastFeedId: Long?,
     ): FeedsRes {
         return feedService.getMyFeeds(user, lastFeedId)
     }
@@ -63,9 +67,10 @@ class FeedController(
     @Operation(summary = "내가 좋아요한 피드 조회")
     fun getFeedsByMeFavorites(
         @AuthenticationPrincipal user: User,
-        @Parameter(description = "마지막 좋아요 id") @RequestParam("lastFavoriteId", required = false) lastFavoriteId: Long?,
+        @Parameter(description = "마지막 좋아요 id")
+        @RequestParam("lastFavoriteId", required = false)
+        lastFavoriteId: Long?,
     ): MyFavoriteFeedsRes {
-
         return feedService.getMyFavoriteFeeds(user, lastFavoriteId)
     }
 
@@ -73,7 +78,9 @@ class FeedController(
     @Operation(summary = "피드 조회 (상세)")
     fun getFeed(
         @AuthenticationPrincipal user: User?,
-        @Parameter(description = "피드 id") @PathVariable("feedId") feedId: Long,
+        @Parameter(description = "피드 id")
+        @PathVariable("feedId")
+        feedId: Long,
     ): FeedRes {
         return feedService.getFeed(user, feedId)
     }
@@ -82,7 +89,9 @@ class FeedController(
     @Operation(summary = "피드 확인 기록 저장")
     fun createFeedView(
         @AuthenticationPrincipal user: User,
-        @Parameter(description = "피드 id") @PathVariable("feedId") feedId: Long,
+        @Parameter(description = "피드 id")
+        @PathVariable("feedId")
+        feedId: Long,
     ) {
         feedService.createFeedView(user, feedId)
     }
@@ -91,7 +100,9 @@ class FeedController(
     @Operation(summary = "피드 차단")
     fun blockFeed(
         @AuthenticationPrincipal user: User,
-        @Parameter(description = "피드 id") @PathVariable("feedId") feedId: Long,
+        @Parameter(description = "피드 id")
+        @PathVariable("feedId")
+        feedId: Long,
     ) {
         feedService.blockFeed(user, feedId)
     }
@@ -100,7 +111,9 @@ class FeedController(
     @Operation(summary = "피드 신고")
     fun claimFeed(
         @AuthenticationPrincipal user: User,
-        @Parameter(description = "피드 id") @PathVariable("feedId") feedId: Long,
+        @Parameter(description = "피드 id")
+        @PathVariable("feedId")
+        feedId: Long,
     ) {
         feedService.claimFeed(user, feedId)
     }
@@ -108,7 +121,7 @@ class FeedController(
     @PostMapping("/{feedId}/favorites")
     @Operation(
         summary = "피드 좋아요",
-        responses = [ApiResponse(responseCode = "400(40002)", description = "FAVORITE_FEED_ALREADY_EXISTS")]
+        responses = [ApiResponse(responseCode = "400(40002)", description = "FAVORITE_FEED_ALREADY_EXISTS")],
     )
     fun createFavoriteFeed(
         @AuthenticationPrincipal user: User,
