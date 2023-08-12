@@ -29,7 +29,7 @@ class UserValidationInterceptor(
                 return true
             }
             val user = authentication.principal as User
-            if (!user.registrationCompleted) {
+            if (!user.registrationCompleted && !isRegisterIncompletePermittedUrl(request)) {
                 response.status = HttpStatus.FORBIDDEN.value()
                 writer.print(objectMapper.writeValueAsString(ErrorRes.of(ErrorType.INCOMPLETE_REGISTRATION)))
                 writer.flush()
@@ -42,5 +42,12 @@ class UserValidationInterceptor(
             return false
         }
         return true
+    }
+
+    private fun isRegisterIncompletePermittedUrl(request: HttpServletRequest): Boolean {
+        val list = listOf(
+            "/api/v1/users/register",
+        )
+        return list.any { request.requestURI == it }
     }
 }
