@@ -1,5 +1,7 @@
 package com.draw.controller.oauth
 
+import com.draw.common.enums.Gender
+import com.draw.common.enums.MBTI
 import com.draw.common.enums.OAuthProvider
 import com.draw.component.JwtProvider
 import com.draw.domain.user.User
@@ -28,6 +30,9 @@ class OAuthBackDoorController(
                     appleId = if (req.oauthProvider == OAuthProvider.APPLE) "-1" else null,
                     registrationCompleted = req.registerCompleted,
                     oauthProvider = req.oauthProvider,
+                    mbti = MBTI.ESTJ,
+                    gender = Gender.MALE,
+                    dateOfBirth = "950731",
                 ),
             )
         val accessToken = jwtProvider.generateAccessToken(user, req.accessTokenLifeTime)
