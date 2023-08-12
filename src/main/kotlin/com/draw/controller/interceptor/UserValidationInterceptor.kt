@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.security.authentication.AnonymousAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.servlet.HandlerInterceptor
 
@@ -24,8 +25,11 @@ class UserValidationInterceptor(
         response.contentType = MediaType.APPLICATION_JSON_VALUE
 
         if (authentication != null && authentication.isAuthenticated) {
+            if (authentication is AnonymousAuthenticationToken) {
+                return true
+            }
             val user = authentication.principal as User
-            if (!user.registrationCompleted) {
+            if (!user.registrationCompleted && !isRegisterIncompletePermittedUrl(request)) {
                 response.status = HttpStatus.FORBIDDEN.value()
                 writer.print(objectMapper.writeValueAsString(ErrorRes.of(ErrorType.INCOMPLETE_REGISTRATION)))
                 writer.flush()
@@ -38,5 +42,12 @@ class UserValidationInterceptor(
             return false
         }
         return true
+    }
+
+    private fun isRegisterIncompletePermittedUrl(request: HttpServletRequest): Boolean {
+        val list = listOf(
+            "/api/v1/users/register",
+        )
+        return list.any { request.requestURI == it }
     }
 }
