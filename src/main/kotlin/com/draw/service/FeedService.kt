@@ -30,7 +30,7 @@ class FeedService(
     private val feedRepository: FeedRepository,
     private val userRepository: UserRepository,
     private val favoriteFeedRepository: FavoriteFeedRepository,
-    private val fmcService: FcmService,
+    private val fcmService: FcmService,
 ) {
     private val log = KotlinLogging.logger { }
 
@@ -52,9 +52,14 @@ class FeedService(
 
     @Transactional
     fun createFeed(user: User, feedCreateReq: FeedCreateReq) {
-        feedRepository.save(
+        val feed = feedRepository.save(
             feedCreateReq.toEntity(user.id!!, user.getAge()),
         )
+        val candidates = userRepository.findAll()
+        // TODO 개선필요 (성능상 문제될 수 있음)
+        val feedProjection = feedRepository.findFeedProjection(feed.id!!) ?: throw FeedNotFoundException()
+        candidates.filter { isFit(feedProjection, it) }
+            .forEach { fcmService.pushFeedRecommended(it, feed.id!!) }
     }
 
     @Transactional
@@ -89,7 +94,7 @@ class FeedService(
                 ),
             )
             val writer = userRepository.findById(feed.writerId).getOrElse { throw UserNotFoundException() }
-            fmcService.pushLike(fromUser = user, receiveUser = writer, detailId = feed.id!!)
+            fcmService.pushLike(fromUser = user, receiveUser = writer, detailId = feed.id!!)
         } catch (e: DataIntegrityViolationException) {
             throw BusinessException(ErrorType.FAVORITE_FEED_ALREADY_EXISTS, e)
         }

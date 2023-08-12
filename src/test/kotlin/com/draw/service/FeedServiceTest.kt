@@ -13,6 +13,7 @@ import com.draw.domain.feed.Feed
 import com.draw.domain.user.User
 import com.draw.infra.persistence.FavoriteFeedRepository
 import com.draw.infra.persistence.FeedRepository
+import com.draw.infra.persistence.user.UserRepository
 import com.draw.service.dto.FeedProjection
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
@@ -28,14 +29,17 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.data.repository.findByIdOrNull
 import java.time.ZonedDateTime
+import java.util.Optional
 
 @ExtendWith(value = [MockKExtension::class])
 class FeedServiceTest {
 
     private val feedRepository = mockk<FeedRepository>()
+    private val userRepository = mockk<UserRepository>()
     private val favoriteFeedRepository = mockk<FavoriteFeedRepository>(relaxUnitFun = true)
+    private val fcmService = mockk<FcmService>(relaxUnitFun = true)
 
-    private val feedService = FeedService(feedRepository, favoriteFeedRepository)
+    private val feedService = FeedService(feedRepository, userRepository, favoriteFeedRepository, fcmService)
 
     private lateinit var feed: Feed
     private lateinit var user: User
@@ -150,8 +154,9 @@ class FeedServiceTest {
         every { feedRepository.findByIdOrNull(1L) } returns feed
         every { favoriteFeedRepository.save(any()) } returns FavoriteFeed(
             userId = 1L,
-            feed = feed
+            feed = feed,
         )
+        every { userRepository.findById(1L) } returns Optional.of(User())
 
         // when
         feedService.createFavoriteFeed(user, 1L)
