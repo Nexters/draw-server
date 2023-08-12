@@ -61,7 +61,7 @@ class OAuthController(
     fun refreshAccessToken(
         @RequestBody req: TokenRefreshReq,
     ): TokenRefreshRes {
-        val result = commonOAuthService.refreshToken(req.accessToken, req.refreshToken)
+        val result = commonOAuthService.refreshToken(req.refreshToken)
         return TokenRefreshRes(accessToken = result.accessToken, refreshToken = result.refreshToken)
     }
 }
