@@ -5,12 +5,14 @@ import com.draw.controller.dto.ReplyCreateReq
 import com.draw.domain.feed.Feed
 import com.draw.domain.reply.Reply
 import com.draw.domain.user.User
+import com.draw.infra.persistence.ClaimRepository
 import com.draw.infra.persistence.FeedRepository
 import com.draw.infra.persistence.PeekReplyRepository
 import com.draw.infra.persistence.ReplyRepository
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -24,8 +26,9 @@ class ReplyServiceTest {
     private val feedRepository = mockk<FeedRepository>()
     private val replyRepository = mockk<ReplyRepository>()
     private val peekReplyRepository = mockk<PeekReplyRepository>()
+    private val claimRepository = mockk<ClaimRepository>()
 
-    private val replyService = ReplyService(feedRepository, replyRepository, peekReplyRepository)
+    private val replyService = ReplyService(feedRepository, replyRepository, peekReplyRepository, claimRepository)
 
     private lateinit var feed: Feed
     private lateinit var user: User
@@ -85,12 +88,14 @@ class ReplyServiceTest {
         // given
         val reply = Reply(feed = feed, content = "content", writerId = 1L)
         every { replyRepository.findByIdOrNull(1L) } returns reply
+        every { claimRepository.save(any()) } returns mockk()
 
         // when
         replyService.claimReply(user2, 1L)
 
         // then
         assertThat(reply.blockReplies).hasSize(1)
+        verify(exactly = 1) { claimRepository.save(any()) }
     }
 
     @Test

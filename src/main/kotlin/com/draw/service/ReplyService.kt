@@ -1,5 +1,6 @@
 package com.draw.service
 
+import com.draw.common.enums.ClaimOriginType
 import com.draw.common.enums.Gender
 import com.draw.common.enums.MBTI
 import com.draw.common.exception.FeedNotFoundException
@@ -11,12 +12,14 @@ import com.draw.controller.dto.ReplyCreateReq
 import com.draw.controller.dto.ReplyRes
 import com.draw.controller.dto.ReplyStatus
 import com.draw.controller.dto.ReplyWriterRes
+import com.draw.domain.claim.Claim
 import com.draw.domain.reply.PeekReply
 import com.draw.domain.reply.Reply
 import com.draw.domain.user.User
 import com.draw.infra.persistence.FeedRepository
 import com.draw.infra.persistence.PeekReplyRepository
 import com.draw.infra.persistence.ReplyRepository
+import com.draw.infra.persistence.ClaimRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -27,6 +30,7 @@ class ReplyService(
     private val feedRepository: FeedRepository,
     private val replyRepository: ReplyRepository,
     private val peekReplyRepository: PeekReplyRepository,
+    private val claimRepository: ClaimRepository,
 ) {
     fun getReplies(user: User?, feedId: Long): RepliesRes {
         val feed = feedRepository.findByIdOrNull(feedId) ?: throw FeedNotFoundException()
@@ -62,18 +66,25 @@ class ReplyService(
     }
 
     @Transactional
-    fun blockReply(user: User, replyId: Long) {
+    fun blockReply(user: User, replyId: Long): Reply {
         val reply = replyRepository.findByIdOrNull(replyId) ?: throw ReplyNotFoundException()
         require(reply.writerId != user.id!!) { "Not allowed block own reply" }
 
         reply.addBlockReply(user.id!!)
+        return reply
     }
 
     @Transactional
     fun claimReply(user: User, replyId: Long) {
-        blockReply(user, replyId)
-
-        // TODO: claim 적재 로직 추가 2023/08/02 (koi)
+        val reply = blockReply(user, replyId)
+        claimRepository.save(
+            Claim(
+                reportedUserId = reply.writerId,
+                informantUserId = user.id!!,
+                originId = replyId,
+                originType = ClaimOriginType.REPLY,
+            )
+        )
     }
 
     fun getMyReplies(user: User, lastReplyId: Long?): MyRepliesRes {

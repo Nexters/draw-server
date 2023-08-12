@@ -96,3 +96,17 @@ create table if not exists block_reply
 
 create unique index reply_id_user_id_uniq
     on block_reply (reply_id, user_id);
+
+create table if not exists claim
+(
+    id                bigint auto_increment primary key,
+    reported_user_id  bigint      not null comment '신고 대상자',
+    informant_user_id bigint      not null comment '신고자',
+    origin_id         bigint      not null comment '신고 대상의 id',
+    origin_type       varchar(16) not null comment '신고 대상의 타입 (FEED, REPLY)',
+    created_at        datetime    not null default now(),
+    updated_at        datetime    not null default now() on update now()
+);
+
+create unique index informant_user_id_origin_id_origin_type_uniq
+    on claim (informant_user_id, origin_id, origin_type);
