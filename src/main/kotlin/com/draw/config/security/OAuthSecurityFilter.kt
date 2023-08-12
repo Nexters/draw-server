@@ -36,6 +36,7 @@ class OAuthSecurityFilter(
         }
         if (tokenHeader == null && !authorizationRequiredRequestMatcher.matches(request)) {
             chain.doFilter(request, response)
+            return
         } else {
             runCatching {
                 val token = tokenHeader.toString().removePrefix("Bearer")
