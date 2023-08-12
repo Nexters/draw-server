@@ -3,8 +3,6 @@ package com.draw.service
 import com.draw.common.BusinessException
 import com.draw.common.enums.ClaimOriginType
 import com.draw.common.enums.ErrorType
-import com.draw.common.enums.Gender
-import com.draw.common.enums.MBTI
 import com.draw.common.exception.FeedNotFoundException
 import com.draw.common.exception.ReplyNotFoundException
 import com.draw.common.exception.UserNotFoundException
@@ -46,8 +44,11 @@ class ReplyService(
             peekReplyRepository.findAllByUserIdAndReplyIn(user.id!!, replies)
                 .associateBy(
                     { it.reply },
-                    { ReplyWriterRes(MBTI.ESTJ, Gender.MALE, 29) }, // TODO: 기능 개발 필요  2023/08/05 (koi)
-                ) // TODO: userId 기반 user 정보 조회 2023/08/02 (koi)
+                    {
+                        val writerInfo = it.reply.writerInfo
+                        ReplyWriterRes(writerInfo.mbti, writerInfo.gender, writerInfo.age)
+                    }
+                )
         } ?: emptyMap()
 
         return RepliesRes(
@@ -59,6 +60,7 @@ class ReplyService(
                         status = replyReplyWriterResMap.getStatus(reply, user),
                         writerId = reply.writerId,
                         writer = replyReplyWriterResMap[reply],
+                        isActiveWriter = userRepository.existsById(reply.writerId), // TODO: 성능 고민 필요 2023/08/12 (koi)
                     )
                 }.toList(),
         )
@@ -67,7 +69,7 @@ class ReplyService(
     @Transactional
     fun createReply(user: User, feedId: Long, reqReplyCreateReq: ReplyCreateReq) {
         val feed = feedRepository.findByIdOrNull(feedId) ?: throw FeedNotFoundException()
-        feed.addReply(user.id!!, reqReplyCreateReq.content)
+        feed.addReply(user, reqReplyCreateReq.content)
     }
 
     @Transactional
@@ -141,10 +143,10 @@ class ReplyService(
 
         // TODO: writerUser에게 push 발송 2023/08/12 (koi)
 
-        return ReplyWriterRes(writerUser.mbti, writerUser.gender, writerUser.getAge())
+        return ReplyWriterRes(writerUser.mbti!!, writerUser.gender!!, writerUser.getAge())
     }
 
-    private fun Map<Reply, ReplyWriterRes>.getStatus(reply: Reply, user: User?) =
+    private fun Map<Reply, ReplyWriterRes?>.getStatus(reply: Reply, user: User?) =
         if (user == null) ReplyStatus.NORMAL
         else if (this.containsKey(reply)) ReplyStatus.PEEKED
         else if (reply.writerId == user.id) ReplyStatus.MINE

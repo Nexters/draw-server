@@ -13,6 +13,7 @@ data class ReplyRes(
     val status: ReplyStatus,
     val writerId: Long,
     val writer: ReplyWriterRes?,
+    val isActiveWriter: Boolean = false,
 )
 
 data class ReplyWriterRes(

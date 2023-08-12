@@ -8,6 +8,8 @@ import com.draw.domain.common.BaseEntity
 import com.draw.domain.common.converter.GendersConverter
 import com.draw.domain.common.converter.MBTICharsConverter
 import com.draw.domain.reply.Reply
+import com.draw.domain.reply.WriterInfo
+import com.draw.domain.user.User
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Convert
@@ -92,8 +94,13 @@ class Feed(
     var favoriteCount: Int = 0
         protected set
 
-    fun addReply(userId: Long, content: String) {
-        val reply = Reply(feed = this, writerId = userId, content = content)
+    fun addReply(user: User, content: String) {
+        val reply = Reply(
+            feed = this,
+            writerId = user.id!!,
+            content = content,
+            writerInfo = WriterInfo(mbti = user.mbti!!, gender = user.gender!!, age = user.getAge())
+        )
         mutableReplies.add(reply)
     }
 
