@@ -110,7 +110,8 @@ class ControllerExceptionHandler(
                     setExtra("method", request.method)
                     setExtra("parameterMap", request.parameterMap)
                     setExtra("stackTrace", e.stackTraceToString())
-                })
+                }
+            )
         } catch (e: Exception) {
             log.error("Failed to send slack notification", e)
         }
