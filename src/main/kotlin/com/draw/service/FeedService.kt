@@ -2,6 +2,8 @@ package com.draw.service
 
 import com.draw.common.BusinessException
 import com.draw.common.enums.ErrorType
+import com.draw.common.enums.Gender
+import com.draw.common.enums.MBTI
 import com.draw.common.exception.FeedNotFoundException
 import com.draw.controller.dto.FeedCreateReq
 import com.draw.controller.dto.FeedRes
@@ -12,6 +14,7 @@ import com.draw.domain.feed.FavoriteFeed
 import com.draw.domain.user.User
 import com.draw.infra.persistence.FavoriteFeedRepository
 import com.draw.infra.persistence.FeedRepository
+import com.draw.service.dto.FeedProjection
 import mu.KotlinLogging
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.data.repository.findByIdOrNull
@@ -36,14 +39,16 @@ class FeedService(
             content = feedProjection.content,
             isFavorite = feedProjection.isFavorite(),
             favoriteCount = feedProjection.favoriteCount,
-            isFit = user?.let { feedProjection.isFit(it.gender, it.getAge(), it.mbti) } ?: false
+
+            isFit = user?.let { isFit(feedProjection, it) }
+                ?: false,
         )
     }
 
     @Transactional
     fun createFeed(user: User, feedCreateReq: FeedCreateReq) {
         feedRepository.save(
-            feedCreateReq.toEntity(user.id!!, user.getAge())
+            feedCreateReq.toEntity(user.id!!, user.getAge()),
         )
     }
 
@@ -77,7 +82,7 @@ class FeedService(
                 FavoriteFeed(
                     userId = user.id!!,
                     feed = feed,
-                )
+                ),
             )
         } catch (e: DataIntegrityViolationException) {
             throw BusinessException(ErrorType.FAVORITE_FEED_ALREADY_EXISTS, e)
@@ -101,10 +106,10 @@ class FeedService(
                     content = feedProjection.content,
                     isFavorite = feedProjection.isFavorite(),
                     favoriteCount = feedProjection.favoriteCount,
-                    isFit = user?.let { feedProjection.isFit(it.gender, it.getAge(), it.mbti) } ?: false
+                    isFit = user?.let { isFit(feedProjection, it) } ?: false,
                 )
             }.toList(),
-            hasNext = slice.hasNext()
+            hasNext = slice.hasNext(),
         )
     }
 
@@ -118,10 +123,10 @@ class FeedService(
                     content = feedProjection.content,
                     isFavorite = feedProjection.isFavorite(),
                     favoriteCount = feedProjection.favoriteCount,
-                    isFit = feedProjection.isFit(user.gender, user.getAge(), user.mbti)
+                    isFit = isFit(feedProjection, user),
                 )
             }.toList(),
-            hasNext = slice.hasNext()
+            hasNext = slice.hasNext(),
         )
     }
 
@@ -136,10 +141,15 @@ class FeedService(
                     isFavorite = feedProjection.isFavorite(),
                     favoriteCount = feedProjection.favoriteCount,
                     favoriteId = feedProjection.favoriteId!!,
-                    isFit = feedProjection.isFit(user.gender, user.getAge(), user.mbti)
+                    isFit = isFit(feedProjection, user),
                 )
             }.toList(),
-            hasNext = slice.hasNext()
+            hasNext = slice.hasNext(),
         )
+    }
+
+    // larry.x 백도어 API 로 가입완료 시킨 유저들 대응하기 위해서 임시로 추가
+    private fun isFit(feedProjection: FeedProjection, user: User): Boolean {
+        return feedProjection.isFit(user.gender ?: Gender.MALE, user.getAge(), user.mbti ?: MBTI.ENFJ)
     }
 }
