@@ -26,7 +26,7 @@ class KakaoOAuthService(
     private val promotionService: PromotionService,
 ) {
     @Transactional
-    fun registerOrLogin(authCode: String): LoginResult {
+    fun registerOrLogin(authCode: String, origin: String): LoginResult {
         val tokenResponse = fetchKakaoUserAccessToken(authCode)
         val userInfo = kakaoApiClient.getUserInfo("Bearer ${tokenResponse.accessToken}")
         val user = userRepository.findByKakaoId(userInfo.id.toString())
