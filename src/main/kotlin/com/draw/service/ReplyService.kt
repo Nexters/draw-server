@@ -32,8 +32,9 @@ class ReplyService(
     private val feedRepository: FeedRepository,
     private val replyRepository: ReplyRepository,
     private val peekReplyRepository: PeekReplyRepository,
-    private val claimRepository: ClaimRepository,
     private val userRepository: UserRepository,
+    private val fcmService: FcmService,
+    private val claimRepository: ClaimRepository,
 ) {
     fun getReplies(user: User?, feedId: Long): RepliesRes {
         val feed = feedRepository.findByIdOrNull(feedId) ?: throw FeedNotFoundException()
@@ -47,7 +48,7 @@ class ReplyService(
                     {
                         val writerInfo = it.reply.writerInfo
                         ReplyWriterRes(writerInfo.mbti, writerInfo.gender, writerInfo.age)
-                    }
+                    },
                 )
         } ?: emptyMap()
 
@@ -90,7 +91,7 @@ class ReplyService(
                 informantUserId = user.id!!,
                 originId = replyId,
                 originType = ClaimOriginType.REPLY,
-            )
+            ),
         )
     }
 
@@ -130,27 +131,32 @@ class ReplyService(
         peekReplyRepository.save(
             PeekReply(
                 userId = user.id!!,
-                reply = reply
-            )
+                reply = reply,
+            ),
         )
 
         userRepository.saveAll(
             mutableListOf(
                 user,
                 writerUser,
-            )
+            ),
         )
 
-        // TODO: writerUser에게 push 발송 2023/08/12 (koi)
-
+        val replyWriter = userRepository.findById(reply.writerId).orElseThrow { throw UserNotFoundException() }
+        fcmService.pushPeekNotification(peekUser = user, receiveUser = replyWriter, detailId = reply.feed.id!!)
         return ReplyWriterRes(writerUser.mbti!!, writerUser.gender!!, writerUser.getAge())
     }
 
     private fun Map<Reply, ReplyWriterRes?>.getStatus(reply: Reply, user: User?) =
-        if (user == null) ReplyStatus.NORMAL
-        else if (this.containsKey(reply)) ReplyStatus.PEEKED
-        else if (reply.writerId == user.id) ReplyStatus.MINE
-        else ReplyStatus.NORMAL
+        if (user == null) {
+            ReplyStatus.NORMAL
+        } else if (this.containsKey(reply)) {
+            ReplyStatus.PEEKED
+        } else if (reply.writerId == user.id) {
+            ReplyStatus.MINE
+        } else {
+            ReplyStatus.NORMAL
+        }
 
     companion object {
         private const val PEEK_POINT_TO_USE = 10L

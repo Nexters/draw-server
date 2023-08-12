@@ -15,7 +15,6 @@ import io.jsonwebtoken.Jwts
 import mu.KotlinLogging
 import org.apache.tomcat.util.codec.binary.Base64
 import org.springframework.stereotype.Service
-import java.lang.IllegalArgumentException
 import java.math.BigInteger
 import java.security.KeyFactory
 import java.security.PublicKey

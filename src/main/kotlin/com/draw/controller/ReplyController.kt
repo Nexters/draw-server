@@ -51,7 +51,9 @@ class ReplyController(
     @Operation(summary = "내가 쓴 리플 조회")
     fun getMyReplies(
         @AuthenticationPrincipal user: User,
-        @Parameter(description = "마지막 리플 id") @RequestParam("lastReplyId", required = false) lastReplyId: Long?,
+        @Parameter(description = "마지막 리플 id")
+        @RequestParam("lastReplyId", required = false)
+        lastReplyId: Long?,
     ): MyRepliesRes {
         return replyService.getMyReplies(user, lastReplyId)
     }

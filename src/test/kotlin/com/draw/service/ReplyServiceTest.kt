@@ -30,11 +30,11 @@ class ReplyServiceTest {
     private val feedRepository = mockk<FeedRepository>()
     private val replyRepository = mockk<ReplyRepository>()
     private val peekReplyRepository = mockk<PeekReplyRepository>()
-    private val claimRepository = mockk<ClaimRepository>()
     private val userRepository = mockk<UserRepository>()
+    private val claimRepository = mockk<ClaimRepository>()
+    private val fcmService = mockk<FcmService>(relaxUnitFun = true)
 
-    private val replyService =
-        ReplyService(feedRepository, replyRepository, peekReplyRepository, claimRepository, userRepository)
+    private val replyService = ReplyService(feedRepository, replyRepository, peekReplyRepository, userRepository, fcmService, claimRepository)
 
     private lateinit var feed: Feed
     private lateinit var user: User
