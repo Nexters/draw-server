@@ -43,12 +43,13 @@ create index user_id_feed_id_idx
 
 create table reply
 (
-    id         bigint auto_increment primary key,
-    feed_id    bigint       not null,
-    writer_id  bigint       not null,
-    content    varchar(256) not null,
-    created_at datetime     not null default now(),
-    updated_at datetime     not null default now() on update now()
+    id          bigint auto_increment primary key,
+    feed_id     bigint       not null,
+    writer_id   bigint       not null,
+    writer_info varchar(256) not null,
+    content     varchar(256) not null,
+    created_at  datetime     not null default now(),
+    updated_at  datetime     not null default now() on update now()
 );
 
 create index feed_id_idx
