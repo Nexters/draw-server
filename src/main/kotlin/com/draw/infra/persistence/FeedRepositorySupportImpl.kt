@@ -123,6 +123,7 @@ class FeedRepositorySupportImpl(
 
     override fun findUserFavoriteFeedProjections(userId: Long, lastFavoriteId: Long?): Slice<FeedProjection> {
         val favoriteFeed = QFavoriteFeed.favoriteFeed
+        val blockFeed = QBlockFeed.blockFeed
 
         val results = queryFactory.select(
             feedProjection(favoriteFeed)
@@ -132,8 +133,14 @@ class FeedRepositorySupportImpl(
                 feed.eq(favoriteFeed.feed)
                     .and(favoriteFeed.userId.eq(userId))
             )
+            .leftJoin(blockFeed)
+            .on(
+                feed.eq(blockFeed.feed)
+                    .and(blockFeed.userId.eq(userId))
+            )
             .where(
                 lastFavoriteId?.let { favoriteFeed.id.lt(it) },
+                blockFeed.id.isNull,
                 favoriteFeed.id.isNotNull,
                 favoriteFeed.userId.eq(userId),
             )
