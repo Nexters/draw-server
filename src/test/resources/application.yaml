@@ -39,6 +39,7 @@ auth:
 
 kakao:
   auth:
+    admin-key: "kakao-admin-key"
     client-secret: "kakao-client-secret"
     js-key: "kakao-js-key"
     rest-api-key: "kakao-rest-api-key"

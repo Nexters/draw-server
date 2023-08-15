@@ -13,6 +13,8 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
+import org.hibernate.annotations.SQLDelete
+import org.hibernate.annotations.Where
 import java.time.Duration
 import java.time.LocalDate
 import java.time.ZoneId
@@ -20,6 +22,8 @@ import java.time.ZonedDateTime
 
 @Entity
 @Table(name = "draw_user")
+@SQLDelete(sql = "UPDATE draw_user SET deleted_at = CURRENT_TIMESTAMP() WHERE id = ?")
+@Where(clause = "deleted_at IS NULL")
 class User(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,6 +56,8 @@ class User(
     var fcmToken: String? = null,
 
     var lastFitPushReceivedAt: ZonedDateTime? = null,
+
+    var deletedAt: ZonedDateTime? = null,
 ) : BaseEntity() {
     fun grantPoint(point: Point) {
         this.point = point.value
@@ -119,5 +125,9 @@ class User(
 
     fun markFitRecommendationReceived() {
         this.lastFitPushReceivedAt = ZonedDateTime.now()
+    }
+
+    fun delete() {
+        this.deletedAt = ZonedDateTime.now()
     }
 }

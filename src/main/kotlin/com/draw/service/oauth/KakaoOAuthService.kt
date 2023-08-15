@@ -6,6 +6,7 @@ import com.draw.domain.promotion.NewlyRegisterPromotionGenerator
 import com.draw.domain.user.User
 import com.draw.infra.external.kakao.KakaoApiClient
 import com.draw.infra.external.kakao.KakaoAuthClient
+import com.draw.infra.external.kakao.KakaoUnlinkRequest
 import com.draw.infra.external.kakao.KauthTokenRequest
 import com.draw.infra.external.kakao.KauthTokenResponse
 import com.draw.infra.persistence.user.UserRepository
@@ -42,6 +43,15 @@ class KakaoOAuthService(
         userRepository.save(newUser)
         promotionService.grant(newlyRegisterPromotionGenerator.generate(newUser))
         return LoginResult.newlyRegistered(accessToken, newUser.refreshToken!!)
+    }
+
+    fun unlink(user: User) {
+        kakaoApiClient.unlink(
+            "KakaoAK ${kakaoOAuthProperties.adminKey}",
+            KakaoUnlinkRequest(targetIdType = "user_id", targetId = user.kakaoId!!.toLong()).toMap(),
+        )
+        user.delete()
+        userRepository.delete(user)
     }
 
     private fun fetchKakaoUserAccessToken(authCode: String, callbackOrigin: String): KauthTokenResponse {

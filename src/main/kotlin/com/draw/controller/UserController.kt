@@ -8,6 +8,7 @@ import com.draw.service.UserService
 import com.draw.service.UserUpdateInfo
 import io.swagger.v3.oas.annotations.Operation
 import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -49,5 +50,12 @@ class UserController(
         @RequestBody fcmTokenRegReq: FcmTokenRegReq,
     ) {
         userService.registerFcmToken(user, fcmTokenRegReq.fcmToken)
+    }
+
+    @DeleteMapping("/withdraw")
+    fun run(
+        @AuthenticationPrincipal user: User,
+    ) {
+        userService.withdraw(user)
     }
 }
