@@ -6,6 +6,8 @@ import com.draw.infra.external.apple.TokenResponse
 import com.draw.properties.AppleOAuthProperties
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
+import mu.KotlinLogging
+import org.apache.tomcat.util.codec.binary.Base64
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo
 import org.bouncycastle.openssl.PEMParser
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter
@@ -18,9 +20,13 @@ class AppleTokenGenerator(
     private val appleOAuthProperties: AppleOAuthProperties,
     private val appleOauthClient: AppleOauthClient,
 ) {
+    private val log = KotlinLogging.logger { }
+
     fun createClientSecretToken(): String {
         val now = Date()
-        val parser = PEMParser(StringReader(appleOAuthProperties.privateKey))
+        val decodedPrivateKeyFile = String(Base64.decodeBase64(appleOAuthProperties.privateKey))
+        log.info(decodedPrivateKeyFile)
+        val parser = PEMParser(StringReader(decodedPrivateKeyFile))
         val privateKey = JcaPEMKeyConverter().getPrivateKey(parser.readObject() as PrivateKeyInfo)
 
         val claims = Jwts.claims().also {

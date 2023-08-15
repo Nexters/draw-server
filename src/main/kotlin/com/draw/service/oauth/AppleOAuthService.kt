@@ -39,7 +39,7 @@ class AppleOAuthService(
             objectMapper.readValue(String(Base64.decodeBase64(idToken)), Map::class.java) as Map<String, String>
         log.info("$header, $idToken")
         log.info("${header["kid"]!!}, ${header["alg"]!!}")
-        log.info("애플 코드 $code")
+        log.info("애플 id token: $idToken, 애플 코드 $code")
         val publicKey = genPubKey(header["kid"]!!, header["alg"]!!)
         val parsedToken = Jwts.parserBuilder().setSigningKey(publicKey).build().parseClaimsJws(idToken)
         log.info("${parsedToken.body}")
