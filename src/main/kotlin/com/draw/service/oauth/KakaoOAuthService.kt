@@ -6,6 +6,7 @@ import com.draw.domain.promotion.NewlyRegisterPromotionGenerator
 import com.draw.domain.user.User
 import com.draw.infra.external.kakao.KakaoApiClient
 import com.draw.infra.external.kakao.KakaoAuthClient
+import com.draw.infra.external.kakao.KakaoUnlinkRequest
 import com.draw.infra.external.kakao.KauthTokenRequest
 import com.draw.infra.external.kakao.KauthTokenResponse
 import com.draw.infra.persistence.user.UserRepository
@@ -36,12 +37,19 @@ class KakaoOAuthService(
             }
             return LoginResult.normal(jwtProvider.generateAccessToken(user), jwtProvider.generateRefreshToken(user))
         }
-        val newUser = User(kakaoId = userInfo.id.toString(), oauthProvider = OAuthProvider.KAKAO)
+        val newUser = userRepository.save(User(kakaoId = userInfo.id.toString(), oauthProvider = OAuthProvider.KAKAO))
         val accessToken = jwtProvider.generateAccessToken(newUser)
         newUser.refreshToken = jwtProvider.generateRefreshToken(newUser)
-        userRepository.save(newUser)
         promotionService.grant(newlyRegisterPromotionGenerator.generate(newUser))
+        userRepository.save(newUser)
         return LoginResult.newlyRegistered(accessToken, newUser.refreshToken!!)
+    }
+
+    fun unlink(user: User) {
+        kakaoApiClient.unlink(
+            "KakaoAK ${kakaoOAuthProperties.adminKey}",
+            KakaoUnlinkRequest(targetIdType = "user_id", targetId = user.kakaoId!!.toLong()).toMap(),
+        )
     }
 
     private fun fetchKakaoUserAccessToken(authCode: String, callbackOrigin: String): KauthTokenResponse {

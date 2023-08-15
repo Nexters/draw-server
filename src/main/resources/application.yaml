@@ -45,6 +45,7 @@ feign:
 
 kakao:
   auth:
+    admin-key: ${KAKAO_ADMIN_KEY}
     client-secret: ${KAKAO_CLIENT_SECRET}
     js-key: ${KAKAO_JS_KEY}
     rest-api-key: ${KAKAO_REST_API_KEY}
@@ -52,8 +53,12 @@ kakao:
 
 apple:
   auth:
+    service-id: ${APPLE_SERVICE_ID}
     team-id: ${APPLE_TEAM_ID}
+    bundle-id: ${APPLE_BUNDLE_ID}
+    private-key: ${APPLE_P8}
     aud: https://appleid.apple.com
+    kid: ${APPLE_KID}
 
 discord:
   webhook:

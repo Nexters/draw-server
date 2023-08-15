@@ -6,6 +6,7 @@ import com.draw.domain.promotion.NewlyRegisterPromotionGenerator
 import com.draw.domain.user.User
 import com.draw.infra.external.apple.AppleOauthClient
 import com.draw.infra.external.apple.ApplePubKey
+import com.draw.infra.external.apple.RevokeRequest
 import com.draw.infra.persistence.user.UserRepository
 import com.draw.properties.AppleOAuthProperties
 import com.draw.service.oauth.dto.LoginResult
@@ -15,6 +16,7 @@ import io.jsonwebtoken.Jwts
 import mu.KotlinLogging
 import org.apache.tomcat.util.codec.binary.Base64
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.math.BigInteger
 import java.security.KeyFactory
 import java.security.PublicKey
@@ -29,39 +31,63 @@ class AppleOAuthService(
     private val objectMapper: ObjectMapper,
     private val newlyRegisterPromotionGenerator: NewlyRegisterPromotionGenerator,
     private val promotionService: PromotionService,
+    private val appleTokenGenerator: AppleTokenGenerator,
 ) {
     private val log = KotlinLogging.logger { }
 
-    fun registerOrLogin(idToken: String): LoginResult {
+    @Transactional
+    fun registerOrLogin(idToken: String, code: String): LoginResult {
         val header =
-            objectMapper.readValue(String(Base64.decodeBase64(idToken)), Map::class.java) as Map<String, String>
+            objectMapper.readValue(String(Base64.decodeBase64URLSafe(idToken)), Map::class.java) as Map<String, String>
         log.info("$header, $idToken")
         log.info("${header["kid"]!!}, ${header["alg"]!!}")
+        log.info("애플 id token: $idToken, 애플 코드 $code")
         val publicKey = genPubKey(header["kid"]!!, header["alg"]!!)
         val parsedToken = Jwts.parserBuilder().setSigningKey(publicKey).build().parseClaimsJws(idToken)
-        println(parsedToken.body)
+        log.info("${parsedToken.body}")
         val iss = parsedToken.body["iss"]
         if (iss != appleOauthProperties.aud) {
             throw IllegalArgumentException("apple token issuer is invalid")
         }
+
+        val validationResult = appleTokenGenerator.generateAppleToken(authorizationCode = code)
+        val appleRefreshToken = validationResult.refreshToken
         val appleId = parsedToken.body["sub"] as String
         val user = userRepository.findByAppleId(appleId)
         if (user != null) {
+            if (appleRefreshToken != null) {
+                user.appleRefreshToken = appleRefreshToken
+            }
+            userRepository.save(user)
+
             if (!user.registrationCompleted) {
                 return LoginResult.newlyRegistered(jwtProvider.generateAccessToken(user), jwtProvider.generateRefreshToken(user))
             }
             return LoginResult.normal(jwtProvider.generateAccessToken(user), jwtProvider.generateRefreshToken(user))
         }
-        val newUser = User(appleId = appleId, oauthProvider = OAuthProvider.APPLE)
+        val newUser = userRepository.save(User(appleId = appleId, oauthProvider = OAuthProvider.APPLE))
         val accessToken = jwtProvider.generateAccessToken(newUser)
         newUser.refreshToken = jwtProvider.generateRefreshToken(newUser)
-        userRepository.save(newUser)
+        newUser.appleRefreshToken = appleRefreshToken!!
         promotionService.grant(newlyRegisterPromotionGenerator.generate(newUser))
+        userRepository.save(newUser)
         return LoginResult.newlyRegistered(accessToken, newUser.refreshToken!!)
+    }
+
+    fun withdraw(user: User) {
+        appleOauthClient.revoke(
+            RevokeRequest(
+                clientId = appleOauthProperties.serviceId,
+                clientSecret = appleTokenGenerator.createClientSecretToken(),
+                token = user.appleRefreshToken!!,
+                tokenTypeHint = "refresh_token",
+            ).toMap(),
+        )
     }
 
     private fun genPubKey(kid: String, alg: String): PublicKey {
         val applePubKey = getApplePubKey(kid, alg)
+        log.info("선택된 애플 퍼블릭 키 : $applePubKey")
         val n = BigInteger(1, Base64.decodeBase64URLSafe(applePubKey.n))
         val e = BigInteger(1, Base64.decodeBase64URLSafe(applePubKey.e))
         val keySpec = RSAPublicKeySpec(n, e)
