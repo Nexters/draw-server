@@ -37,8 +37,13 @@ class AppleOAuthService(
 
     @Transactional
     fun registerOrLogin(idToken: String, code: String): LoginResult {
-        val header =
+        log.info("전달된 애플 id token: $idToken")
+        val header = runCatching {
             objectMapper.readValue(String(Base64.decodeBase64URLSafe(idToken)), Map::class.java) as Map<String, String>
+        }.onFailure {
+            log.info("id 토큰 역직렬화 에러 발생 : id token = ($idToken), message = ${it.message}, throwable = $it")
+        }.getOrThrow()
+
         log.info("$header, $idToken")
         log.info("${header["kid"]!!}, ${header["alg"]!!}")
         log.info("애플 id token: $idToken, 애플 코드 $code")
