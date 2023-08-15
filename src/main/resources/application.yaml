@@ -55,6 +55,7 @@ apple:
   auth:
     team-id: ${APPLE_TEAM_ID}
     aud: https://appleid.apple.com
+    p8: ${APPLE_P8}
 
 discord:
   webhook:
