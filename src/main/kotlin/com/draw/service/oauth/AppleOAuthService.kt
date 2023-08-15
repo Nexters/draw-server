@@ -16,6 +16,7 @@ import io.jsonwebtoken.Jwts
 import mu.KotlinLogging
 import org.apache.tomcat.util.codec.binary.Base64
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.math.BigInteger
 import java.security.KeyFactory
 import java.security.PublicKey
@@ -34,6 +35,7 @@ class AppleOAuthService(
 ) {
     private val log = KotlinLogging.logger { }
 
+    @Transactional
     fun registerOrLogin(idToken: String, code: String): LoginResult {
         val header =
             objectMapper.readValue(String(Base64.decodeBase64URLSafe(idToken)), Map::class.java) as Map<String, String>
@@ -49,9 +51,15 @@ class AppleOAuthService(
         }
 
         val validationResult = appleTokenGenerator.generateAppleToken(authorizationCode = code)
+        val appleRefreshToken = validationResult.refreshToken
         val appleId = parsedToken.body["sub"] as String
         val user = userRepository.findByAppleId(appleId)
         if (user != null) {
+            if (appleRefreshToken != null) {
+                user.appleRefreshToken = appleRefreshToken
+            }
+            userRepository.save(user)
+
             if (!user.registrationCompleted) {
                 return LoginResult.newlyRegistered(jwtProvider.generateAccessToken(user), jwtProvider.generateRefreshToken(user))
             }
@@ -60,7 +68,7 @@ class AppleOAuthService(
         val newUser = userRepository.save(User(appleId = appleId, oauthProvider = OAuthProvider.APPLE))
         val accessToken = jwtProvider.generateAccessToken(newUser)
         newUser.refreshToken = jwtProvider.generateRefreshToken(newUser)
-        newUser.appleRefreshToken = validationResult.refreshToken!!
+        newUser.appleRefreshToken = appleRefreshToken!!
         promotionService.grant(newlyRegisterPromotionGenerator.generate(newUser))
         userRepository.save(newUser)
         return LoginResult.newlyRegistered(accessToken, newUser.refreshToken!!)
