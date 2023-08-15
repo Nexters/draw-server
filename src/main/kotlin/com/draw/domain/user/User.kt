@@ -41,6 +41,8 @@ class User(
 
     var refreshToken: String? = null,
 
+    var appleRefreshToken: String? = null,
+
     private var point: Long = 0L,
 
     var lastLoggedAt: ZonedDateTime? = null,

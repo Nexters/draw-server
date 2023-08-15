@@ -36,7 +36,7 @@ class OAuthController(
         return if (req.provider == OAuthProvider.KAKAO) {
             kakaoOAuthService.registerOrLogin(req.code, origin)
         } else {
-            appleOAuthService.registerOrLogin(req.code, req.appleAuthorizationCode)
+            appleOAuthService.registerOrLogin(req.code, req.appleAuthorizationCode!!)
         }
     }
 
