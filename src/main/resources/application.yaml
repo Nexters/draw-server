@@ -53,9 +53,12 @@ kakao:
 
 apple:
   auth:
+    service-id: ${APPLE_SERVICE_ID}
     team-id: ${APPLE_TEAM_ID}
+    bundle-id: ${APPLE_BUNDLE_ID}
+    private-key: ${APPLE_P8}
     aud: https://appleid.apple.com
-    p8: ${APPLE_P8}
+    kid: ${APPLE_KID}
 
 discord:
   webhook:

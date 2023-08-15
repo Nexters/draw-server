@@ -6,6 +6,7 @@ import com.draw.domain.promotion.NewlyRegisterPromotionGenerator
 import com.draw.domain.user.User
 import com.draw.infra.external.apple.AppleOauthClient
 import com.draw.infra.external.apple.ApplePubKey
+import com.draw.infra.external.apple.RevokeRequest
 import com.draw.infra.persistence.user.UserRepository
 import com.draw.properties.AppleOAuthProperties
 import com.draw.service.oauth.dto.LoginResult
@@ -29,10 +30,11 @@ class AppleOAuthService(
     private val objectMapper: ObjectMapper,
     private val newlyRegisterPromotionGenerator: NewlyRegisterPromotionGenerator,
     private val promotionService: PromotionService,
+    private val appleTokenGenerator: AppleTokenGenerator,
 ) {
     private val log = KotlinLogging.logger { }
 
-    fun registerOrLogin(idToken: String, code: String?): LoginResult {
+    fun registerOrLogin(idToken: String, code: String): LoginResult {
         val header =
             objectMapper.readValue(String(Base64.decodeBase64(idToken)), Map::class.java) as Map<String, String>
         log.info("$header, $idToken")
@@ -45,6 +47,8 @@ class AppleOAuthService(
         if (iss != appleOauthProperties.aud) {
             throw IllegalArgumentException("apple token issuer is invalid")
         }
+
+        val validationResult = appleTokenGenerator.generateAppleToken(authorizationCode = code)
         val appleId = parsedToken.body["sub"] as String
         val user = userRepository.findByAppleId(appleId)
         if (user != null) {
@@ -56,9 +60,21 @@ class AppleOAuthService(
         val newUser = userRepository.save(User(appleId = appleId, oauthProvider = OAuthProvider.APPLE))
         val accessToken = jwtProvider.generateAccessToken(newUser)
         newUser.refreshToken = jwtProvider.generateRefreshToken(newUser)
+        newUser.appleRefreshToken = validationResult.refreshToken
         promotionService.grant(newlyRegisterPromotionGenerator.generate(newUser))
         userRepository.save(newUser)
         return LoginResult.newlyRegistered(accessToken, newUser.refreshToken!!)
+    }
+
+    fun withdraw(user: User) {
+        appleOauthClient.revoke(
+            RevokeRequest(
+                clientId = appleOauthProperties.serviceId,
+                clientSecret = appleTokenGenerator.createClientSecretToken(),
+                token = user.appleRefreshToken!!,
+                tokenTypeHint = "refresh_token",
+            ).toMap(),
+        )
     }
 
     private fun genPubKey(kid: String, alg: String): PublicKey {
