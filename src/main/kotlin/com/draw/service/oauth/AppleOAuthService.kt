@@ -36,7 +36,7 @@ class AppleOAuthService(
 
     fun registerOrLogin(idToken: String, code: String): LoginResult {
         val header =
-            objectMapper.readValue(String(Base64.decodeBase64(idToken)), Map::class.java) as Map<String, String>
+            objectMapper.readValue(String(Base64.decodeBase64URLSafe(idToken)), Map::class.java) as Map<String, String>
         log.info("$header, $idToken")
         log.info("${header["kid"]!!}, ${header["alg"]!!}")
         log.info("애플 id token: $idToken, 애플 코드 $code")
@@ -79,6 +79,7 @@ class AppleOAuthService(
 
     private fun genPubKey(kid: String, alg: String): PublicKey {
         val applePubKey = getApplePubKey(kid, alg)
+        log.info("선택된 애플 퍼블릭 키 : $applePubKey")
         val n = BigInteger(1, Base64.decodeBase64URLSafe(applePubKey.n))
         val e = BigInteger(1, Base64.decodeBase64URLSafe(applePubKey.e))
         val keySpec = RSAPublicKeySpec(n, e)
