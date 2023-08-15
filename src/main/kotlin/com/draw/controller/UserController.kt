@@ -45,6 +45,7 @@ class UserController(
     }
 
     @PostMapping("/fcm")
+    @Operation(summary = "fcm 토큰 갱신")
     fun registerFcmToken(
         @AuthenticationPrincipal user: User,
         @RequestBody fcmTokenRegReq: FcmTokenRegReq,
@@ -53,6 +54,7 @@ class UserController(
     }
 
     @DeleteMapping("/withdraw")
+    @Operation(summary = "회원 탈퇴")
     fun run(
         @AuthenticationPrincipal user: User,
     ) {
