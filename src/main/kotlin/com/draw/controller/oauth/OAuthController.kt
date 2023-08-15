@@ -36,7 +36,7 @@ class OAuthController(
         return if (req.provider == OAuthProvider.KAKAO) {
             kakaoOAuthService.registerOrLogin(req.code, origin)
         } else {
-            appleOAuthService.registerOrLogin(req.code)
+            appleOAuthService.registerOrLogin(req.code, req.appleAuthorizationCode)
         }
     }
 
@@ -53,7 +53,7 @@ class OAuthController(
     fun localAppleLoginCallBack(
         req: AppleLoginReq,
     ): LoginResult {
-        return appleOAuthService.registerOrLogin(req.idToken)
+        return appleOAuthService.registerOrLogin(req.idToken, req.code)
     }
 
     @PostMapping("/token/refresh")

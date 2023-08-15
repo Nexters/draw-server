@@ -32,14 +32,15 @@ class AppleOAuthService(
 ) {
     private val log = KotlinLogging.logger { }
 
-    fun registerOrLogin(idToken: String): LoginResult {
+    fun registerOrLogin(idToken: String, code: String): LoginResult {
         val header =
             objectMapper.readValue(String(Base64.decodeBase64(idToken)), Map::class.java) as Map<String, String>
         log.info("$header, $idToken")
         log.info("${header["kid"]!!}, ${header["alg"]!!}")
+        log.info("애플 코드 $code")
         val publicKey = genPubKey(header["kid"]!!, header["alg"]!!)
         val parsedToken = Jwts.parserBuilder().setSigningKey(publicKey).build().parseClaimsJws(idToken)
-        println(parsedToken.body)
+        log.info("${parsedToken.body}")
         val iss = parsedToken.body["iss"]
         if (iss != appleOauthProperties.aud) {
             throw IllegalArgumentException("apple token issuer is invalid")
@@ -52,11 +53,11 @@ class AppleOAuthService(
             }
             return LoginResult.normal(jwtProvider.generateAccessToken(user), jwtProvider.generateRefreshToken(user))
         }
-        val newUser = User(appleId = appleId, oauthProvider = OAuthProvider.APPLE)
+        val newUser = userRepository.save(User(appleId = appleId, oauthProvider = OAuthProvider.APPLE))
         val accessToken = jwtProvider.generateAccessToken(newUser)
         newUser.refreshToken = jwtProvider.generateRefreshToken(newUser)
-        userRepository.save(newUser)
         promotionService.grant(newlyRegisterPromotionGenerator.generate(newUser))
+        userRepository.save(newUser)
         return LoginResult.newlyRegistered(accessToken, newUser.refreshToken!!)
     }
 
