@@ -11,6 +11,7 @@ class DrawApiRequestMatcher : RequestMatcher {
     private val excludeMatchers = listOf(
         matcherOf("/api/v1/feeds"),
         matcherOf("/api/v1/feeds/{feedId:[0-9]+}"),
+        matcherOf("/api/v1/feeds/{feedId:[0-9]+}/replies"),
     )
 
     override fun matches(request: HttpServletRequest?): Boolean {
