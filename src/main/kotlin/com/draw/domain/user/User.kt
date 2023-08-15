@@ -126,8 +126,4 @@ class User(
     fun markFitRecommendationReceived() {
         this.lastFitPushReceivedAt = ZonedDateTime.now()
     }
-
-    fun delete() {
-        this.deletedAt = ZonedDateTime.now()
-    }
 }

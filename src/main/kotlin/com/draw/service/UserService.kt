@@ -33,7 +33,7 @@ class UserService(
         if (user.oauthProvider == OAuthProvider.KAKAO) {
             kakaoOAuthService.unlink(user)
         }
-        // userRepository.deleteById(user.id!!)
+        userRepository.delete(user)
     }
 }
 
