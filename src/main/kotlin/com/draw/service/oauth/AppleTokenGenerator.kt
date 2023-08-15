@@ -30,6 +30,7 @@ class AppleTokenGenerator(
         val privateKey = JcaPEMKeyConverter().getPrivateKey(parser.readObject() as PrivateKeyInfo)
 
         val claims = Jwts.claims().also {
+            it["sub"] = appleOAuthProperties.serviceId
             it["iss"] = appleOAuthProperties.teamId
             it["iat"] = now
             it["exp"] = Date(now.time + 1_800_000)
@@ -43,7 +44,9 @@ class AppleTokenGenerator(
             .setHeaderParam("kid", appleOAuthProperties.kid)
             .setExpiration(Date(now.time + 1_800_000))
             .signWith(privateKey, SignatureAlgorithm.ES256)
-            .compact()
+            .compact().also {
+                log.info(it)
+            }
     }
 
     fun generateAppleToken(refreshToken: String? = null, authorizationCode: String? = null): TokenResponse {
