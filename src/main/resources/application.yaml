@@ -45,6 +45,7 @@ feign:
 
 kakao:
   auth:
+    admin-key: ${KAKAO_ADMIN_KEY}
     client-secret: ${KAKAO_CLIENT_SECRET}
     js-key: ${KAKAO_JS_KEY}
     rest-api-key: ${KAKAO_REST_API_KEY}
