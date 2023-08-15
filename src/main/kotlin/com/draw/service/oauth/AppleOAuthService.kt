@@ -32,7 +32,7 @@ class AppleOAuthService(
 ) {
     private val log = KotlinLogging.logger { }
 
-    fun registerOrLogin(idToken: String, code: String): LoginResult {
+    fun registerOrLogin(idToken: String, code: String?): LoginResult {
         val header =
             objectMapper.readValue(String(Base64.decodeBase64(idToken)), Map::class.java) as Map<String, String>
         log.info("$header, $idToken")
