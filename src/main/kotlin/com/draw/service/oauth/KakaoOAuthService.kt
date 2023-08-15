@@ -50,8 +50,6 @@ class KakaoOAuthService(
             "KakaoAK ${kakaoOAuthProperties.adminKey}",
             KakaoUnlinkRequest(targetIdType = "user_id", targetId = user.kakaoId!!.toLong()).toMap(),
         )
-        user.delete()
-        userRepository.delete(user)
     }
 
     private fun fetchKakaoUserAccessToken(authCode: String, callbackOrigin: String): KauthTokenResponse {
