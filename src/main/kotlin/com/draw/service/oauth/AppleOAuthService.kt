@@ -60,7 +60,7 @@ class AppleOAuthService(
         val newUser = userRepository.save(User(appleId = appleId, oauthProvider = OAuthProvider.APPLE))
         val accessToken = jwtProvider.generateAccessToken(newUser)
         newUser.refreshToken = jwtProvider.generateRefreshToken(newUser)
-        newUser.appleRefreshToken = validationResult.refreshToken
+        newUser.appleRefreshToken = validationResult.refreshToken!!
         promotionService.grant(newlyRegisterPromotionGenerator.generate(newUser))
         userRepository.save(newUser)
         return LoginResult.newlyRegistered(accessToken, newUser.refreshToken!!)
