@@ -61,16 +61,25 @@ class FcmServiceImpl(
         userRepository.save(receiveUser)
     }
 
-    private fun createNotification(title: String, body: String): Notification {
-        return Notification.builder()
-            .setTitle(title).setBody(body).build()
+    private fun createNotification(title: String, body: String): DrawFcmNotification {
+        return DrawFcmNotification(
+            notification = Notification.builder().setTitle(title).setBody(body).build(),
+            title = title,
+            body = body,
+        )
     }
 
-    private fun createMessage(receiveUser: User, notification: Notification, detailId: Long): Message {
+    private fun createMessage(receiveUser: User, drawNotification: DrawFcmNotification, detailId: Long): Message {
         return Message.builder()
-            .putData("url", "https://draw-nexters.netlify.app/question-detail/$detailId")
+            .putAllData(
+                mutableMapOf(
+                    "url" to "https://draw-nexters.netlify.app/question-detail/$detailId",
+                    "title" to drawNotification.title,
+                    "body" to drawNotification.body,
+                ),
+            )
             .setToken(receiveUser.fcmToken)
-            .setNotification(notification)
+            .setNotification(drawNotification.notification)
             .build()
     }
 
@@ -92,4 +101,10 @@ class FcmServiceImpl(
             )
         }
     }
+
+    private data class DrawFcmNotification(
+        val notification: Notification,
+        val title: String,
+        val body: String,
+    )
 }
