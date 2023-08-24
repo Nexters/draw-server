@@ -11,6 +11,7 @@ import com.draw.service.ReplyService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.validation.Valid
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -41,7 +42,7 @@ class ReplyController(
     fun createReply(
         @AuthenticationPrincipal user: User,
         @PathVariable("feedId") feedId: Long,
-        @RequestBody replyCreateReq: ReplyCreateReq,
+        @RequestBody @Valid replyCreateReq: ReplyCreateReq,
     ) {
         replyService.createReply(user, feedId, replyCreateReq)
     }

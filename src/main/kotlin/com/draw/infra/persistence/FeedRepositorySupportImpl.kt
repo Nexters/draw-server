@@ -88,7 +88,6 @@ class FeedRepositorySupportImpl(
                 ltFeedId(lastFeedId),
                 blockFeed.id.isNull,
                 feedViewHistory.id.isNull,
-                feed.writerId.ne(userId),
                 feed.visibleTarget.eq(VisibleTarget.of(userAge))
             )
             .orderBy(feed.id.desc())
@@ -161,6 +160,7 @@ class FeedRepositorySupportImpl(
         feed.genders,
         feed.ageRange,
         feed.mbtiChars,
+        feed.writerId,
         feed.createdAt,
     )
 

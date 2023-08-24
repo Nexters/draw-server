@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.validation.Valid
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -44,7 +45,7 @@ class FeedController(
     @Operation(summary = "피드 작성")
     fun createFeed(
         @AuthenticationPrincipal user: User,
-        @RequestBody feedCreateReq: FeedCreateReq,
+        @RequestBody @Valid feedCreateReq: FeedCreateReq,
     ) {
         feedService.createFeed(user, feedCreateReq)
     }

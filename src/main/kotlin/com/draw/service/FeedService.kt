@@ -9,6 +9,7 @@ import com.draw.common.exception.FeedNotFoundException
 import com.draw.common.exception.UserNotFoundException
 import com.draw.controller.dto.FeedCreateReq
 import com.draw.controller.dto.FeedRes
+import com.draw.controller.dto.FeedStatus
 import com.draw.controller.dto.FeedsRes
 import com.draw.controller.dto.MyFavoriteFeedRes
 import com.draw.controller.dto.MyFavoriteFeedsRes
@@ -47,9 +48,9 @@ class FeedService(
         return FeedRes(
             id = feedProjection.id,
             content = feedProjection.content,
+            status = feedProjection.getStatus(user),
             isFavorite = feedProjection.isFavorite(),
             favoriteCount = feedProjection.favoriteCount,
-
             isFit = user?.let { isFit(feedProjection, it) }
                 ?: false,
         )
@@ -128,6 +129,7 @@ class FeedService(
                 FeedRes(
                     id = feedProjection.id,
                     content = feedProjection.content,
+                    status = feedProjection.getStatus(user),
                     isFavorite = feedProjection.isFavorite(),
                     favoriteCount = feedProjection.favoriteCount,
                     isFit = user?.let { isFit(feedProjection, it) } ?: false,
@@ -145,6 +147,7 @@ class FeedService(
                 FeedRes(
                     id = feedProjection.id,
                     content = feedProjection.content,
+                    status = feedProjection.getStatus(user),
                     isFavorite = feedProjection.isFavorite(),
                     favoriteCount = feedProjection.favoriteCount,
                     isFit = isFit(feedProjection, user),
@@ -175,5 +178,13 @@ class FeedService(
     // larry.x 백도어 API 로 가입완료 시킨 유저들 대응하기 위해서 임시로 추가
     private fun isFit(feedProjection: FeedProjection, user: User): Boolean {
         return feedProjection.isFit(user.gender ?: Gender.MALE, user.getAge(), user.mbti ?: MBTI.ENFJ)
+    }
+
+    private fun FeedProjection.getStatus(user: User?): FeedStatus {
+        return if (user != null && user.id!! == writerId) {
+            FeedStatus.MINE
+        } else {
+            FeedStatus.NORMAL
+        }
     }
 }
