@@ -72,6 +72,7 @@ class FeedServiceTest {
             ageRange = AgeRange.ALL,
             createdAt = ZonedDateTime.now(),
             favoriteId = 1L,
+            writerId = 1L,
             favoriteCount = 10,
         )
 
@@ -97,6 +98,7 @@ class FeedServiceTest {
                 mutableListOf(),
                 AgeRange.ALL,
                 mutableListOf(),
+                writerId = 1L,
                 ZonedDateTime.now(),
             )
         val req =

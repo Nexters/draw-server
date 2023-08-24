@@ -5,8 +5,10 @@ import com.draw.common.enums.Gender
 import com.draw.common.enums.MBTIChar
 import com.draw.common.enums.VisibleTarget
 import com.draw.domain.feed.Feed
+import jakarta.validation.constraints.NotBlank
 
 data class FeedCreateReq(
+    @field:NotBlank(message = "content is required")
     val content: String,
     val genders: List<Gender> = emptyList(),
     val ageOption: AgeOption = AgeOption.ALL,

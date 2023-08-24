@@ -35,7 +35,7 @@ class PromotionServiceTest {
         fun `프로모션을 사용처리하고 유저에게 프로모션 지급액을 지급한다`() {
             val user = userRepository.save(User(oauthProvider = OAuthProvider.KAKAO))
             val promotion = promotionRepository.save(Promotion(user = user, promotionType = PromotionType.WELCOME))
-            sut.consume(user, promotion.id!!)
+            sut.consume(user, promotion.id)
             assertTrue(promotion.isConsumed())
             assertEquals(PromotionType.WELCOME.grantPoint, user.getPoint())
         }
@@ -44,9 +44,9 @@ class PromotionServiceTest {
         fun `이미 사용된 프로모션을 재사용하려고 시도하면 예외가 발생한다`() {
             val user = userRepository.save(User(oauthProvider = OAuthProvider.KAKAO))
             val promotion = promotionRepository.save(Promotion(user = user, promotionType = PromotionType.WELCOME))
-            sut.consume(user, promotion.id!!)
+            sut.consume(user, promotion.id)
             assertThrows<IllegalArgumentException> {
-                sut.consume(user, promotion.id!!)
+                sut.consume(user, promotion.id)
             }
         }
     }

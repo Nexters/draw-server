@@ -15,6 +15,7 @@ data class FeedProjection @QueryProjection constructor(
     val genders: MutableList<Gender>, // 맞춤 피드용도
     val ageRange: AgeRange, // 맞춤 피드용도
     val mbtiChars: MutableList<MBTIChar>, // 맞춤 피드용도
+    val writerId: Long,
     val createdAt: ZonedDateTime, // 정렬용도
 ) {
 
