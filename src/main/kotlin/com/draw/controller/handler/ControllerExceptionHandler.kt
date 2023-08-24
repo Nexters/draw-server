@@ -31,8 +31,8 @@ class ControllerExceptionHandler(
         request: HttpServletRequest
     ): ResponseEntity<ErrorRes> {
         val errorMessage = e.bindingResult.fieldErrors.map {
-            "field: ${it.field}, value: ${it.rejectedValue}, message: ${it.defaultMessage}"
-        }.joinToString { "\n" }
+            "field: ${it.field}, input: ${it.rejectedValue}, message: ${it.defaultMessage}"
+        }.joinToString(separator = "\n")
 
         sendNotification(e, request)
         return ResponseEntity.badRequest().body(
