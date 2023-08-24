@@ -160,6 +160,7 @@ class FeedRepositorySupportImpl(
         feed.genders,
         feed.ageRange,
         feed.mbtiChars,
+        feed.writerId,
         feed.createdAt,
     )
 
