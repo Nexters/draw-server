@@ -2,7 +2,7 @@ spring:
   application:
     name: draw-server
   datasource:
-    url: jdbc:mysql://draw-db-dev.canyydkgjrr5.ap-northeast-2.rds.amazonaws.com:3306/draw?serverTimezone=UTC
+    url: ${DB_URL}
     username: ${DB_USER}
     password: ${DB_PASSWORD}
   redis:
@@ -69,7 +69,7 @@ spring:
       on-profile: prod
 
   datasource:
-    url: jdbc:mysql://draw-db-dev.canyydkgjrr5.ap-northeast-2.rds.amazonaws.com:3306/draw?serverTimezone=UTC
+    url: ${DB_URL}
     username: ${DB_USER}
     password: ${DB_PASSWORD}
   redis:
