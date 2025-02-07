@@ -22,6 +22,7 @@ class FeedProjectionTest {
             ageRange = AgeRange.ALL,
             createdAt = ZonedDateTime.now(),
             favoriteCount = 10,
+            writerId = 1L,
         )
         // when
         val fit = feedProjection.isFit(Gender.MALE, 29, MBTI.ESTJ)
@@ -41,6 +42,7 @@ class FeedProjectionTest {
             ageRange = AgeRange.ALL,
             createdAt = ZonedDateTime.now(),
             favoriteCount = 10,
+            writerId = 1L,
         )
 
         // when
@@ -61,6 +63,7 @@ class FeedProjectionTest {
             ageRange = AgeRange.ALL,
             createdAt = ZonedDateTime.now(),
             favoriteCount = 10,
+            writerId = 1L,
         )
 
         // when
@@ -81,6 +84,7 @@ class FeedProjectionTest {
             ageRange = AgeRange.ALL,
             createdAt = ZonedDateTime.now(),
             favoriteCount = 10,
+            writerId = 1L,
         )
 
         // when
@@ -101,6 +105,7 @@ class FeedProjectionTest {
             ageRange = AgeRange.ALL,
             createdAt = ZonedDateTime.now(),
             favoriteCount = 10,
+            writerId = 1L,
         )
 
         // when
@@ -121,6 +126,7 @@ class FeedProjectionTest {
             ageRange = AgeRange.ALL,
             createdAt = ZonedDateTime.now(),
             favoriteCount = 10,
+            writerId = 1L,
         )
 
         // when
@@ -141,6 +147,7 @@ class FeedProjectionTest {
             ageRange = AgeRange.ALL,
             createdAt = ZonedDateTime.now(),
             favoriteCount = 10,
+            writerId = 1L,
         )
 
         // when
@@ -161,6 +168,7 @@ class FeedProjectionTest {
             ageRange = AgeRange.THIRTY,
             createdAt = ZonedDateTime.now(),
             favoriteCount = 10,
+            writerId = 1L,
         )
 
         // when
